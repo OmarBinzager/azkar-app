@@ -1,0 +1,2 @@
+C:/Users/Dev.OmarBinzager/Desktop/Projects/Adkary/amal_manual/android/app/.cxx/RelWithDebInfo/2p1p2j3y/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/Dev.OmarBinzager/Desktop/Projects/Adkary/amal_manual/android/app/.cxx/RelWithDebInfo/2p1p2j3y/x86_64/CMakeFiles/rebuild_cache.dir

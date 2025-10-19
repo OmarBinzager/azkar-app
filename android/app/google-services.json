@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "816986532792",
+    "project_id": "azkar-app-6e628",
+    "storage_bucket": "azkar-app-6e628.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:816986532792:android:1d1e757a8c5092e577fd4d",
+        "android_client_info": {
+          "package_name": "com.Letterspd.amal_alyoum"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCc1g-R67RGwcxGZ5Af--mhnUsN-1yF0Ik"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:816986532792:android:9e0d95a12e47838977fd4d",
+        "android_client_info": {
+          "package_name": "com.example.new_azkar_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCc1g-R67RGwcxGZ5Af--mhnUsN-1yF0Ik"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
