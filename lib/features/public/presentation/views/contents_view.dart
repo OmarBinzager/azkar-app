@@ -35,12 +35,16 @@ const List<Map<String, String>> quranFonts = [
   {'name': 'خط نبي القرآن', 'code': TextStyles.nabiQuranFont},
   {'name': 'الخط العثماني', 'code': TextStyles.uthmanicQuranFont},
   {'name': 'خط أميري', 'code': 'Amiri'},
+  {'name': 'خط لوتس', 'code': 'mylotus'},
+  {'name': 'خط لوتس لينو', 'code': 'Lotus Linotype'},
 ];
 const List<Map<String, String>> contentFonts = [
   {'name': 'خط أميري', 'code': 'Amiri-Regular'},
   {'name': 'خط المسيري', 'code': 'ElMessiri'},
   {'name': 'خط النسخ', 'code': 'Traditional Naskh'},
   {'name': 'خط الثلث', 'code': 'A Thuluth'},
+  {'name': 'خط لوتس', 'code': 'mylotus'},
+  {'name': 'خط لوتس لينو', 'code': 'Lotus Linotype'},
 ];
 
 class ContentsView extends ConsumerStatefulWidget {

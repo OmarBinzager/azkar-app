@@ -76,7 +76,7 @@ class TheSupplicationsView extends ConsumerWidget {
                         HeaderModel(
                           label: 'أذكار وأوراد تقرأ صباحًا أو مساء',
                           fromHeader: 113,
-                          toHeader: 131,
+                          toHeader: 132,
                         ),
                       ],
                     ),
@@ -93,8 +93,8 @@ class TheSupplicationsView extends ConsumerWidget {
                     Routes.headersViewer,
                     extra: HeaderModel(
                       label: 'أذكار وأدعية خاصة',
-                      fromHeader: 132,
-                      toHeader: 150,
+                      fromHeader: 133,
+                      toHeader: 151,
                     ),
                   ),
             ),

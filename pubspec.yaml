@@ -108,6 +108,7 @@ flutter:
     - assets/fonts/
     - assets/svg/
     - assets/png/
+    - assets/audio/
     - assets/json/surahs.json
     - assets/images/
   # An image asset can refer to one or more resolution-specific "variants", see
@@ -126,6 +127,12 @@ flutter:
     - family: Nabi
       fonts:
         - asset: assets/fonts/Nabi.ttf
+    - family: Lotus Linotype
+      fonts:
+        - asset: assets/fonts/LotusLinotype-Light1.ttf
+    - family: mylotus
+      fonts:
+        - asset: assets/fonts/mylotus.ttf
     - family: Traditional Naskh
       fonts:
         - asset: assets/fonts/Traditional Naskh Regular.ttf
