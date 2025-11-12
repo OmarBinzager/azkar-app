@@ -103,7 +103,6 @@ class IsarServices {
     await isar.writeAsync((isar) {
       isar.headers.clear();
       isar.contents.clear();
-      // isar.fastAccess.clear();
     });
 
     // Reinitialize with fresh data

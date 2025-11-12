@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:audioplayers/audioplayers.dart';
 
 /// Global audio service that persists across screen navigation
@@ -11,6 +13,28 @@ class AudioService {
 
   AudioService._internal() {
     _audioPlayer = AudioPlayer();
+    _configureAudioContext();
+  }
+
+  Future<void> _configureAudioContext() async {
+    final audioContext = AudioContext(
+      android: AudioContextAndroid(
+        stayAwake: true,
+        contentType: AndroidContentType.music,
+        usageType: AndroidUsageType.media,
+        audioFocus: AndroidAudioFocus.gain,
+      ),
+      iOS: AudioContextIOS(
+        category: AVAudioSessionCategory.playback,
+        options: {
+          AVAudioSessionOptions.mixWithOthers,
+          AVAudioSessionOptions.defaultToSpeaker,
+        },
+      ),
+    );
+
+    unawaited(AudioPlayer.global.setAudioContext(audioContext));
+    unawaited(_audioPlayer.setAudioContext(audioContext));
   }
 
   AudioPlayer get audioPlayer => _audioPlayer;
@@ -113,4 +137,3 @@ class AudioService {
     _audioPlayer.dispose();
   }
 }
-
