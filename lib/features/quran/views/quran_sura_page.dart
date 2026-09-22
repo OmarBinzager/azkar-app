@@ -1,30 +1,30 @@
 import 'dart:convert';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_azkar_app/core/constants/app_colors.dart';
 import 'package:new_azkar_app/core/constants/layout_constants.dart';
 import 'package:new_azkar_app/core/constants/shadows.dart';
 import 'package:new_azkar_app/core/constants/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:go_router/go_router.dart';
-// import 'package:quran/dart';
 import 'package:quran/quran.dart';
-import '../globalhelpers/constants.dart';
+import '../../../core/providers/global_audio_provider.dart';
+import '../models/reciter.dart';
 import '../models/sura.dart';
-import 'package:easy_container/easy_container.dart';
+import '../providers/quran_reciter_provider.dart';
 import '../views/quran_page.dart';
 import 'package:string_validator/string_validator.dart';
 
-class QuranPage extends StatefulWidget {
+class QuranPage extends ConsumerStatefulWidget {
   var suraJsonData;
 
   QuranPage({super.key});
 
   @override
-  State<QuranPage> createState() => _QuranPageState();
+  ConsumerState<QuranPage> createState() => _QuranPageState();
 }
 
-class _QuranPageState extends State<QuranPage> {
+class _QuranPageState extends ConsumerState<QuranPage> {
   TextEditingController textEditingController = TextEditingController();
   final FocusNode _searchFocusNode = FocusNode();
 
@@ -67,6 +67,100 @@ class _QuranPageState extends State<QuranPage> {
     super.dispose();
   }
 
+  void _showReciterBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: AppColors.fourthColor,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        final currentReciter = ref.watch(quranReciterProvider);
+        return Consumer(
+          builder: (context, ref, child) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[400],
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'اختر القارئ (التلاوة الصوتية)',
+                    style: TextStyles.bold.copyWith(
+                      color: AppColors.secondaryColor,
+                      fontSize: 18,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Flexible(
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: defaultQuranReciters.length,
+                      itemBuilder: (context, index) {
+                        final reciter = defaultQuranReciters[index];
+                        final isSelected =
+                            reciter.identifier == currentReciter.identifier;
+                        return Container(
+                          margin: const EdgeInsets.symmetric(vertical: 4),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? AppColors.secondaryColor.withOpacity(0.1)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected
+                                  ? AppColors.secondaryColor
+                                  : Colors.transparent,
+                            ),
+                          ),
+                          child: ListTile(
+                            leading: Icon(
+                              isSelected
+                                  ? Icons.radio_button_checked
+                                  : Icons.radio_button_off,
+                              color: AppColors.secondaryColor,
+                            ),
+                            title: Text(
+                              reciter.nameArabic,
+                              style: TextStyles.mediumBold.copyWith(
+                                color: AppColors.secondaryColor,
+                              ),
+                            ),
+                            subtitle: Text(
+                              reciter.nameEnglish,
+                              style: TextStyles.regular.copyWith(
+                                color: Colors.grey[600],
+                                fontSize: 12,
+                              ),
+                            ),
+                            onTap: () {
+                              ref
+                                  .read(quranReciterProvider.notifier)
+                                  .selectReciter(reciter);
+                              Navigator.pop(context);
+                            },
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,6 +174,13 @@ class _QuranPageState extends State<QuranPage> {
           style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 24),
         ),
         centerTitle: true,
+        actions: [
+          IconButton(
+            tooltip: 'اختر القارئ',
+            icon: const Icon(Icons.mic, color: AppColors.gold),
+            onPressed: () => _showReciterBottomSheet(context),
+          ),
+        ],
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
@@ -216,8 +317,8 @@ class _QuranPageState extends State<QuranPage> {
       ),
       children: [
         if (pageNumbers.isNotEmpty) _buildPageResults(),
-        if (ayatFiltered != null) _buildAyahResults(),
         _buildSurahList(),
+        if (ayatFiltered != null) _buildAyahResults(),
       ],
     );
   }
@@ -410,13 +511,26 @@ class _QuranPageState extends State<QuranPage> {
     final revelationType =
         sura["revelationType"] == "Meccan" ? "مكية" : "مدنية";
 
+    final selectedReciter = ref.watch(quranReciterProvider);
+    final audioState = ref.watch(globalAudioProvider);
+
+    final String audioUrl = selectedReciter.getAudioUrl(suraNumber);
+    final bool isCurrentSurah = audioState.activeSurahNumber == suraNumber || audioState.audioUrl == audioUrl;
+    final bool isPlaying = isCurrentSurah && audioState.isPlaying;
+    final bool isLoadingAudio = isCurrentSurah && audioState.isLoading;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
         boxShadow: CShadow.MD,
-        border: Border.all(color: AppColors.secondaryColor.withOpacity(0.1)),
+        border: Border.all(
+          color: isCurrentSurah
+              ? AppColors.gold
+              : AppColors.secondaryColor.withOpacity(0.1),
+          width: isCurrentSurah ? 2 : 1,
+        ),
       ),
       child: Material(
         color: Colors.transparent,
@@ -442,11 +556,11 @@ class _QuranPageState extends State<QuranPage> {
               children: [
                 // Surah number circle
                 Container(
-                  width: 60,
-                  height: 60,
+                  width: 50,
+                  height: 50,
                   decoration: BoxDecoration(
                     color: AppColors.secondaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(25),
                     border: Border.all(
                       color: AppColors.secondaryColor.withOpacity(0.2),
                       width: 2,
@@ -457,12 +571,12 @@ class _QuranPageState extends State<QuranPage> {
                       suraNumber.toString(),
                       style: TextStyles.mediumBold.copyWith(
                         color: AppColors.secondaryColor,
-                        fontSize: 18,
+                        fontSize: 16,
                       ),
                     ),
                   ),
                 ),
-                const SizedBox(width: 16),
+                const SizedBox(width: 12),
 
                 // Surah details
                 Expanded(
@@ -483,33 +597,31 @@ class _QuranPageState extends State<QuranPage> {
                               ),
                             ),
                           ),
-                          Center(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color:
+                                  revelationType == "مكية"
+                                      ? AppColors.secondaryColor.withOpacity(
+                                        0.1,
+                                      )
+                                      : AppColors.primaryColor.withOpacity(
+                                        0.1,
+                                      ),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              revelationType,
+                              style: TextStyles.regular.copyWith(
                                 color:
                                     revelationType == "مكية"
-                                        ? AppColors.secondaryColor.withOpacity(
-                                          0.1,
-                                        )
-                                        : AppColors.primaryColor.withOpacity(
-                                          0.1,
-                                        ),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                revelationType,
-                                style: TextStyles.regular.copyWith(
-                                  color:
-                                      revelationType == "مكية"
-                                          ? AppColors.secondaryColor
-                                          : AppColors.primaryColor,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                        ? AppColors.secondaryColor
+                                        : AppColors.primaryColor,
+                                fontSize: 12,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
@@ -517,16 +629,9 @@ class _QuranPageState extends State<QuranPage> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        suraNameEnglish,
+                        '$suraNameEnglish • $ayahCount آية',
                         style: TextStyles.regular.copyWith(
                           color: Colors.grey[600],
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        '$ayahCount آية',
-                        style: TextStyles.regular.copyWith(
-                          color: AppColors.secondaryColor.withOpacity(0.7),
                           fontSize: 13,
                         ),
                       ),
@@ -534,18 +639,56 @@ class _QuranPageState extends State<QuranPage> {
                   ),
                 ),
 
+                const SizedBox(width: 8),
+
+                // Audio Play/Pause Button
+                IconButton(
+                  tooltip: isPlaying ? 'إيقاف مؤقت' : 'تشغيل التلاوة',
+                  icon: isLoadingAudio
+                      ? const SizedBox(
+                          width: 28,
+                          height: 28,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              AppColors.secondaryColor,
+                            ),
+                          ),
+                        )
+                      : Icon(
+                          isPlaying
+                              ? Icons.pause_circle_filled
+                              : Icons.play_circle_fill,
+                          color: isCurrentSurah
+                              ? AppColors.gold
+                              : AppColors.secondaryColor,
+                          size: 38,
+                        ),
+                  onPressed: () {
+                    final notifier = ref.read(globalAudioProvider.notifier);
+                    notifier.playUrlAudio(
+                      url: audioUrl,
+                      title: 'سورة $suraName (${selectedReciter.nameArabic})',
+                      surahNumber: suraNumber,
+                      reciterId: selectedReciter.identifier,
+                    );
+                  },
+                ),
+
+                const SizedBox(width: 4),
+
                 // Arabic name
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
                     color: AppColors.gold.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10),
                   ),
                   child: Text(
                     suraName,
                     style: const TextStyle(
                       fontFamily: "arsura",
-                      fontSize: 20,
+                      fontSize: 18,
                       color: AppColors.gold,
                     ),
                   ),

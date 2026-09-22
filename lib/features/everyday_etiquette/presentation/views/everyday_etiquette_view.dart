@@ -6,6 +6,7 @@ import 'package:new_azkar_app/core/constants/text_styles.dart';
 import 'package:new_azkar_app/core/widgets/app_tile.dart';
 import 'package:new_azkar_app/features/public/models/header_model.dart';
 import 'package:new_azkar_app/features/public/providers/headers_provider.dart';
+import 'package:new_azkar_app/core/services/isar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -44,14 +45,14 @@ class EverydayEtiquetteView extends ConsumerWidget {
               title: 'آداب الاستيقاظ',
               subtitle: 'أدعية وأذكار الاستيقاظ من النوم',
               onTap:
-                  () => context.pushNamed(Routes.contents, extra: headers[64]),
+                  () => context.pushNamed(Routes.contents, extra: headers[IsarHelper.wakeUpHeaderIndex]),
             ),
             _buildEtiquetteCard(
               icon: Icons.checkroom,
               title: 'آداب لبس الثّوب',
               subtitle: 'أدعية وأذكار لبس الملابس',
               onTap:
-                  () => context.pushNamed(Routes.contents, extra: headers[65]),
+                  () => context.pushNamed(Routes.contents, extra: headers[IsarHelper.wearDressHeaderIndex]),
             ),
             const SizedBox(height: 20),
             _buildSectionTitle('آداب الطهارة'),
@@ -62,11 +63,7 @@ class EverydayEtiquetteView extends ConsumerWidget {
               onTap:
                   () => context.pushNamed(
                     Routes.headersViewer,
-                    extra: HeaderModel(
-                      label: 'آداب الطهارة',
-                      fromHeader: 66,
-                      toHeader: 68,
-                    ),
+                    extra: IsarHelper.getTaharahCategory(),
                   ),
             ),
             const SizedBox(height: 20),
@@ -78,11 +75,7 @@ class EverydayEtiquetteView extends ConsumerWidget {
               onTap:
                   () => context.pushNamed(
                     Routes.headersViewer,
-                    extra: HeaderModel(
-                      label: 'آداب الخروج للمسجد',
-                      fromHeader: 69,
-                      toHeader: 72,
-                    ),
+                    extra: IsarHelper.getMosqueCategory(),
                   ),
             ),
             const SizedBox(height: 20),
@@ -92,14 +85,14 @@ class EverydayEtiquetteView extends ConsumerWidget {
               title: 'دعاء الخروج من المنزل',
               subtitle: 'أدعية الخروج من المنزل',
               onTap:
-                  () => context.pushNamed(Routes.contents, extra: headers[73]),
+                  () => context.pushNamed(Routes.contents, extra: headers[IsarHelper.exitHomeHeaderIndex]),
             ),
             _buildEtiquetteCard(
               icon: Icons.home_outlined,
               title: 'دعاء دخول المنزل',
               subtitle: 'أدعية دخول المنزل',
               onTap:
-                  () => context.pushNamed(Routes.contents, extra: headers[74]),
+                  () => context.pushNamed(Routes.contents, extra: headers[IsarHelper.enterHomeHeaderIndex]),
             ),
             const SizedBox(height: 20),
             _buildSectionTitle('آداب الحياة اليومية'),
@@ -108,28 +101,21 @@ class EverydayEtiquetteView extends ConsumerWidget {
               title: 'آداب خلع الثوب ولبسه',
               subtitle: 'أدعية خلع ولبس الملابس',
               onTap:
-                  () => context.pushNamed(Routes.contents, extra: headers[75]),
+                  () => context.pushNamed(Routes.contents, extra: headers[IsarHelper.undressClothesHeaderIndex]),
             ),
             _buildEtiquetteCard(
               icon: Icons.restaurant,
               title: 'آداب الأكل',
               subtitle: 'أدعية وأذكار الطعام',
               onTap:
-                  () => context.pushNamed(Routes.contents, extra: headers[76]),
+                  () => context.pushNamed(Routes.contents, extra: headers[IsarHelper.eatingHeaderIndex]),
             ),
             _buildEtiquetteCard(
               icon: Icons.meeting_room,
               title: 'دعاء مغادرة المجلس',
               subtitle: 'أدعية مغادرة المجالس',
               onTap:
-                  () => context.pushNamed(Routes.contents, extra: headers[77]),
-            ),
-            _buildEtiquetteCard(
-              icon: Icons.bedtime,
-              title: 'آداب النّوم',
-              subtitle: 'أدعية وأذكار النوم',
-              onTap:
-                  () => context.pushNamed(Routes.contents, extra: headers[78]),
+                  () => context.pushNamed(Routes.contents, extra: headers[IsarHelper.leaveCouncilHeaderIndex]),
             ),
             const SizedBox(height: 32),
           ],

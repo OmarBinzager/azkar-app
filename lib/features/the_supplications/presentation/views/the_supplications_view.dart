@@ -3,12 +3,10 @@ import 'package:new_azkar_app/core/constants/layout_constants.dart';
 import 'package:new_azkar_app/core/constants/routes.dart';
 import 'package:new_azkar_app/core/constants/shadows.dart';
 import 'package:new_azkar_app/core/constants/text_styles.dart';
-import 'package:new_azkar_app/core/widgets/app_tile.dart';
-import 'package:new_azkar_app/features/public/models/header_model.dart';
+import 'package:new_azkar_app/core/services/isar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:new_azkar_app/features/public/models/header_of_header_model.dart';
 
 class TheSupplicationsView extends ConsumerWidget {
   const TheSupplicationsView({super.key});
@@ -29,6 +27,13 @@ class TheSupplicationsView extends ConsumerWidget {
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.headphones_rounded, color: AppColors.gold),
+            tooltip: 'المشغل الصوتي',
+            onPressed: () => context.pushNamed(Routes.audioPlayer),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(LayoutConstants.screenPadding),
@@ -39,48 +44,13 @@ class TheSupplicationsView extends ConsumerWidget {
             const SizedBox(height: 24),
             _buildSupplicationCard(
               icon: Icons.auto_awesome,
-              title: 'أذكار وأوراد اليومية',
+              title: 'أذكار وأوراد يومية',
               subtitle: 'أذكار وأوراد يومية متنوعة',
               color: AppColors.secondaryColor,
-              onTap:
-                  () => context.pushNamed(
-                    Routes.headersOfHeadersViewer,
-                    extra: HeaderOfHeaderModel(
-                      label: 'أذكار وأوراد اليومية',
-                      headers: [
-                        HeaderModel(
-                          label:
-                              'أذكار وأوراد تقرأ صباحًا (من نصف  الليل إلى الزوال)',
-                          headers: [93, 94, 95, 96, 97, 98, 110, 111, 112],
-                        ),
-                        HeaderModel(
-                          label:
-                              'أذكار وأوراد تقرأ مساء (من الزوال إلى نصف  الليل)',
-                          headers: [
-                            99,
-                            100,
-                            101,
-                            102,
-                            103,
-                            104,
-                            105,
-                            110,
-                            111,
-                            112,
-                            106,
-                            107,
-                            108,
-                            109,
-                          ],
-                        ),
-                        HeaderModel(
-                          label: 'أذكار وأوراد تقرأ صباحًا أو مساء',
-                          fromHeader: 113,
-                          toHeader: 132,
-                        ),
-                      ],
-                    ),
-                  ),
+              onTap: () => context.pushNamed(
+                Routes.headersOfHeadersViewer,
+                extra: IsarHelper.getDailyAzkarCategory(),
+              ),
             ),
             const SizedBox(height: 16),
             _buildSupplicationCard(
@@ -88,15 +58,10 @@ class TheSupplicationsView extends ConsumerWidget {
               title: 'أذكار وأدعية خاصة',
               subtitle: 'أدعية خاصة لحالات مختلفة',
               color: AppColors.primaryColor,
-              onTap:
-                  () => context.pushNamed(
-                    Routes.headersViewer,
-                    extra: HeaderModel(
-                      label: 'أذكار وأدعية خاصة',
-                      fromHeader: 133,
-                      toHeader: 151,
-                    ),
-                  ),
+              onTap: () => context.pushNamed(
+                Routes.headersViewer,
+                extra: IsarHelper.getSpecialSupplicationsCategory(),
+              ),
             ),
             const SizedBox(height: 32),
           ],

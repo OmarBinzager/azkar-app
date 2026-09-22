@@ -3,308 +3,290 @@
 part of 'content.dart';
 
 // **************************************************************************
-// _IsarCollectionGenerator
+// IsarCollectionGenerator
 // **************************************************************************
 
 // coverage:ignore-file
-// ignore_for_file: duplicate_ignore, invalid_use_of_protected_member, lines_longer_than_80_chars, constant_identifier_names, avoid_js_rounded_ints, no_leading_underscores_for_local_identifiers, require_trailing_commas, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_in_if_null_operators, library_private_types_in_public_api, prefer_const_constructors
-// ignore_for_file: type=lint
+// ignore_for_file: duplicate_ignore, non_constant_identifier_names, constant_identifier_names, invalid_use_of_protected_member, unnecessary_cast, prefer_const_constructors, lines_longer_than_80_chars, require_trailing_commas, inference_failure_on_function_invocation, unnecessary_parenthesis, unnecessary_raw_strings, unnecessary_null_checks, join_return_with_assignment, prefer_final_locals, avoid_js_rounded_ints, avoid_positional_boolean_parameters, always_specify_types
 
 extension GetContentCollection on Isar {
-  IsarCollection<int, Content> get contents => this.collection();
+  IsarCollection<Content> get contents => this.collection();
 }
 
-const ContentSchema = IsarGeneratedSchema(
-  schema: IsarSchema(
-    name: 'Content',
-    idName: 'id',
-    embedded: false,
-    properties: [
-      IsarPropertySchema(
-        name: 'text',
-        type: IsarType.string,
-      ),
-      IsarPropertySchema(
-        name: 'isLiked',
-        type: IsarType.bool,
-      ),
-      IsarPropertySchema(
-        name: 'headerId',
-        type: IsarType.long,
-      ),
-      IsarPropertySchema(
-        name: 'hasVoice',
-        type: IsarType.bool,
-      ),
-      IsarPropertySchema(
-        name: 'voiceFile',
-        type: IsarType.string,
-      ),
-    ],
-    indexes: [],
-  ),
-  converter: IsarObjectConverter<int, Content>(
-    serialize: serializeContent,
-    deserialize: deserializeContent,
-    deserializeProperty: deserializeContentProp,
-  ),
-  embeddedSchemas: [],
+const ContentSchema = CollectionSchema(
+  name: r'Content',
+  id: 2749874844035024652,
+  properties: {
+    r'hasVoice': PropertySchema(id: 0, name: r'hasVoice', type: IsarType.bool),
+    r'headerId': PropertySchema(id: 1, name: r'headerId', type: IsarType.long),
+    r'isLiked': PropertySchema(id: 2, name: r'isLiked', type: IsarType.bool),
+    r'text': PropertySchema(id: 3, name: r'text', type: IsarType.string),
+    r'voiceFile': PropertySchema(
+      id: 4,
+      name: r'voiceFile',
+      type: IsarType.string,
+    ),
+  },
+
+  estimateSize: _contentEstimateSize,
+  serialize: _contentSerialize,
+  deserialize: _contentDeserialize,
+  deserializeProp: _contentDeserializeProp,
+  idName: r'id',
+  indexes: {},
+  links: {},
+  embeddedSchemas: {},
+
+  getId: _contentGetId,
+  getLinks: _contentGetLinks,
+  attach: _contentAttach,
+  version: '3.3.0',
 );
 
-@isarProtected
-int serializeContent(IsarWriter writer, Content object) {
-  IsarCore.writeString(writer, 1, object.text);
-  IsarCore.writeBool(writer, 2, object.isLiked);
-  IsarCore.writeLong(writer, 3, object.headerId);
-  IsarCore.writeBool(writer, 4, object.hasVoice);
+int _contentEstimateSize(
+  Content object,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  var bytesCount = offsets.last;
+  bytesCount += 3 + object.text.length * 3;
   {
     final value = object.voiceFile;
-    if (value == null) {
-      IsarCore.writeNull(writer, 5);
-    } else {
-      IsarCore.writeString(writer, 5, value);
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
     }
   }
-  return object.id;
+  return bytesCount;
 }
 
-@isarProtected
-Content deserializeContent(IsarReader reader) {
-  final int _id;
-  _id = IsarCore.readId(reader);
-  final String _text;
-  _text = IsarCore.readString(reader, 1) ?? '';
-  final bool _isLiked;
-  _isLiked = IsarCore.readBool(reader, 2);
-  final int _headerId;
-  _headerId = IsarCore.readLong(reader, 3);
-  final bool _hasVoice;
-  _hasVoice = IsarCore.readBool(reader, 4);
-  final String? _voiceFile;
-  _voiceFile = IsarCore.readString(reader, 5);
+void _contentSerialize(
+  Content object,
+  IsarWriter writer,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
+  writer.writeBool(offsets[0], object.hasVoice);
+  writer.writeLong(offsets[1], object.headerId);
+  writer.writeBool(offsets[2], object.isLiked);
+  writer.writeString(offsets[3], object.text);
+  writer.writeString(offsets[4], object.voiceFile);
+}
+
+Content _contentDeserialize(
+  Id id,
+  IsarReader reader,
+  List<int> offsets,
+  Map<Type, List<int>> allOffsets,
+) {
   final object = Content(
-    _id,
-    _text,
-    _isLiked,
-    _headerId,
-    hasVoice: _hasVoice,
-    voiceFile: _voiceFile,
+    id,
+    reader.readString(offsets[3]),
+    reader.readBool(offsets[2]),
+    reader.readLong(offsets[1]),
+    hasVoice: reader.readBoolOrNull(offsets[0]) ?? false,
+    voiceFile: reader.readStringOrNull(offsets[4]),
   );
   return object;
 }
 
-@isarProtected
-dynamic deserializeContentProp(IsarReader reader, int property) {
-  switch (property) {
+P _contentDeserializeProp<P>(
+  IsarReader reader,
+  int propertyId,
+  int offset,
+  Map<Type, List<int>> allOffsets,
+) {
+  switch (propertyId) {
     case 0:
-      return IsarCore.readId(reader);
+      return (reader.readBoolOrNull(offset) ?? false) as P;
     case 1:
-      return IsarCore.readString(reader, 1) ?? '';
+      return (reader.readLong(offset)) as P;
     case 2:
-      return IsarCore.readBool(reader, 2);
+      return (reader.readBool(offset)) as P;
     case 3:
-      return IsarCore.readLong(reader, 3);
+      return (reader.readString(offset)) as P;
     case 4:
-      return IsarCore.readBool(reader, 4);
-    case 5:
-      return IsarCore.readString(reader, 5);
+      return (reader.readStringOrNull(offset)) as P;
     default:
-      throw ArgumentError('Unknown property: $property');
+      throw IsarError('Unknown property with id $propertyId');
   }
 }
 
-sealed class _ContentUpdate {
-  bool call({
-    required int id,
-    String? text,
-    bool? isLiked,
-    int? headerId,
-    bool? hasVoice,
-    String? voiceFile,
-  });
+Id _contentGetId(Content object) {
+  return object.id;
 }
 
-class _ContentUpdateImpl implements _ContentUpdate {
-  const _ContentUpdateImpl(this.collection);
-
-  final IsarCollection<int, Content> collection;
-
-  @override
-  bool call({
-    required int id,
-    Object? text = ignore,
-    Object? isLiked = ignore,
-    Object? headerId = ignore,
-    Object? hasVoice = ignore,
-    Object? voiceFile = ignore,
-  }) {
-    return collection.updateProperties([
-          id
-        ], {
-          if (text != ignore) 1: text as String?,
-          if (isLiked != ignore) 2: isLiked as bool?,
-          if (headerId != ignore) 3: headerId as int?,
-          if (hasVoice != ignore) 4: hasVoice as bool?,
-          if (voiceFile != ignore) 5: voiceFile as String?,
-        }) >
-        0;
-  }
+List<IsarLinkBase<dynamic>> _contentGetLinks(Content object) {
+  return [];
 }
 
-sealed class _ContentUpdateAll {
-  int call({
-    required List<int> id,
-    String? text,
-    bool? isLiked,
-    int? headerId,
-    bool? hasVoice,
-    String? voiceFile,
-  });
-}
+void _contentAttach(IsarCollection<dynamic> col, Id id, Content object) {}
 
-class _ContentUpdateAllImpl implements _ContentUpdateAll {
-  const _ContentUpdateAllImpl(this.collection);
-
-  final IsarCollection<int, Content> collection;
-
-  @override
-  int call({
-    required List<int> id,
-    Object? text = ignore,
-    Object? isLiked = ignore,
-    Object? headerId = ignore,
-    Object? hasVoice = ignore,
-    Object? voiceFile = ignore,
-  }) {
-    return collection.updateProperties(id, {
-      if (text != ignore) 1: text as String?,
-      if (isLiked != ignore) 2: isLiked as bool?,
-      if (headerId != ignore) 3: headerId as int?,
-      if (hasVoice != ignore) 4: hasVoice as bool?,
-      if (voiceFile != ignore) 5: voiceFile as String?,
+extension ContentQueryWhereSort on QueryBuilder<Content, Content, QWhere> {
+  QueryBuilder<Content, Content, QAfterWhere> anyId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(const IdWhereClause.any());
     });
   }
 }
 
-extension ContentUpdate on IsarCollection<int, Content> {
-  _ContentUpdate get update => _ContentUpdateImpl(this);
-
-  _ContentUpdateAll get updateAll => _ContentUpdateAllImpl(this);
-}
-
-sealed class _ContentQueryUpdate {
-  int call({
-    String? text,
-    bool? isLiked,
-    int? headerId,
-    bool? hasVoice,
-    String? voiceFile,
-  });
-}
-
-class _ContentQueryUpdateImpl implements _ContentQueryUpdate {
-  const _ContentQueryUpdateImpl(this.query, {this.limit});
-
-  final IsarQuery<Content> query;
-  final int? limit;
-
-  @override
-  int call({
-    Object? text = ignore,
-    Object? isLiked = ignore,
-    Object? headerId = ignore,
-    Object? hasVoice = ignore,
-    Object? voiceFile = ignore,
-  }) {
-    return query.updateProperties(limit: limit, {
-      if (text != ignore) 1: text as String?,
-      if (isLiked != ignore) 2: isLiked as bool?,
-      if (headerId != ignore) 3: headerId as int?,
-      if (hasVoice != ignore) 4: hasVoice as bool?,
-      if (voiceFile != ignore) 5: voiceFile as String?,
+extension ContentQueryWhere on QueryBuilder<Content, Content, QWhereClause> {
+  QueryBuilder<Content, Content, QAfterWhereClause> idEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IdWhereClause.between(lower: id, upper: id));
     });
   }
-}
 
-extension ContentQueryUpdate on IsarQuery<Content> {
-  _ContentQueryUpdate get updateFirst =>
-      _ContentQueryUpdateImpl(this, limit: 1);
-
-  _ContentQueryUpdate get updateAll => _ContentQueryUpdateImpl(this);
-}
-
-class _ContentQueryBuilderUpdateImpl implements _ContentQueryUpdate {
-  const _ContentQueryBuilderUpdateImpl(this.query, {this.limit});
-
-  final QueryBuilder<Content, Content, QOperations> query;
-  final int? limit;
-
-  @override
-  int call({
-    Object? text = ignore,
-    Object? isLiked = ignore,
-    Object? headerId = ignore,
-    Object? hasVoice = ignore,
-    Object? voiceFile = ignore,
-  }) {
-    final q = query.build();
-    try {
-      return q.updateProperties(limit: limit, {
-        if (text != ignore) 1: text as String?,
-        if (isLiked != ignore) 2: isLiked as bool?,
-        if (headerId != ignore) 3: headerId as int?,
-        if (hasVoice != ignore) 4: hasVoice as bool?,
-        if (voiceFile != ignore) 5: voiceFile as String?,
-      });
-    } finally {
-      q.close();
-    }
+  QueryBuilder<Content, Content, QAfterWhereClause> idNotEqualTo(Id id) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            )
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            );
+      } else {
+        return query
+            .addWhereClause(
+              IdWhereClause.greaterThan(lower: id, includeLower: false),
+            )
+            .addWhereClause(
+              IdWhereClause.lessThan(upper: id, includeUpper: false),
+            );
+      }
+    });
   }
-}
 
-extension ContentQueryBuilderUpdate
-    on QueryBuilder<Content, Content, QOperations> {
-  _ContentQueryUpdate get updateFirst =>
-      _ContentQueryBuilderUpdateImpl(this, limit: 1);
+  QueryBuilder<Content, Content, QAfterWhereClause> idGreaterThan(
+    Id id, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.greaterThan(lower: id, includeLower: include),
+      );
+    });
+  }
 
-  _ContentQueryUpdate get updateAll => _ContentQueryBuilderUpdateImpl(this);
+  QueryBuilder<Content, Content, QAfterWhereClause> idLessThan(
+    Id id, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.lessThan(upper: id, includeUpper: include),
+      );
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterWhereClause> idBetween(
+    Id lowerId,
+    Id upperId, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(
+        IdWhereClause.between(
+          lower: lowerId,
+          includeLower: includeLower,
+          upper: upperId,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
 }
 
 extension ContentQueryFilter
     on QueryBuilder<Content, Content, QFilterCondition> {
-  QueryBuilder<Content, Content, QAfterFilterCondition> idEqualTo(
+  QueryBuilder<Content, Content, QAfterFilterCondition> hasVoiceEqualTo(
+    bool value,
+  ) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'hasVoice', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterFilterCondition> headerIdEqualTo(
     int value,
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 0,
+        FilterCondition.equalTo(property: r'headerId', value: value),
+      );
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterFilterCondition> headerIdGreaterThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'headerId',
           value: value,
         ),
+      );
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterFilterCondition> headerIdLessThan(
+    int value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.lessThan(
+          include: include,
+          property: r'headerId',
+          value: value,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterFilterCondition> headerIdBetween(
+    int lower,
+    int upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'headerId',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterFilterCondition> idEqualTo(Id value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.equalTo(property: r'id', value: value),
       );
     });
   }
 
   QueryBuilder<Content, Content, QAfterFilterCondition> idGreaterThan(
-    int value,
-  ) {
+    Id value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        GreaterCondition(
-          property: 0,
-          value: value,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterFilterCondition> idGreaterThanOrEqualTo(
-    int value,
-  ) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        GreaterOrEqualCondition(
-          property: 0,
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'id',
           value: value,
         ),
       );
@@ -312,25 +294,14 @@ extension ContentQueryFilter
   }
 
   QueryBuilder<Content, Content, QAfterFilterCondition> idLessThan(
-    int value,
-  ) {
+    Id value, {
+    bool include = false,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 0,
-          value: value,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterFilterCondition> idLessThanOrEqualTo(
-    int value,
-  ) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        LessOrEqualCondition(
-          property: 0,
+        FilterCondition.lessThan(
+          include: include,
+          property: r'id',
           value: value,
         ),
       );
@@ -338,16 +309,30 @@ extension ContentQueryFilter
   }
 
   QueryBuilder<Content, Content, QAfterFilterCondition> idBetween(
-    int lower,
-    int upper,
+    Id lower,
+    Id upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        FilterCondition.between(
+          property: r'id',
+          lower: lower,
+          includeLower: includeLower,
+          upper: upper,
+          includeUpper: includeUpper,
+        ),
+      );
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterFilterCondition> isLikedEqualTo(
+    bool value,
   ) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        BetweenCondition(
-          property: 0,
-          lower: lower,
-          upper: upper,
-        ),
+        FilterCondition.equalTo(property: r'isLiked', value: value),
       );
     });
   }
@@ -358,8 +343,8 @@ extension ContentQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 1,
+        FilterCondition.equalTo(
+          property: r'text',
           value: value,
           caseSensitive: caseSensitive,
         ),
@@ -369,28 +354,14 @@ extension ContentQueryFilter
 
   QueryBuilder<Content, Content, QAfterFilterCondition> textGreaterThan(
     String value, {
+    bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        GreaterCondition(
-          property: 1,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterFilterCondition>
-      textGreaterThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        GreaterOrEqualCondition(
-          property: 1,
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'text',
           value: value,
           caseSensitive: caseSensitive,
         ),
@@ -400,27 +371,14 @@ extension ContentQueryFilter
 
   QueryBuilder<Content, Content, QAfterFilterCondition> textLessThan(
     String value, {
+    bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 1,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterFilterCondition> textLessThanOrEqualTo(
-    String value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        LessOrEqualCondition(
-          property: 1,
+        FilterCondition.lessThan(
+          include: include,
+          property: r'text',
           value: value,
           caseSensitive: caseSensitive,
         ),
@@ -431,14 +389,18 @@ extension ContentQueryFilter
   QueryBuilder<Content, Content, QAfterFilterCondition> textBetween(
     String lower,
     String upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        BetweenCondition(
-          property: 1,
+        FilterCondition.between(
+          property: r'text',
           lower: lower,
+          includeLower: includeLower,
           upper: upper,
+          includeUpper: includeUpper,
           caseSensitive: caseSensitive,
         ),
       );
@@ -451,8 +413,8 @@ extension ContentQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        StartsWithCondition(
-          property: 1,
+        FilterCondition.startsWith(
+          property: r'text',
           value: value,
           caseSensitive: caseSensitive,
         ),
@@ -466,8 +428,8 @@ extension ContentQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EndsWithCondition(
-          property: 1,
+        FilterCondition.endsWith(
+          property: r'text',
           value: value,
           caseSensitive: caseSensitive,
         ),
@@ -476,12 +438,13 @@ extension ContentQueryFilter
   }
 
   QueryBuilder<Content, Content, QAfterFilterCondition> textContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        ContainsCondition(
-          property: 1,
+        FilterCondition.contains(
+          property: r'text',
           value: value,
           caseSensitive: caseSensitive,
         ),
@@ -490,12 +453,13 @@ extension ContentQueryFilter
   }
 
   QueryBuilder<Content, Content, QAfterFilterCondition> textMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        MatchesCondition(
-          property: 1,
+        FilterCondition.matches(
+          property: r'text',
           wildcard: pattern,
           caseSensitive: caseSensitive,
         ),
@@ -506,10 +470,7 @@ extension ContentQueryFilter
   QueryBuilder<Content, Content, QAfterFilterCondition> textIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const EqualCondition(
-          property: 1,
-          value: '',
-        ),
+        FilterCondition.equalTo(property: r'text', value: ''),
       );
     });
   }
@@ -517,131 +478,24 @@ extension ContentQueryFilter
   QueryBuilder<Content, Content, QAfterFilterCondition> textIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const GreaterCondition(
-          property: 1,
-          value: '',
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterFilterCondition> isLikedEqualTo(
-    bool value,
-  ) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        EqualCondition(
-          property: 2,
-          value: value,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterFilterCondition> headerIdEqualTo(
-    int value,
-  ) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        EqualCondition(
-          property: 3,
-          value: value,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterFilterCondition> headerIdGreaterThan(
-    int value,
-  ) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        GreaterCondition(
-          property: 3,
-          value: value,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterFilterCondition>
-      headerIdGreaterThanOrEqualTo(
-    int value,
-  ) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        GreaterOrEqualCondition(
-          property: 3,
-          value: value,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterFilterCondition> headerIdLessThan(
-    int value,
-  ) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        LessCondition(
-          property: 3,
-          value: value,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterFilterCondition>
-      headerIdLessThanOrEqualTo(
-    int value,
-  ) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        LessOrEqualCondition(
-          property: 3,
-          value: value,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterFilterCondition> headerIdBetween(
-    int lower,
-    int upper,
-  ) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        BetweenCondition(
-          property: 3,
-          lower: lower,
-          upper: upper,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterFilterCondition> hasVoiceEqualTo(
-    bool value,
-  ) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        EqualCondition(
-          property: 4,
-          value: value,
-        ),
+        FilterCondition.greaterThan(property: r'text', value: ''),
       );
     });
   }
 
   QueryBuilder<Content, Content, QAfterFilterCondition> voiceFileIsNull() {
     return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(const IsNullCondition(property: 5));
+      return query.addFilterCondition(
+        const FilterCondition.isNull(property: r'voiceFile'),
+      );
     });
   }
 
   QueryBuilder<Content, Content, QAfterFilterCondition> voiceFileIsNotNull() {
-    return QueryBuilder.apply(not(), (query) {
-      return query.addFilterCondition(const IsNullCondition(property: 5));
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(
+        const FilterCondition.isNotNull(property: r'voiceFile'),
+      );
     });
   }
 
@@ -651,8 +505,8 @@ extension ContentQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EqualCondition(
-          property: 5,
+        FilterCondition.equalTo(
+          property: r'voiceFile',
           value: value,
           caseSensitive: caseSensitive,
         ),
@@ -662,28 +516,14 @@ extension ContentQueryFilter
 
   QueryBuilder<Content, Content, QAfterFilterCondition> voiceFileGreaterThan(
     String? value, {
+    bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        GreaterCondition(
-          property: 5,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterFilterCondition>
-      voiceFileGreaterThanOrEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        GreaterOrEqualCondition(
-          property: 5,
+        FilterCondition.greaterThan(
+          include: include,
+          property: r'voiceFile',
           value: value,
           caseSensitive: caseSensitive,
         ),
@@ -693,28 +533,14 @@ extension ContentQueryFilter
 
   QueryBuilder<Content, Content, QAfterFilterCondition> voiceFileLessThan(
     String? value, {
+    bool include = false,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        LessCondition(
-          property: 5,
-          value: value,
-          caseSensitive: caseSensitive,
-        ),
-      );
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterFilterCondition>
-      voiceFileLessThanOrEqualTo(
-    String? value, {
-    bool caseSensitive = true,
-  }) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addFilterCondition(
-        LessOrEqualCondition(
-          property: 5,
+        FilterCondition.lessThan(
+          include: include,
+          property: r'voiceFile',
           value: value,
           caseSensitive: caseSensitive,
         ),
@@ -725,14 +551,18 @@ extension ContentQueryFilter
   QueryBuilder<Content, Content, QAfterFilterCondition> voiceFileBetween(
     String? lower,
     String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
     bool caseSensitive = true,
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        BetweenCondition(
-          property: 5,
+        FilterCondition.between(
+          property: r'voiceFile',
           lower: lower,
+          includeLower: includeLower,
           upper: upper,
+          includeUpper: includeUpper,
           caseSensitive: caseSensitive,
         ),
       );
@@ -745,8 +575,8 @@ extension ContentQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        StartsWithCondition(
-          property: 5,
+        FilterCondition.startsWith(
+          property: r'voiceFile',
           value: value,
           caseSensitive: caseSensitive,
         ),
@@ -760,8 +590,8 @@ extension ContentQueryFilter
   }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        EndsWithCondition(
-          property: 5,
+        FilterCondition.endsWith(
+          property: r'voiceFile',
           value: value,
           caseSensitive: caseSensitive,
         ),
@@ -770,12 +600,13 @@ extension ContentQueryFilter
   }
 
   QueryBuilder<Content, Content, QAfterFilterCondition> voiceFileContains(
-      String value,
-      {bool caseSensitive = true}) {
+    String value, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        ContainsCondition(
-          property: 5,
+        FilterCondition.contains(
+          property: r'voiceFile',
           value: value,
           caseSensitive: caseSensitive,
         ),
@@ -784,12 +615,13 @@ extension ContentQueryFilter
   }
 
   QueryBuilder<Content, Content, QAfterFilterCondition> voiceFileMatches(
-      String pattern,
-      {bool caseSensitive = true}) {
+    String pattern, {
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        MatchesCondition(
-          property: 5,
+        FilterCondition.matches(
+          property: r'voiceFile',
           wildcard: pattern,
           caseSensitive: caseSensitive,
         ),
@@ -800,10 +632,7 @@ extension ContentQueryFilter
   QueryBuilder<Content, Content, QAfterFilterCondition> voiceFileIsEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const EqualCondition(
-          property: 5,
-          value: '',
-        ),
+        FilterCondition.equalTo(property: r'voiceFile', value: ''),
       );
     });
   }
@@ -811,10 +640,7 @@ extension ContentQueryFilter
   QueryBuilder<Content, Content, QAfterFilterCondition> voiceFileIsNotEmpty() {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(
-        const GreaterCondition(
-          property: 5,
-          value: '',
-        ),
+        FilterCondition.greaterThan(property: r'voiceFile', value: ''),
       );
     });
   }
@@ -823,323 +649,218 @@ extension ContentQueryFilter
 extension ContentQueryObject
     on QueryBuilder<Content, Content, QFilterCondition> {}
 
+extension ContentQueryLinks
+    on QueryBuilder<Content, Content, QFilterCondition> {}
+
 extension ContentQuerySortBy on QueryBuilder<Content, Content, QSortBy> {
-  QueryBuilder<Content, Content, QAfterSortBy> sortById() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(0);
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterSortBy> sortByIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(0, sort: Sort.desc);
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterSortBy> sortByText(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        1,
-        caseSensitive: caseSensitive,
-      );
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterSortBy> sortByTextDesc(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        1,
-        sort: Sort.desc,
-        caseSensitive: caseSensitive,
-      );
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterSortBy> sortByIsLiked() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(2);
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterSortBy> sortByIsLikedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(2, sort: Sort.desc);
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterSortBy> sortByHeaderId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(3);
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterSortBy> sortByHeaderIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(3, sort: Sort.desc);
-    });
-  }
-
   QueryBuilder<Content, Content, QAfterSortBy> sortByHasVoice() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(4);
+      return query.addSortBy(r'hasVoice', Sort.asc);
     });
   }
 
   QueryBuilder<Content, Content, QAfterSortBy> sortByHasVoiceDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(4, sort: Sort.desc);
+      return query.addSortBy(r'hasVoice', Sort.desc);
     });
   }
 
-  QueryBuilder<Content, Content, QAfterSortBy> sortByVoiceFile(
-      {bool caseSensitive = true}) {
+  QueryBuilder<Content, Content, QAfterSortBy> sortByHeaderId() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        5,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(r'headerId', Sort.asc);
     });
   }
 
-  QueryBuilder<Content, Content, QAfterSortBy> sortByVoiceFileDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<Content, Content, QAfterSortBy> sortByHeaderIdDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(
-        5,
-        sort: Sort.desc,
-        caseSensitive: caseSensitive,
-      );
+      return query.addSortBy(r'headerId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterSortBy> sortByIsLiked() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isLiked', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterSortBy> sortByIsLikedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isLiked', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterSortBy> sortByText() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'text', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterSortBy> sortByTextDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'text', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterSortBy> sortByVoiceFile() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'voiceFile', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterSortBy> sortByVoiceFileDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'voiceFile', Sort.desc);
     });
   }
 }
 
 extension ContentQuerySortThenBy
     on QueryBuilder<Content, Content, QSortThenBy> {
-  QueryBuilder<Content, Content, QAfterSortBy> thenById() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(0);
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterSortBy> thenByIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(0, sort: Sort.desc);
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterSortBy> thenByText(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(1, caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterSortBy> thenByTextDesc(
-      {bool caseSensitive = true}) {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(1, sort: Sort.desc, caseSensitive: caseSensitive);
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterSortBy> thenByIsLiked() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(2);
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterSortBy> thenByIsLikedDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(2, sort: Sort.desc);
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterSortBy> thenByHeaderId() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(3);
-    });
-  }
-
-  QueryBuilder<Content, Content, QAfterSortBy> thenByHeaderIdDesc() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(3, sort: Sort.desc);
-    });
-  }
-
   QueryBuilder<Content, Content, QAfterSortBy> thenByHasVoice() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(4);
+      return query.addSortBy(r'hasVoice', Sort.asc);
     });
   }
 
   QueryBuilder<Content, Content, QAfterSortBy> thenByHasVoiceDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(4, sort: Sort.desc);
+      return query.addSortBy(r'hasVoice', Sort.desc);
     });
   }
 
-  QueryBuilder<Content, Content, QAfterSortBy> thenByVoiceFile(
-      {bool caseSensitive = true}) {
+  QueryBuilder<Content, Content, QAfterSortBy> thenByHeaderId() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(5, caseSensitive: caseSensitive);
+      return query.addSortBy(r'headerId', Sort.asc);
     });
   }
 
-  QueryBuilder<Content, Content, QAfterSortBy> thenByVoiceFileDesc(
-      {bool caseSensitive = true}) {
+  QueryBuilder<Content, Content, QAfterSortBy> thenByHeaderIdDesc() {
     return QueryBuilder.apply(this, (query) {
-      return query.addSortBy(5, sort: Sort.desc, caseSensitive: caseSensitive);
+      return query.addSortBy(r'headerId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterSortBy> thenById() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterSortBy> thenByIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'id', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterSortBy> thenByIsLiked() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isLiked', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterSortBy> thenByIsLikedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isLiked', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterSortBy> thenByText() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'text', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterSortBy> thenByTextDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'text', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterSortBy> thenByVoiceFile() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'voiceFile', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Content, Content, QAfterSortBy> thenByVoiceFileDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'voiceFile', Sort.desc);
     });
   }
 }
 
 extension ContentQueryWhereDistinct
     on QueryBuilder<Content, Content, QDistinct> {
-  QueryBuilder<Content, Content, QAfterDistinct> distinctByText(
-      {bool caseSensitive = true}) {
+  QueryBuilder<Content, Content, QDistinct> distinctByHasVoice() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(1, caseSensitive: caseSensitive);
+      return query.addDistinctBy(r'hasVoice');
     });
   }
 
-  QueryBuilder<Content, Content, QAfterDistinct> distinctByIsLiked() {
+  QueryBuilder<Content, Content, QDistinct> distinctByHeaderId() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(2);
+      return query.addDistinctBy(r'headerId');
     });
   }
 
-  QueryBuilder<Content, Content, QAfterDistinct> distinctByHeaderId() {
+  QueryBuilder<Content, Content, QDistinct> distinctByIsLiked() {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(3);
+      return query.addDistinctBy(r'isLiked');
     });
   }
 
-  QueryBuilder<Content, Content, QAfterDistinct> distinctByHasVoice() {
+  QueryBuilder<Content, Content, QDistinct> distinctByText({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(4);
+      return query.addDistinctBy(r'text', caseSensitive: caseSensitive);
     });
   }
 
-  QueryBuilder<Content, Content, QAfterDistinct> distinctByVoiceFile(
-      {bool caseSensitive = true}) {
+  QueryBuilder<Content, Content, QDistinct> distinctByVoiceFile({
+    bool caseSensitive = true,
+  }) {
     return QueryBuilder.apply(this, (query) {
-      return query.addDistinctBy(5, caseSensitive: caseSensitive);
-    });
-  }
-}
-
-extension ContentQueryProperty1 on QueryBuilder<Content, Content, QProperty> {
-  QueryBuilder<Content, int, QAfterProperty> idProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addProperty(0);
-    });
-  }
-
-  QueryBuilder<Content, String, QAfterProperty> textProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addProperty(1);
-    });
-  }
-
-  QueryBuilder<Content, bool, QAfterProperty> isLikedProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addProperty(2);
-    });
-  }
-
-  QueryBuilder<Content, int, QAfterProperty> headerIdProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addProperty(3);
-    });
-  }
-
-  QueryBuilder<Content, bool, QAfterProperty> hasVoiceProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addProperty(4);
-    });
-  }
-
-  QueryBuilder<Content, String?, QAfterProperty> voiceFileProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addProperty(5);
+      return query.addDistinctBy(r'voiceFile', caseSensitive: caseSensitive);
     });
   }
 }
 
-extension ContentQueryProperty2<R> on QueryBuilder<Content, R, QAfterProperty> {
-  QueryBuilder<Content, (R, int), QAfterProperty> idProperty() {
+extension ContentQueryProperty
+    on QueryBuilder<Content, Content, QQueryProperty> {
+  QueryBuilder<Content, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addProperty(0);
+      return query.addPropertyName(r'id');
     });
   }
 
-  QueryBuilder<Content, (R, String), QAfterProperty> textProperty() {
+  QueryBuilder<Content, bool, QQueryOperations> hasVoiceProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addProperty(1);
+      return query.addPropertyName(r'hasVoice');
     });
   }
 
-  QueryBuilder<Content, (R, bool), QAfterProperty> isLikedProperty() {
+  QueryBuilder<Content, int, QQueryOperations> headerIdProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addProperty(2);
+      return query.addPropertyName(r'headerId');
     });
   }
 
-  QueryBuilder<Content, (R, int), QAfterProperty> headerIdProperty() {
+  QueryBuilder<Content, bool, QQueryOperations> isLikedProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addProperty(3);
+      return query.addPropertyName(r'isLiked');
     });
   }
 
-  QueryBuilder<Content, (R, bool), QAfterProperty> hasVoiceProperty() {
+  QueryBuilder<Content, String, QQueryOperations> textProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addProperty(4);
+      return query.addPropertyName(r'text');
     });
   }
 
-  QueryBuilder<Content, (R, String?), QAfterProperty> voiceFileProperty() {
+  QueryBuilder<Content, String?, QQueryOperations> voiceFileProperty() {
     return QueryBuilder.apply(this, (query) {
-      return query.addProperty(5);
-    });
-  }
-}
-
-extension ContentQueryProperty3<R1, R2>
-    on QueryBuilder<Content, (R1, R2), QAfterProperty> {
-  QueryBuilder<Content, (R1, R2, int), QOperations> idProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addProperty(0);
-    });
-  }
-
-  QueryBuilder<Content, (R1, R2, String), QOperations> textProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addProperty(1);
-    });
-  }
-
-  QueryBuilder<Content, (R1, R2, bool), QOperations> isLikedProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addProperty(2);
-    });
-  }
-
-  QueryBuilder<Content, (R1, R2, int), QOperations> headerIdProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addProperty(3);
-    });
-  }
-
-  QueryBuilder<Content, (R1, R2, bool), QOperations> hasVoiceProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addProperty(4);
-    });
-  }
-
-  QueryBuilder<Content, (R1, R2, String?), QOperations> voiceFileProperty() {
-    return QueryBuilder.apply(this, (query) {
-      return query.addProperty(5);
+      return query.addPropertyName(r'voiceFile');
     });
   }
 }

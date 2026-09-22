@@ -4,6 +4,7 @@ import 'package:new_azkar_app/core/constants/text_styles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../core/constants/routes.dart';
 
 class SplashView extends ConsumerStatefulWidget {
@@ -92,15 +93,19 @@ class _SplashViewState extends ConsumerState<SplashView>
 
   void _startAnimations() async {
     await Future.delayed(const Duration(milliseconds: 300));
+    if (!mounted) return;
     _fadeController.forward();
 
     await Future.delayed(const Duration(milliseconds: 500));
+    if (!mounted) return;
     _logoController.forward();
 
     await Future.delayed(const Duration(milliseconds: 800));
+    if (!mounted) return;
     _textController.forward();
 
     await Future.delayed(const Duration(milliseconds: 1200));
+    if (!mounted) return;
     _loadingController.repeat();
   }
 
@@ -134,46 +139,49 @@ class _SplashViewState extends ConsumerState<SplashView>
             Center(
               child: FadeTransition(
                 opacity: _fadeAnimation,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 60),
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 30.h),
 
-                    // Logo/Icon with animations
-                    _buildAnimatedLogo(),
+                      // Logo/Icon with animations
+                      _buildAnimatedLogo(),
 
-                    const SizedBox(height: 40),
+                      SizedBox(height: 28.h),
 
-                    // App title with slide animation
-                    SlideTransition(
-                      position: Tween<Offset>(
-                        begin: const Offset(0, 0.3),
-                        end: Offset.zero,
-                      ).animate(
-                        CurvedAnimation(
-                          parent: _textController,
-                          curve: Curves.easeOutCubic,
+                      // App title with slide animation
+                      SlideTransition(
+                        position: Tween<Offset>(
+                          begin: const Offset(0, 0.3),
+                          end: Offset.zero,
+                        ).animate(
+                          CurvedAnimation(
+                            parent: _textController,
+                            curve: Curves.easeOutCubic,
+                          ),
+                        ),
+                        child: FadeTransition(
+                          opacity: _textController,
+                          child: _buildAppTitle(),
                         ),
                       ),
-                      child: FadeTransition(
+
+                      SizedBox(height: 36.h),
+
+                      // Loading indicator
+                      _buildLoadingIndicator(),
+
+                      SizedBox(height: 24.h),
+
+                      // Subtitle
+                      FadeTransition(
                         opacity: _textController,
-                        child: _buildAppTitle(),
+                        child: _buildSubtitle(),
                       ),
-                    ),
-
-                    const SizedBox(height: 60),
-
-                    // Loading indicator
-                    _buildLoadingIndicator(),
-
-                    const SizedBox(height: 40),
-
-                    // Subtitle
-                    FadeTransition(
-                      opacity: _textController,
-                      child: _buildSubtitle(),
-                    ),
-                  ],
+                      SizedBox(height: 30.h),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -196,8 +204,8 @@ class _SplashViewState extends ConsumerState<SplashView>
           child: Transform.rotate(
             angle: _logoRotationAnimation.value * 0.1,
             child: Container(
-              width: 120,
-              height: 120,
+              width: 100.r,
+              height: 100.r,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 gradient: const LinearGradient(
@@ -217,7 +225,7 @@ class _SplashViewState extends ConsumerState<SplashView>
                   ),
                 ],
               ),
-              child: const Icon(Icons.mosque, size: 60, color: Colors.white),
+              child: Icon(Icons.mosque, size: 50.r, color: Colors.white),
             ),
           ),
         );
@@ -227,9 +235,9 @@ class _SplashViewState extends ConsumerState<SplashView>
 
   Widget _buildAppTitle() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 8.h),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
+        borderRadius: BorderRadius.circular(15.r),
         gradient: LinearGradient(
           colors: [
             const Color(0xFFD4AF37).withOpacity(0.1),
@@ -244,7 +252,7 @@ class _SplashViewState extends ConsumerState<SplashView>
       child: Text(
         GlobalStrings.bookTitle,
         style: TextStyles.bigSplashFont.copyWith(
-          fontSize: 55,
+          fontSize: 44.sp,
           color: const Color(0xFFD4AF37),
           shadows: [
             Shadow(
@@ -264,8 +272,8 @@ class _SplashViewState extends ConsumerState<SplashView>
       animation: _loadingAnimation,
       builder: (context, child) {
         return SizedBox(
-          width: 60,
-          height: 60,
+          width: 48.r,
+          height: 48.r,
           child: CircularProgressIndicator(
             value: _loadingAnimation.value,
             strokeWidth: 3,
@@ -281,7 +289,7 @@ class _SplashViewState extends ConsumerState<SplashView>
     return Text(
       "حُرُوْفْ",
       style: TextStyle(
-        fontSize: 24,
+        fontSize: 22.sp,
         color: Colors.white.withOpacity(0.7),
         fontFamily: "DecoTypeThuluthII",
         fontWeight: FontWeight.w400,

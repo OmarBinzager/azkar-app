@@ -11,6 +11,7 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class ContentDetailsView extends ConsumerStatefulWidget {
   final Content content;
@@ -301,19 +302,19 @@ class _ContentDetailsViewState extends ConsumerState<ContentDetailsView> {
               icon: Icon(
                 Icons.replay_10,
                 color: AppColors.secondaryColor,
-                size: 30,
+                size: 26.r,
               ),
               onPressed: () {
                 final newPosition = _position - const Duration(seconds: 10);
                 _audioService.seek(newPosition);
               },
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 14.w),
             GestureDetector(
               onTap: _isLoading ? null : (_isPlaying ? _stopAudio : _playAudio),
               child: Container(
-                width: 50,
-                height: 50,
+                width: 46.r,
+                height: 46.r,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppColors.secondaryColor.withOpacity(0.1),
@@ -323,16 +324,16 @@ class _ContentDetailsViewState extends ConsumerState<ContentDetailsView> {
                       ? Icons.hourglass_empty
                       : (_isPlaying ? Icons.stop : Icons.play_arrow),
                   color: AppColors.secondaryColor,
-                  size: 30,
+                  size: 26.r,
                 ),
               ),
             ),
-            const SizedBox(width: 16),
+            SizedBox(width: 14.w),
             IconButton(
               icon: Icon(
                 Icons.forward_10,
                 color: AppColors.secondaryColor,
-                size: 30,
+                size: 26.r,
               ),
               onPressed: () {
                 final newPosition = _position + const Duration(seconds: 10);
@@ -351,15 +352,15 @@ class _ContentDetailsViewState extends ConsumerState<ContentDetailsView> {
     final favorite = ref.read(contentsListProvider.notifier);
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.all(LayoutConstants.screenPadding),
+        padding: EdgeInsets.all(LayoutConstants.screenPadding.r),
         child: StatefulBuilder(
           builder:
               (context, setState) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 20),
-                  BackButton(),
-                  const SizedBox(height: 15),
+                  SizedBox(height: 16.h),
+                  const BackButton(),
+                  SizedBox(height: 12.h),
                   Row(
                     children: [
                       Text('حجم الخط', style: TextStyles.medium),
@@ -376,7 +377,7 @@ class _ContentDetailsViewState extends ConsumerState<ContentDetailsView> {
                       ),
                     ],
                   ),
-                  const SizedBox(height: 15),
+                  SizedBox(height: 12.h),
                   Expanded(
                     child: SingleChildScrollView(
                       child: Column(
@@ -396,7 +397,7 @@ class _ContentDetailsViewState extends ConsumerState<ContentDetailsView> {
                   ),
                   if (widget.content.hasVoice &&
                       widget.content.voiceFile != null) ...[
-                    const SizedBox(height: 20),
+                    SizedBox(height: 16.h),
                     _buildAudioControls(),
                   ],
                 ],

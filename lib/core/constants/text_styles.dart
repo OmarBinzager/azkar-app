@@ -1,54 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 abstract final class TextStyles {
-  static const TextStyle heading1Bold = TextStyle(
-    fontSize: 32,
+  static TextStyle get heading1Bold => TextStyle(
+    fontSize: 32.sp,
     fontWeight: FontWeight.bold,
   );
 
-  static const TextStyle regular = TextStyle(
-    fontSize: 14,
+  static TextStyle get regular => TextStyle(
+    fontSize: 14.sp,
     fontWeight: FontWeight.w400,
   );
 
-  static const TextStyle regularBold = TextStyle(
-    fontSize: 14,
+  static TextStyle get regularBold => TextStyle(
+    fontSize: 14.sp,
     fontWeight: FontWeight.bold,
   );
 
-  static const TextStyle big = TextStyle(
-    fontSize: 30,
+  static TextStyle get big => TextStyle(
+    fontSize: 30.sp,
     fontWeight: FontWeight.bold,
   );
 
-  static const TextStyle medium = TextStyle(
-    fontSize: 18,
+  static TextStyle get medium => TextStyle(
+    fontSize: 18.sp,
     fontWeight: FontWeight.w400,
   );
 
-  static const TextStyle mediumBold = TextStyle(
-    fontSize: 18,
+  static TextStyle get mediumBold => TextStyle(
+    fontSize: 18.sp,
     fontWeight: FontWeight.bold,
   );
 
-  static const TextStyle large = TextStyle(
-    fontSize: 20,
+  static TextStyle get large => TextStyle(
+    fontSize: 20.sp,
     fontWeight: FontWeight.w600,
   );
 
-  static const TextStyle bold = TextStyle(
-    fontSize: 24,
+  static TextStyle get bold => TextStyle(
+    fontSize: 24.sp,
     fontWeight: FontWeight.bold,
   );
 
-  static const TextStyle bigSplashFont = TextStyle(
-    fontSize: 60,
+  static TextStyle get bigSplashFont => TextStyle(
+    fontSize: 60.sp,
     fontWeight: FontWeight.w500,
     fontFamily: docTypeQuranFont,
   );
 
-  static const TextStyle body = TextStyle(
-    fontSize: 18,
+  static TextStyle get body => TextStyle(
+    fontSize: 18.sp,
     fontWeight: FontWeight.w400,
     fontFamily: amiriFont,
   );
@@ -60,9 +61,8 @@ abstract final class TextStyles {
   static const String lotusFont = "Lotus";
   static const String elmessiriFont = "ElMessiri";
 
-  static const TextStyle quranText = TextStyle(
+  static TextStyle get quranText => const TextStyle(
     fontWeight: FontWeight.w700,
     fontFamily: uthmanicQuranFont,
-    // fontFamily: ,
   );
 }

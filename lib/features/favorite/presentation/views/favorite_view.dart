@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:new_azkar_app/core/constants/app_colors.dart';
 import 'package:new_azkar_app/core/constants/layout_constants.dart';
 import 'package:new_azkar_app/core/constants/routes.dart';
@@ -24,24 +25,24 @@ class FavoriteView extends ConsumerWidget {
         elevation: 0,
         title: Text(
           'المفضلة',
-          style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 22),
+          style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 20.sp),
         ),
         centerTitle: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20.r)),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(LayoutConstants.screenPadding),
+        padding: EdgeInsets.all(LayoutConstants.rScreenPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeaderCard(favoriteHeaders.length),
-            const SizedBox(height: 24),
+            SizedBox(height: 20.h),
             favoriteHeaders.isEmpty
                 ? _buildEmptyState()
                 : _buildFavoritesList(favoriteHeaders, context),
-            const SizedBox(height: 32),
+            SizedBox(height: 24.h),
           ],
         ),
       ),
@@ -51,32 +52,32 @@ class FavoriteView extends ConsumerWidget {
   Widget _buildHeaderCard(int favoritesCount) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [AppColors.error, AppColors.error.withOpacity(0.8)],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         boxShadow: CShadow.LG,
       ),
       child: Row(
         children: [
           Container(
-            width: 60,
-            height: 60,
+            width: 52.r,
+            height: 52.r,
             decoration: BoxDecoration(
               color: AppColors.gold.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(15.r),
             ),
             child: Icon(
               Icons.favorite_rounded,
               color: AppColors.gold,
-              size: 30,
+              size: 26.r,
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 14.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,17 +86,17 @@ class FavoriteView extends ConsumerWidget {
                   'المفضلة',
                   style: TextStyles.bold.copyWith(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 17.sp,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4.h),
                 Text(
                   favoritesCount == 0
                       ? 'لا توجد نصوص في المفضلة'
-                      : '${favoritesCount} ${favoritesCount == 1 ? 'نص مفضل' : 'نص مفضل'}',
+                      : '$favoritesCount نص مفضل',
                   style: TextStyles.medium.copyWith(
                     color: Colors.white.withOpacity(0.8),
-                    fontSize: 14,
+                    fontSize: 13.sp,
                   ),
                 ),
               ],
@@ -109,52 +110,52 @@ class FavoriteView extends ConsumerWidget {
   Widget _buildEmptyState() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(40),
+      padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 32.h),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         boxShadow: CShadow.MD,
         border: Border.all(color: AppColors.error.withOpacity(0.1), width: 1),
       ),
       child: Column(
         children: [
           Container(
-            width: 100,
-            height: 100,
+            width: 80.r,
+            height: 80.r,
             decoration: BoxDecoration(
               color: AppColors.error.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.favorite_border_rounded,
-              size: 50,
+              size: 40.r,
               color: AppColors.error,
             ),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 18.h),
           Text(
             'لا توجد مفضلات',
             style: TextStyles.bold.copyWith(
-              fontSize: 20,
+              fontSize: 18.sp,
               color: AppColors.secondaryColor,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 8.h),
           Text(
             'اضغط على أيقونة القلب في أي نص لإضافته إلى المفضلة',
             style: TextStyles.medium.copyWith(
-              fontSize: 14,
+              fontSize: 13.sp,
               color: Colors.grey[600],
               height: 1.4,
             ),
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 20.h),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
             decoration: BoxDecoration(
               color: AppColors.error.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(25),
+              borderRadius: BorderRadius.circular(25.r),
               border: Border.all(
                 color: AppColors.error.withOpacity(0.2),
                 width: 1,
@@ -163,13 +164,13 @@ class FavoriteView extends ConsumerWidget {
             child: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.favorite_rounded, size: 18, color: AppColors.error),
-                const SizedBox(width: 8),
+                Icon(Icons.favorite_rounded, size: 16.r, color: AppColors.error),
+                SizedBox(width: 8.w),
                 Text(
                   'ابدأ بإضافة نصوصك المفضلة',
                   style: TextStyles.medium.copyWith(
                     color: AppColors.error,
-                    fontSize: 13,
+                    fontSize: 12.sp,
                   ),
                 ),
               ],
@@ -188,22 +189,22 @@ class FavoriteView extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          '${favoriteHeaders.length} ${favoriteHeaders.length == 1 ? 'مفضل' : 'مفضل'}',
+          '${favoriteHeaders.length} مفضل',
           style: TextStyles.medium.copyWith(
             color: AppColors.secondaryColor,
-            fontSize: 16,
+            fontSize: 15.sp,
             fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 12.h),
         ...favoriteHeaders.asMap().entries.map((entry) {
           final index = entry.key;
           final header = entry.value;
           return Padding(
-            padding: const EdgeInsets.only(bottom: 12),
+            padding: EdgeInsets.only(bottom: 10.h),
             child: _buildFavoriteCard(context, header, index),
           );
-        }).toList(),
+        }),
       ],
     );
   }
@@ -213,39 +214,39 @@ class FavoriteView extends ConsumerWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: CShadow.MD,
         border: Border.all(color: AppColors.error.withOpacity(0.1), width: 1),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           onTap: () => context.pushNamed(Routes.contents, extra: header),
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(14.r),
             child: Row(
               children: [
                 // Number Badge
                 Container(
-                  width: 40,
-                  height: 40,
+                  width: 36.r,
+                  height: 36.r,
                   decoration: BoxDecoration(
                     color: AppColors.error.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(10.r),
                   ),
                   child: Center(
                     child: Text(
                       '${index + 1}',
                       style: TextStyles.mediumBold.copyWith(
                         color: AppColors.error,
-                        fontSize: 16,
+                        fontSize: 14.sp,
                       ),
                     ),
                   ),
                 ),
 
-                const SizedBox(width: 16),
+                SizedBox(width: 14.w),
 
                 // Content
                 Expanded(
@@ -256,17 +257,17 @@ class FavoriteView extends ConsumerWidget {
                         header.name,
                         style: TextStyles.mediumBold.copyWith(
                           color: AppColors.secondaryColor,
-                          fontSize: 16,
+                          fontSize: 15.sp,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 2.h),
                       Text(
                         'نص مفضل',
                         style: TextStyles.regular.copyWith(
                           color: Colors.grey[600],
-                          fontSize: 12,
+                          fontSize: 11.sp,
                         ),
                       ),
                     ],
@@ -275,15 +276,15 @@ class FavoriteView extends ConsumerWidget {
 
                 // Arrow Icon
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: EdgeInsets.all(6.r),
                   decoration: BoxDecoration(
                     color: AppColors.error.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(8),
+                    borderRadius: BorderRadius.circular(8.r),
                   ),
                   child: Icon(
                     Icons.arrow_forward_ios_rounded,
                     color: AppColors.error,
-                    size: 16,
+                    size: 14.r,
                   ),
                 ),
               ],

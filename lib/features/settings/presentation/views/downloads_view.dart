@@ -1,17 +1,15 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_azkar_app/core/constants/app_colors.dart';
 import 'package:new_azkar_app/core/constants/layout_constants.dart';
 import 'package:new_azkar_app/core/constants/text_styles.dart';
-import 'package:new_azkar_app/features/home/entities/content.dart';
-import 'package:new_azkar_app/features/home/entities/header.dart';
-import 'package:new_azkar_app/features/public/providers/contents_provider.dart';
-import 'package:new_azkar_app/features/public/providers/headers_provider.dart';
+import 'package:new_azkar_app/core/models/audio_item.dart';
+import 'package:new_azkar_app/core/providers/global_audio_provider.dart';
+import 'package:new_azkar_app/core/services/isar_helper.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class DownloadsView extends ConsumerStatefulWidget {
   const DownloadsView({super.key});
@@ -24,146 +22,104 @@ class _DownloadsViewState extends ConsumerState<DownloadsView> {
   final Map<String, double> _progressById = {};
   final Map<String, bool> _downloadingById = {};
   final Map<String, bool> _existsById = {};
-  final Map<String, String> _nameById = {};
-  final List<_DriveFile> _files = [];
-  bool _loadingList = true;
+  final Map<String, int> _sizeById = {};
 
-  // Provided Google Drive file IDs
-  static const List<String> _providedIds = [
-    '1pbFtdfksbGQdHmNooxa9W4A-WrYx56zI',
-    '1bI3SFC9MOw_qfbygCuMBMytCAoYNzd-a',
-    '1ek2tnjJvmT3DAZMmpCtlcv1gIpsjDtdZ',
-    '1ZiEN8-3aJGcZHIxrDb9UE9PDDPgSEcZJ',
-    '1EUMC-ZRCeQkl-cXtS8FuwrX-FHmOzrYu',
-    '1nFP2Im9h5w1YSGCn6pmbvdtETZ2hnWTl',
-    '1UYE3rxVKUx2bUHlTq5L4jGKoCWawHJlQ',
-    '1a2fZ1ldb2-gdAK5_oiATI8nbSE8iUWbC',
-    '1mXtyEkGckwTRHpE4Il0wOhZxlNoBCB4D',
-    '1dUG88heXJ_bNFGUJFVDso1L0eU-m6c07',
-    '1w1AOARSdMJhQJV2HS4zSLxD_WVHremHT',
-    '11bVqJXT6cjeZUxZA4wD4BlV6FmtOWxVZ',
-  ];
+  List<AudioItem> _allAudios = [];
+  List<AudioItem> _filteredAudios = [];
+  String _searchQuery = '';
+  String? _selectedCategory;
+  bool _loading = true;
+  bool _isBulkDownloading = false;
+  bool _cancelBulk = false;
 
   @override
   void initState() {
     super.initState();
-    _initList();
+    _loadAudios();
   }
 
-  Future<void> _initList() async {
-    setState(() => _loadingList = true);
-    final List<Content> allContents = ref.read(contentsListProvider);
-    final Map<String, String> idToName = {};
-    for (final c in allContents) {
-      if (c.hasVoice &&
-          c.voiceFile != null &&
-          _providedIds.contains(c.voiceFile)) {
-        final Header header = await ref.read(headersProvider.notifier).getHeaderById(c.headerId);
-        idToName[c.voiceFile!] = header.name;
-      }
-    }
-    final List<_DriveFile> built =
-        _providedIds
-            .map((id) => _DriveFile(id: id, name: idToName[id] ?? 'ملف صوتي'))
-            .toList();
-    await _precheckExisting(built);
+  Future<void> _loadAudios() async {
+    setState(() => _loading = true);
+    final audios = IsarHelper.getAllAudioItems();
+    await _checkLocalStatus(audios);
+
     if (!mounted) return;
     setState(() {
-      _files
-        ..clear()
-        ..addAll(built);
-      _loadingList = false;
+      _allAudios = audios;
+      _applyFilter();
+      _loading = false;
     });
-    // Fetch real filenames in background
-    // for (final f in _files) {
-    //   _resolveAndApplyFileName(f.id);
-    // }
   }
 
-  Future<void> _resolveAndApplyFileName(String id) async {
-    try {
-      final name = await _fetchFileNameFromHeaders(id);
-      if (name != null && name.trim().isNotEmpty) {
-        _nameById[id] = name.trim();
-        final idx = _files.indexWhere((e) => e.id == id);
-        if (idx != -1 && mounted) {
-          setState(() {
-            _files[idx] = _DriveFile(id: id, name: _nameById[id]!);
-          });
-        }
-      }
-    } catch (_) {}
-  }
-
-  Future<String?> _fetchFileNameFromHeaders(String id) async {
-    final Uri uri = Uri.parse(
-      'https://drive.google.com/uc?export=download&id=$id',
-    );
-    HttpClient? httpClient;
-    try {
-      httpClient = HttpClient();
-      // Try HEAD first
-      HttpClientRequest req = await httpClient.openUrl('HEAD', uri);
-      HttpClientResponse res = await req.close();
-      if (res.statusCode == 405 || res.statusCode == 400) {
-        // Fallback to GET (will read headers only)
-        req = await httpClient.getUrl(uri);
-        res = await req.close();
-      }
-      final cd = res.headers.value('content-disposition');
-      if (cd == null) return null;
-      final name = _parseFileNameFromContentDisposition(cd);
-      return name;
-    } finally {
-      httpClient?.close(force: true);
-    }
-  }
-
-  String? _parseFileNameFromContentDisposition(String cd) {
-    final rfc5987 = RegExp(r"filename\*=UTF-8''([^;]+)");
-    final simple = RegExp(r'filename="?([^";]+)"?');
-    final m1 = rfc5987.firstMatch(cd);
-    if (m1 != null) {
-      return Uri.decodeFull(m1.group(1) ?? '');
-    }
-    final m2 = simple.firstMatch(cd);
-    if (m2 != null) {
-      final raw = m2.group(1) ?? '';
-      try {
-        return utf8.decode(raw.codeUnits);
-      } catch (_) {
-        return raw;
-      }
-    }
-    return null;
-  }
-
-  Future<String> _localPathFor(String idOrName) async {
+  Future<String> _getLocalPath(String voiceFile) async {
     final Directory baseDir = await getApplicationDocumentsDirectory();
     final Directory audioDir = Directory('${baseDir.path}/audios');
     if (!await audioDir.exists()) {
       await audioDir.create(recursive: true);
     }
-    return '${audioDir.path}/$idOrName.mp3';
+    return '${audioDir.path}/$voiceFile.mp3';
   }
 
-  Future<void> _precheckExisting(List<_DriveFile> files) async {
-    for (final f in files) {
-      final path = await _localPathFor(f.id);
-      final exists = await File(path).exists();
-      _existsById[f.id] = exists;
+  Future<void> _checkLocalStatus(List<AudioItem> audios) async {
+    for (final item in audios) {
+      final path = await _getLocalPath(item.voiceFile);
+      final file = File(path);
+      final exists = await file.exists();
+      _existsById[item.voiceFile] = exists;
+      if (exists) {
+        try {
+          _sizeById[item.voiceFile] = await file.length();
+        } catch (_) {
+          _sizeById[item.voiceFile] = 0;
+        }
+      } else {
+        _sizeById[item.voiceFile] = 0;
+      }
     }
   }
 
-  Future<void> _download(String id) async {
-    if (_downloadingById[id] == true) return;
+  void _applyFilter() {
+    var list = _allAudios;
+    if (_selectedCategory != null && _selectedCategory != 'الكل') {
+      list = list.where((item) => item.category == _selectedCategory).toList();
+    }
+    if (_searchQuery.trim().isNotEmpty) {
+      final query = _searchQuery.trim().toLowerCase();
+      list = list
+          .where((item) =>
+              item.title.toLowerCase().contains(query) ||
+              (item.category ?? '').toLowerCase().contains(query))
+          .toList();
+    }
+    _filteredAudios = list;
+  }
+
+  int get _downloadedCount =>
+      _allAudios.where((a) => _existsById[a.voiceFile] == true).length;
+
+  int get _totalBytesUsed => _sizeById.values.fold(0, (sum, size) => sum + size);
+
+  String _formatBytes(int bytes) {
+    if (bytes <= 0) return '0 ميجابايت';
+    final mb = bytes / (1024 * 1024);
+    if (mb < 1.0) {
+      final kb = bytes / 1024;
+      return '${kb.toStringAsFixed(1)} كيلوبايت';
+    }
+    return '${mb.toStringAsFixed(1)} ميجابايت';
+  }
+
+  Future<void> _downloadSingle(String voiceFile, {bool silent = false}) async {
+    if (_downloadingById[voiceFile] == true) return;
+
     setState(() {
-      _downloadingById[id] = true;
-      _progressById[id] = 0.0;
+      _downloadingById[voiceFile] = true;
+      _progressById[voiceFile] = 0.0;
     });
 
-    final String url = 'https://drive.google.com/uc?export=download&id=$id';
-    final String path = await _localPathFor(id);
+    final String url =
+        'https://drive.google.com/uc?export=download&id=$voiceFile&confirm=t';
+    final String path = await _getLocalPath(voiceFile);
     final file = File(path);
 
     HttpClient? httpClient;
@@ -171,67 +127,189 @@ class _DownloadsViewState extends ConsumerState<DownloadsView> {
       httpClient = HttpClient();
       final req = await httpClient.getUrl(Uri.parse(url));
       final res = await req.close();
-      if (res.statusCode != 200)
+      if (res.statusCode != 200) {
         throw HttpException('status ${res.statusCode}');
-
-      // Update filename from headers if available
-      final cd = res.headers.value('content-disposition');
-      final resolved =
-          cd != null ? _parseFileNameFromContentDisposition(cd) : null;
-      if (resolved != null && resolved.trim().isNotEmpty) {
-        _nameById[id] = resolved.trim();
-        final idx = _files.indexWhere((e) => e.id == id);
-        if (idx != -1 && mounted) {
-          setState(() {
-            _files[idx] = _DriveFile(id: id, name: _nameById[id]!);
-          });
-        }
       }
 
       final total = res.contentLength > 0 ? res.contentLength : null;
       final sink = file.openWrite();
       int received = 0;
+
       await for (final chunk in res) {
         sink.add(chunk);
         received += chunk.length;
-        if (total != null) {
+        if (total != null && mounted) {
           setState(() {
-            _progressById[id] = received / total;
+            _progressById[voiceFile] = received / total;
           });
         }
       }
       await sink.close();
 
-      setState(() {
-        _downloadingById[id] = false;
-        _progressById[id] = 1.0;
-        _existsById[id] = true;
-      });
+      final length = await file.length();
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('تم تنزيل الملف الصوتي')));
+        setState(() {
+          _downloadingById[voiceFile] = false;
+          _progressById[voiceFile] = 1.0;
+          _existsById[voiceFile] = true;
+          _sizeById[voiceFile] = length;
+        });
+
+        if (!silent) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('تم تنزيل الملف الصوتي بنجاح'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
       }
     } catch (e) {
       try {
         if (await file.exists()) await file.delete();
       } catch (_) {}
-      setState(() {
-        _downloadingById[id] = false;
-        _progressById[id] = 0.0;
-      });
+
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('فشل تنزيل الملف الصوتي')));
+        setState(() {
+          _downloadingById[voiceFile] = false;
+          _progressById[voiceFile] = 0.0;
+        });
+
+        if (!silent) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('تعذر تنزيل الملف الصوتي، يرجى المحاولة لاحقاً'),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
       }
     } finally {
       httpClient?.close(force: true);
     }
   }
 
+  Future<void> _deleteAudio(String voiceFile) async {
+    try {
+      final path = await _getLocalPath(voiceFile);
+      final file = File(path);
+      if (await file.exists()) {
+        await file.delete();
+      }
+      if (mounted) {
+        setState(() {
+          _existsById[voiceFile] = false;
+          _sizeById[voiceFile] = 0;
+          _progressById[voiceFile] = 0.0;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('تم حذف الملف الصوتي من الذاكرة'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
+    } catch (_) {}
+  }
+
+  Future<void> _downloadAll() async {
+    final toDownload = _allAudios
+        .where((a) => _existsById[a.voiceFile] != true && _downloadingById[a.voiceFile] != true)
+        .toList();
+
+    if (toDownload.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('جميع الملفات الصوتية محملة بالفعل')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isBulkDownloading = true;
+      _cancelBulk = false;
+    });
+
+    for (int i = 0; i < toDownload.length; i++) {
+      if (_cancelBulk) break;
+      await _downloadSingle(toDownload[i].voiceFile, silent: true);
+    }
+
+    if (mounted) {
+      setState(() {
+        _isBulkDownloading = false;
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('اكتملت عملية التنزيل الجماعي')),
+      );
+    }
+  }
+
+  Future<void> _deleteAll() async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text(
+          'حذف جميع الصوتيات',
+          style: TextStyles.bold.copyWith(color: AppColors.primaryColor),
+        ),
+        content: Text(
+          'هل أنت متأكد من حذف جميع الملفات الصوتية المحملة؟ يمكنك إعادة تنزيلها في أي وقت.',
+          style: TextStyles.regular,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('إلغاء'),
+          ),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('حذف الكل'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm != true) return;
+
+    for (final item in _allAudios) {
+      if (_existsById[item.voiceFile] == true) {
+        final path = await _getLocalPath(item.voiceFile);
+        final file = File(path);
+        if (await file.exists()) {
+          try {
+            await file.delete();
+          } catch (_) {}
+        }
+      }
+    }
+
+    if (mounted) {
+      setState(() {
+        for (final item in _allAudios) {
+          _existsById[item.voiceFile] = false;
+          _sizeById[item.voiceFile] = 0;
+          _progressById[item.voiceFile] = 0.0;
+        }
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('تم حذف جميع الملفات الصوتية')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final categories = ['الكل', ...{
+      for (final a in _allAudios)
+        if (a.category != null && a.category!.isNotEmpty) a.category!
+    }];
+
     return Scaffold(
       backgroundColor: AppColors.fourthColor,
       appBar: AppBar(
@@ -239,134 +317,356 @@ class _DownloadsViewState extends ConsumerState<DownloadsView> {
         foregroundColor: AppColors.gold,
         elevation: 0,
         title: Text(
-          'التحميلات',
-          style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 22),
+          'إدارة التنزيلات الصوتية',
+          style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 18.sp),
         ),
         centerTitle: true,
       ),
-      body:
-          _loadingList
-              ? Center(
-                child: CircularProgressIndicator(
-                  color: AppColors.secondaryColor,
-                ),
-              )
-              : Padding(
-                padding: const EdgeInsets.all(LayoutConstants.screenPadding),
-                child:
-                    _files.isEmpty
-                        ? Center(
+      body: _loading
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColors.secondaryColor),
+            )
+          : Column(
+              children: [
+                _buildStorageHeaderCard(),
+                _buildSearchAndFilters(categories),
+                Expanded(
+                  child: _filteredAudios.isEmpty
+                      ? Center(
                           child: Text(
-                            'لا توجد ملفات صوتية',
+                            'لا توجد ملفات صوتية مطابقة',
                             style: TextStyles.medium.copyWith(
                               color: AppColors.secondaryColor,
+                              fontSize: 14.sp,
                             ),
                           ),
                         )
-                        : ListView.separated(
-                          itemCount: _files.length,
-                          separatorBuilder:
-                              (_, __) => const SizedBox(height: 12),
+                      : ListView.separated(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: LayoutConstants.screenPadding.r,
+                            vertical: 8.h,
+                          ),
+                          itemCount: _filteredAudios.length,
+                          separatorBuilder: (_, __) => SizedBox(height: 10.h),
                           itemBuilder: (context, index) {
-                            final f = _files[index];
-                            final downloading = _downloadingById[f.id] == true;
-                            final progress = _progressById[f.id] ?? 0.0;
-                            final exists = _existsById[f.id] == true;
-                            final displayName = _nameById[f.id] ?? f.name;
-
-                            return Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(16),
-                                border: Border.all(
-                                  color: AppColors.secondaryColor.withOpacity(
-                                    0.1,
-                                  ),
-                                ),
-                              ),
-                              child: ListTile(
-                                title: Text(
-                                  displayName,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: TextStyles.mediumBold.copyWith(
-                                    color: AppColors.secondaryColor,
-                                  ),
-                                ),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'ملف صوتي',
-                                      style: TextStyles.regular.copyWith(
-                                        color: Colors.grey[600],
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                    if (downloading) ...[
-                                      const SizedBox(height: 6),
-                                      LinearProgressIndicator(
-                                        value:
-                                            progress > 0 && progress < 1.0
-                                                ? progress
-                                                : null,
-                                        backgroundColor: Colors.grey[200],
-                                        color: AppColors.secondaryColor,
-                                        minHeight: 6,
-                                      ),
-                                    ],
-                                    if (exists && !downloading) ...[
-                                      const SizedBox(height: 6),
-                                      Text(
-                                        'محمل محلياً',
-                                        style: TextStyles.regular.copyWith(
-                                          color: Colors.green[700],
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
-                                  ],
-                                ),
-                                trailing:
-                                    downloading
-                                        ? Icon(
-                                          Icons.downloading,
-                                          color: AppColors.secondaryColor,
-                                        )
-                                        : exists
-                                        ? Icon(
-                                          Icons.check_circle,
-                                          color: Colors.green[700],
-                                        )
-                                        : IconButton(
-                                          icon: Icon(
-                                            Icons.download,
-                                            color: AppColors.secondaryColor,
-                                          ),
-                                          onPressed: () => _download(f.id),
-                                        ),
-                                onTap:
-                                    exists || downloading
-                                        ? null
-                                        : () => _download(f.id),
-                              ),
-                            );
+                            final audio = _filteredAudios[index];
+                            return _buildAudioCard(audio);
                           },
                         ),
-              ),
+                ),
+              ],
+            ),
     );
   }
 
-  String _extractTitleFromContent(String text) {
-    final cleaned = text.replaceAll('\n', ' ').trim();
-    if (cleaned.length <= 50) return cleaned;
-    return '${cleaned.substring(0, 50)}...';
+  Widget _buildStorageHeaderCard() {
+    return Container(
+      margin: EdgeInsets.all(LayoutConstants.screenPadding.r),
+      padding: EdgeInsets.all(14.r),
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [AppColors.secondaryColor, AppColors.primaryColor],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(18.r),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.secondaryColor.withOpacity(0.2),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: EdgeInsets.all(10.r),
+                decoration: BoxDecoration(
+                  color: AppColors.gold.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12.r),
+                ),
+                child: Icon(Icons.cloud_download_rounded, color: AppColors.gold, size: 24.r),
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'الملفات المحملة: $_downloadedCount من إجمالي ${_allAudios.length}',
+                      style: TextStyles.bold.copyWith(color: Colors.white, fontSize: 14.sp),
+                    ),
+                    SizedBox(height: 4.h),
+                    Text(
+                      'المساحة المستخدمة: ${_formatBytes(_totalBytesUsed)}',
+                      style: TextStyles.regular.copyWith(
+                        color: Colors.white.withOpacity(0.85),
+                        fontSize: 12.sp,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          SizedBox(height: 12.h),
+          Row(
+            children: [
+              Expanded(
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.gold,
+                    foregroundColor: AppColors.secondaryColor,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 8.h),
+                  ),
+                  onPressed: _isBulkDownloading
+                      ? () => setState(() => _cancelBulk = true)
+                      : _downloadAll,
+                  icon: Icon(_isBulkDownloading ? Icons.stop_rounded : Icons.download_rounded, size: 18.r),
+                  label: Text(
+                    _isBulkDownloading ? 'إيقاف التحميل' : 'تحميل الكل (${_allAudios.length - _downloadedCount})',
+                    style: TextStyles.bold.copyWith(fontSize: 12.sp),
+                  ),
+                ),
+              ),
+              if (_downloadedCount > 0) ...[
+                SizedBox(width: 8.w),
+                OutlinedButton.icon(
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.red[300],
+                    side: BorderSide(color: Colors.red[300]!),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.r),
+                    ),
+                    padding: EdgeInsets.symmetric(vertical: 8.h, horizontal: 10.w),
+                  ),
+                  onPressed: _deleteAll,
+                  icon: Icon(Icons.delete_outline_rounded, size: 16.r),
+                  label: Text('حذف الكل', style: TextStyles.bold.copyWith(fontSize: 12.sp)),
+                ),
+              ],
+            ],
+          ),
+        ],
+      ),
+    );
   }
-}
 
-class _DriveFile {
-  final String id;
-  final String name;
-  _DriveFile({required this.id, required this.name});
+  Widget _buildSearchAndFilters(List<String> categories) {
+    return Column(
+      children: [
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: LayoutConstants.screenPadding.r),
+          child: TextField(
+            onChanged: (val) {
+              setState(() {
+                _searchQuery = val;
+                _applyFilter();
+              });
+            },
+            decoration: InputDecoration(
+              hintText: 'بحث عن صوتية...',
+              hintStyle: TextStyles.regular.copyWith(color: Colors.grey[500], fontSize: 13.sp),
+              prefixIcon: Icon(Icons.search, color: AppColors.primaryColor, size: 20.r),
+              filled: true,
+              fillColor: Colors.white,
+              contentPadding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 10.h),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14.r),
+                borderSide: BorderSide(color: Colors.grey[300]!),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14.r),
+                borderSide: BorderSide(color: Colors.grey[200]!),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(14.r),
+                borderSide: const BorderSide(color: AppColors.primaryColor),
+              ),
+            ),
+          ),
+        ),
+        SizedBox(height: 8.h),
+        SizedBox(
+          height: 34.h,
+          child: ListView.separated(
+            padding: EdgeInsets.symmetric(horizontal: LayoutConstants.screenPadding.r),
+            scrollDirection: Axis.horizontal,
+            itemCount: categories.length,
+            separatorBuilder: (_, __) => SizedBox(width: 8.w),
+            itemBuilder: (context, idx) {
+              final cat = categories[idx];
+              final isSelected = (_selectedCategory == null && cat == 'الكل') ||
+                  _selectedCategory == cat;
+              return ChoiceChip(
+                label: Text(
+                  cat,
+                  style: TextStyles.medium.copyWith(
+                    color: isSelected ? Colors.white : AppColors.secondaryColor,
+                    fontSize: 11.sp,
+                  ),
+                ),
+                selected: isSelected,
+                selectedColor: AppColors.secondaryColor,
+                backgroundColor: Colors.white,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.r),
+                  side: BorderSide(
+                    color: isSelected ? AppColors.secondaryColor : Colors.grey[300]!,
+                  ),
+                ),
+                onSelected: (selected) {
+                  setState(() {
+                    _selectedCategory = cat == 'الكل' ? null : cat;
+                    _applyFilter();
+                  });
+                },
+              );
+            },
+          ),
+        ),
+        SizedBox(height: 8.h),
+      ],
+    );
+  }
+
+  Widget _buildAudioCard(AudioItem audio) {
+    final downloading = _downloadingById[audio.voiceFile] == true;
+    final progress = _progressById[audio.voiceFile] ?? 0.0;
+    final exists = _existsById[audio.voiceFile] == true;
+    final sizeBytes = _sizeById[audio.voiceFile] ?? 0;
+    final currentPlaying = ref.watch(globalAudioProvider).voiceFile == audio.voiceFile;
+    final isPlaying = currentPlaying && ref.watch(globalAudioProvider).isPlaying;
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14.r),
+        border: Border.all(
+          color: currentPlaying
+              ? AppColors.gold
+              : AppColors.secondaryColor.withOpacity(0.1),
+          width: currentPlaying ? 1.5 : 1.0,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 6,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: ListTile(
+        contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 2.h),
+        leading: GestureDetector(
+          onTap: () {
+            ref.read(globalAudioProvider.notifier).playAudio(
+                  voiceFile: audio.voiceFile,
+                  title: audio.title,
+                );
+          },
+          child: Container(
+            width: 40.r,
+            height: 40.r,
+            decoration: BoxDecoration(
+              color: currentPlaying
+                  ? AppColors.gold.withOpacity(0.2)
+                  : AppColors.primaryColor.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+              color: currentPlaying ? AppColors.gold : AppColors.primaryColor,
+              size: 22.r,
+            ),
+          ),
+        ),
+        title: Text(
+          audio.title,
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+          style: TextStyles.mediumBold.copyWith(
+            color: AppColors.secondaryColor,
+            fontSize: 13.sp,
+          ),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(height: 4.h),
+            Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              spacing: 6.w,
+              runSpacing: 4.h,
+              children: [
+                if (audio.category != null)
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
+                    decoration: BoxDecoration(
+                      color: AppColors.gold.withOpacity(0.15),
+                      borderRadius: BorderRadius.circular(6.r),
+                    ),
+                    child: Text(
+                      audio.category!,
+                      style: TextStyles.regular.copyWith(
+                        color: AppColors.secondaryColor,
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                Text(
+                  exists ? _formatBytes(sizeBytes) : 'غير محمل',
+                  style: TextStyles.regular.copyWith(
+                    color: exists ? Colors.green[700] : Colors.grey[500],
+                    fontSize: 11.sp,
+                  ),
+                ),
+              ],
+            ),
+            if (downloading) ...[
+              SizedBox(height: 6.h),
+              LinearProgressIndicator(
+                value: progress > 0 && progress < 1.0 ? progress : null,
+                backgroundColor: Colors.grey[200],
+                color: AppColors.secondaryColor,
+                minHeight: 4.h,
+                borderRadius: BorderRadius.circular(4.r),
+              ),
+            ],
+          ],
+        ),
+        trailing: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (downloading)
+              SizedBox(
+                width: 20.r,
+                height: 20.r,
+                child: const CircularProgressIndicator(strokeWidth: 2),
+              )
+            else if (exists) ...[
+              IconButton(
+                icon: Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20.r),
+                tooltip: 'حذف من الذاكرة',
+                onPressed: () => _deleteAudio(audio.voiceFile),
+              ),
+              Icon(Icons.check_circle_rounded, color: Colors.green, size: 20.r),
+            ] else
+              IconButton(
+                icon: Icon(Icons.download_rounded, color: AppColors.primaryColor, size: 22.r),
+                tooltip: 'تنزيل للاستماع أوفلاين',
+                onPressed: () => _downloadSingle(audio.voiceFile),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 }

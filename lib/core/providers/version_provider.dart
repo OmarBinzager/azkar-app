@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:new_azkar_app/core/services/version_service.dart';
 import 'package:new_azkar_app/core/services/isar_services.dart';
+import 'package:new_azkar_app/features/public/providers/headers_provider.dart';
+import 'package:new_azkar_app/features/public/providers/contents_provider.dart';
 
 final versionProvider = FutureProvider<String>((ref) async {
   return await VersionService.getFullVersionString();
@@ -12,17 +14,21 @@ final appUpdateCheckProvider = FutureProvider<bool>((ref) async {
 
 final dataUpdateProvider =
     StateNotifierProvider<DataUpdateNotifier, AsyncValue<void>>((ref) {
-      return DataUpdateNotifier();
+      return DataUpdateNotifier(ref);
     });
 
 class DataUpdateNotifier extends StateNotifier<AsyncValue<void>> {
-  DataUpdateNotifier() : super(const AsyncValue.data(null));
+  final Ref ref;
+  DataUpdateNotifier(this.ref) : super(const AsyncValue.data(null));
 
   Future<void> updateData() async {
     state = const AsyncValue.loading();
     try {
       final isarServices = IsarServices();
       await isarServices.updateAzkarData();
+      await ref.read(headersProvider.notifier).refresh();
+      await ref.read(contentsListProvider.notifier).refresh();
+      await VersionService.saveCurrentVersion();
       await VersionService.clearDataUpdateRequired();
       state = const AsyncValue.data(null);
     } catch (error, stackTrace) {

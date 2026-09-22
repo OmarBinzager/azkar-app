@@ -28,7 +28,6 @@ class AudioService {
         category: AVAudioSessionCategory.playback,
         options: {
           AVAudioSessionOptions.mixWithOthers,
-          AVAudioSessionOptions.defaultToSpeaker,
         },
       ),
     );

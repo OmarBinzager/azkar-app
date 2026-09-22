@@ -6,7 +6,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   audioplayers_windows
   flutter_timezone
   geolocator_windows
-  isar_flutter_libs
+  isar_community_flutter_libs
   share_plus
   url_launcher_windows
 )

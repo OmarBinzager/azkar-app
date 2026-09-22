@@ -12,6 +12,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:go_router/go_router.dart';
 import 'package:new_azkar_app/core/constants/routes.dart';
 import 'package:new_azkar_app/features/splash/views/splash_view.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SettingsView extends ConsumerStatefulWidget {
   const SettingsView({super.key});
@@ -60,19 +61,19 @@ class _SettingsViewState extends ConsumerState<SettingsView>
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
-                width: 80,
-                height: 80,
+                width: 70.r,
+                height: 70.r,
                 decoration: BoxDecoration(
                   color: AppColors.secondaryColor.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   Icons.settings,
-                  size: 40,
+                  size: 36.r,
                   color: AppColors.secondaryColor,
                 ),
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
               Text(
                 'جاري تحميل الإعدادات...',
                 style: TextStyles.medium.copyWith(
@@ -91,12 +92,12 @@ class _SettingsViewState extends ConsumerState<SettingsView>
       body: FadeTransition(
         opacity: _fadeAnimation,
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(LayoutConstants.screenPadding),
+          padding: EdgeInsets.all(LayoutConstants.screenPadding.r),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildHeaderCard(),
-              const SizedBox(height: 24),
+              SizedBox(height: 20.h),
               _buildSectionTitle('الصوت والوسائط'),
               _buildSwitchTile(
                 icon: Icons.volume_up,
@@ -109,7 +110,7 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                       .setAutoPlayAudio(value);
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
 
               _buildSectionTitle('المظهر والخط'),
               _buildSliderTile(
@@ -118,12 +119,12 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                 subtitle: '${settings.fontSize.round()}',
                 value: settings.fontSize,
                 min: 22.0,
-                max: 30.0,
+                max: 35.0,
                 onChanged: (value) async {
                   await ref.read(settingsProvider.notifier).setFontSize(value);
                 },
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
 
               _buildSectionTitle('إدارة البيانات'),
               _buildActionTile(
@@ -135,7 +136,7 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                 },
                 color: AppColors.primaryColor,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12.h),
               _buildActionTile(
                 icon: Icons.update,
                 title: 'تحديث بيانات الأذكار',
@@ -146,7 +147,7 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                 onTap: _showUpdateDataDialog,
                 color: AppColors.warring,
               ),
-              const SizedBox(height: 16),
+              SizedBox(height: 16.h),
 
               _buildSectionTitle('حول التطبيق'),
               versionAsync.when(
@@ -172,7 +173,7 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                       color: AppColors.primaryColor,
                     ),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12.h),
               _buildInfoTile(
                 icon: Icons.share,
                 title: 'مشاركة التطبيق',
@@ -180,7 +181,7 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                 color: AppColors.primaryColor,
                 onTap: onShare,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12.h),
               _buildInfoTile(
                 icon: Icons.description_outlined,
                 title: 'سياسة الخصوصية',
@@ -190,7 +191,7 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                 },
                 color: AppColors.secondaryColor,
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: 12.h),
               _buildInfoTile(
                 icon: Icons.help_outline,
                 title: 'المساعدة والدعم',
@@ -200,7 +201,7 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                 },
                 color: AppColors.thirdColor,
               ),
-              const SizedBox(height: 32),
+              SizedBox(height: 32.h),
             ],
           ),
         ),
@@ -215,11 +216,11 @@ class _SettingsViewState extends ConsumerState<SettingsView>
       elevation: 0,
       title: Text(
         'الإعدادات',
-        style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 22),
+        style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 20.sp),
       ),
       centerTitle: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(bottom: Radius.circular(20.r)),
       ),
     );
   }
@@ -227,7 +228,7 @@ class _SettingsViewState extends ConsumerState<SettingsView>
   Widget _buildHeaderCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -237,21 +238,21 @@ class _SettingsViewState extends ConsumerState<SettingsView>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(18.r),
         boxShadow: CShadow.LG,
       ),
       child: Row(
         children: [
           Container(
-            width: 60,
-            height: 60,
+            width: 52.r,
+            height: 52.r,
             decoration: BoxDecoration(
               color: AppColors.gold.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(14.r),
             ),
-            child: Icon(Icons.settings, color: AppColors.gold, size: 30),
+            child: Icon(Icons.settings, color: AppColors.gold, size: 26.r),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 14.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,15 +261,15 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                   'إعدادات التطبيق',
                   style: TextStyles.bold.copyWith(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 16.sp,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4.h),
                 Text(
                   'خصص تجربتك في التطبيق',
                   style: TextStyles.medium.copyWith(
                     color: Colors.white.withOpacity(0.8),
-                    fontSize: 14,
+                    fontSize: 13.sp,
                   ),
                 ),
               ],
@@ -281,12 +282,12 @@ class _SettingsViewState extends ConsumerState<SettingsView>
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12, top: 8),
+      padding: EdgeInsets.only(bottom: 10.h, top: 6.h),
       child: Text(
         title,
         style: TextStyles.mediumBold.copyWith(
           color: AppColors.secondaryColor,
-          fontSize: 16,
+          fontSize: 15.sp,
         ),
       ),
     );
@@ -302,29 +303,29 @@ class _SettingsViewState extends ConsumerState<SettingsView>
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: CShadow.MD,
         border: Border.all(color: AppColors.secondaryColor.withOpacity(0.1)),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           onTap: () => onChanged(!value),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(14.r),
             child: Row(
               children: [
                 Container(
-                  width: 50,
-                  height: 50,
+                  width: 44.r,
+                  height: 44.r,
                   decoration: BoxDecoration(
                     color: AppColors.secondaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
-                  child: Icon(icon, color: AppColors.secondaryColor, size: 24),
+                  child: Icon(icon, color: AppColors.secondaryColor, size: 22.r),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 14.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -333,15 +334,15 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                         title,
                         style: TextStyles.mediumBold.copyWith(
                           color: AppColors.secondaryColor,
-                          fontSize: 16,
+                          fontSize: 15.sp,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 2.h),
                       Text(
                         subtitle,
                         style: TextStyles.regular.copyWith(
                           color: Colors.grey[600],
-                          fontSize: 14,
+                          fontSize: 12.sp,
                         ),
                       ),
                     ],
@@ -373,27 +374,27 @@ class _SettingsViewState extends ConsumerState<SettingsView>
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: CShadow.MD,
         border: Border.all(color: AppColors.secondaryColor.withOpacity(0.1)),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(16.r),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               children: [
                 Container(
-                  width: 50,
-                  height: 50,
+                  width: 44.r,
+                  height: 44.r,
                   decoration: BoxDecoration(
                     color: AppColors.secondaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
-                  child: Icon(icon, color: AppColors.secondaryColor, size: 24),
+                  child: Icon(icon, color: AppColors.secondaryColor, size: 22.r),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 14.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -402,14 +403,14 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                         title,
                         style: TextStyles.mediumBold.copyWith(
                           color: AppColors.secondaryColor,
-                          fontSize: 16,
+                          fontSize: 15.sp,
                         ),
                       ),
                       Text(
                         subtitle,
                         style: TextStyles.regular.copyWith(
                           color: Colors.grey[600],
-                          fontSize: 14,
+                          fontSize: 12.sp,
                         ),
                       ),
                     ],
@@ -417,7 +418,7 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 14.h),
             SliderTheme(
               data: SliderTheme.of(context).copyWith(
                 activeTrackColor: AppColors.secondaryColor,
@@ -425,8 +426,8 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                 thumbColor: AppColors.secondaryColor,
                 overlayColor: AppColors.secondaryColor.withOpacity(0.1),
                 trackHeight: 4,
-                thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
-                overlayShape: const RoundSliderOverlayShape(overlayRadius: 16),
+                thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8.r),
+                overlayShape: RoundSliderOverlayShape(overlayRadius: 16.r),
               ),
               child: Slider(
                 value: value,
@@ -443,14 +444,14 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                   'صغير',
                   style: TextStyles.regular.copyWith(
                     color: Colors.grey[600],
-                    fontSize: 12,
+                    fontSize: 12.sp,
                   ),
                 ),
                 Text(
                   'كبير',
                   style: TextStyles.regular.copyWith(
                     color: Colors.grey[600],
-                    fontSize: 12,
+                    fontSize: 12.sp,
                   ),
                 ),
               ],
@@ -473,29 +474,29 @@ class _SettingsViewState extends ConsumerState<SettingsView>
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: CShadow.MD,
         border: Border.all(color: tileColor.withOpacity(0.1)),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(14.r),
             child: Row(
               children: [
                 Container(
-                  width: 50,
-                  height: 50,
+                  width: 44.r,
+                  height: 44.r,
                   decoration: BoxDecoration(
                     color: tileColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
-                  child: Icon(icon, color: tileColor, size: 24),
+                  child: Icon(icon, color: tileColor, size: 22.r),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 14.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -504,15 +505,15 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                         title,
                         style: TextStyles.mediumBold.copyWith(
                           color: AppColors.secondaryColor,
-                          fontSize: 16,
+                          fontSize: 15.sp,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 2.h),
                       Text(
                         subtitle,
                         style: TextStyles.regular.copyWith(
                           color: Colors.grey[600],
-                          fontSize: 14,
+                          fontSize: 12.sp,
                         ),
                       ),
                     ],
@@ -521,7 +522,7 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                 Icon(
                   Icons.arrow_forward_ios,
                   color: AppColors.secondaryColor.withOpacity(0.6),
-                  size: 16,
+                  size: 15.r,
                 ),
               ],
             ),
@@ -543,29 +544,29 @@ class _SettingsViewState extends ConsumerState<SettingsView>
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: CShadow.MD,
         border: Border.all(color: tileColor.withOpacity(0.1)),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(14.r),
             child: Row(
               children: [
                 Container(
-                  width: 50,
-                  height: 50,
+                  width: 44.r,
+                  height: 44.r,
                   decoration: BoxDecoration(
                     color: tileColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
-                  child: Icon(icon, color: tileColor, size: 24),
+                  child: Icon(icon, color: tileColor, size: 22.r),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 14.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -574,15 +575,15 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                         title,
                         style: TextStyles.mediumBold.copyWith(
                           color: AppColors.secondaryColor,
-                          fontSize: 16,
+                          fontSize: 15.sp,
                         ),
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 2.h),
                       Text(
                         subtitle,
                         style: TextStyles.regular.copyWith(
                           color: Colors.grey[600],
-                          fontSize: 14,
+                          fontSize: 12.sp,
                         ),
                       ),
                     ],
@@ -592,7 +593,7 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                   Icon(
                     Icons.arrow_forward_ios,
                     color: AppColors.secondaryColor.withOpacity(0.6),
-                    size: 16,
+                    size: 15.r,
                   ),
               ],
             ),
@@ -609,28 +610,31 @@ class _SettingsViewState extends ConsumerState<SettingsView>
         return AlertDialog(
           backgroundColor: Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(20.r),
           ),
           title: Row(
             children: [
               Container(
-                width: 40,
-                height: 40,
+                width: 36.r,
+                height: 36.r,
                 decoration: BoxDecoration(
                   color: AppColors.warring.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(10.r),
                 ),
                 child: Icon(
                   Icons.warning_amber,
                   color: AppColors.warring,
-                  size: 20,
+                  size: 20.r,
                 ),
               ),
-              const SizedBox(width: 12),
-              Text(
-                'تحديث البيانات',
-                style: TextStyles.mediumBold.copyWith(
-                  color: AppColors.secondaryColor,
+              SizedBox(width: 10.w),
+              Expanded(
+                child: Text(
+                  'تحديث البيانات',
+                  style: TextStyles.mediumBold.copyWith(
+                    color: AppColors.secondaryColor,
+                    fontSize: 16.sp,
+                  ),
                 ),
               ),
             ],
@@ -640,6 +644,7 @@ class _SettingsViewState extends ConsumerState<SettingsView>
             style: TextStyles.regular.copyWith(
               color: Colors.grey[700],
               height: 1.4,
+              fontSize: 13.sp,
             ),
           ),
           actions: [
@@ -659,7 +664,7 @@ class _SettingsViewState extends ConsumerState<SettingsView>
                 backgroundColor: AppColors.warring,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+                  borderRadius: BorderRadius.circular(8.r),
                 ),
               ),
               child: Text(

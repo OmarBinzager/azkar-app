@@ -1,9 +1,10 @@
-import 'package:isar/isar.dart';
+import 'package:isar_community/isar.dart';
+
 part 'content.g.dart';
 
 @Collection()
 class Content {
-  final int id;
+  final Id id;
   late String text;
   bool isLiked = false;
 

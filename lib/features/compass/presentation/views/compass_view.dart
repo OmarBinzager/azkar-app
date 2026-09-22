@@ -1,13 +1,15 @@
 import 'dart:async';
 import 'dart:math' show atan2, cos, pi, sin, tan;
+import 'dart:math' as math;
+import 'package:flutter/material.dart';
+import 'package:flutter_compass/flutter_compass.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:new_azkar_app/core/constants/app_colors.dart';
 import 'package:new_azkar_app/core/constants/fixed_assets.dart';
 import 'package:new_azkar_app/core/constants/layout_constants.dart';
 import 'package:new_azkar_app/core/constants/shadows.dart';
 import 'package:new_azkar_app/core/constants/text_styles.dart';
-import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:flutter_compass/flutter_compass.dart';
 
 class CompassView extends StatefulWidget {
   const CompassView({super.key});
@@ -17,80 +19,61 @@ class CompassView extends StatefulWidget {
 }
 
 class _CompassViewState extends State<CompassView>
-    with TickerProviderStateMixin {
-  double? _qiblaDirection; // اتجاه القبلة بالدرجات
-  double? _heading; // اتجاه الجهاز (البوصلة)
+    with SingleTickerProviderStateMixin {
+  double? _heading;
+  double? _qiblaDirection;
+  Position? _userPosition;
   bool _isLoading = true;
   String? _errorMessage;
-  Position? _userPosition;
-
-  StreamSubscription<CompassEvent>? _compassSubscription;
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
+
+  // Kaaba coordinates (Mecca)
+  static const double kaabaLatitude = 21.4225;
+  static const double kaabaLongitude = 39.8262;
 
   @override
   void initState() {
     super.initState();
-    _initializeAnimations();
-    _getUserLocation();
     _initializeCompass();
+    _initializeAnimation();
   }
 
-  void _initializeAnimations() {
+  void _initializeAnimation() {
     _pulseController = AnimationController(
       duration: const Duration(seconds: 2),
       vsync: this,
-    );
-    _pulseAnimation = Tween<double>(begin: 0.8, end: 1.2).animate(
+    )..repeat(reverse: true);
+
+    _pulseAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
-    _pulseController.repeat(reverse: true);
-  }
-
-  void _initializeCompass() {
-    _compassSubscription = FlutterCompass.events?.listen(
-      (event) {
-        if (!mounted) return;
-        setState(() {
-          _heading = event.heading;
-          if (_isLoading && _qiblaDirection != null) {
-            _isLoading = false;
-          }
-        });
-      },
-      onError: (error) {
-        if (!mounted) return;
-        setState(() {
-          _errorMessage = 'خطأ في البوصلة: $error';
-          _isLoading = false;
-        });
-      },
-    );
-
-    // Handle case where compass events is null
-    if (FlutterCompass.events == null) {
-      if (!mounted) return;
-      setState(() {
-        _errorMessage = 'البوصلة غير متوفرة على هذا الجهاز';
-        _isLoading = false;
-      });
-    }
   }
 
   @override
   void dispose() {
-    _compassSubscription?.cancel();
     _pulseController.dispose();
     super.dispose();
+  }
+
+  Future<void> _initializeCompass() async {
+    try {
+      await _getUserLocation();
+      _listenToCompass();
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'حدث خطأ أثناء تهيئة البوصلة: $e';
+        _isLoading = false;
+      });
+    }
   }
 
   Future<void> _getUserLocation() async {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        if (!mounted) return;
         setState(() {
-          _errorMessage = 'خدمة الموقع غير مفعلة';
+          _errorMessage = 'خدمة الموقع غير مفعلة. يرجى تفعيلها للمتابعة.';
           _isLoading = false;
         });
         return;
@@ -99,83 +82,108 @@ class _CompassViewState extends State<CompassView>
       LocationPermission permission = await Geolocator.checkPermission();
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          setState(() {
+            _errorMessage = 'تم رفض إذن الوصول للموقع.';
+            _isLoading = false;
+          });
+          return;
+        }
       }
 
       if (permission == LocationPermission.deniedForever) {
-        if (!mounted) return;
         setState(() {
-          _errorMessage = 'تم رفض إذن الموقع بشكل دائم';
+          _errorMessage =
+              'تم رفض إذن الموقع بشكل دائم. يرجى تفعيله من الإعدادات.';
           _isLoading = false;
         });
         return;
       }
 
-      if (permission == LocationPermission.whileInUse ||
-          permission == LocationPermission.always) {
-        Position position = await Geolocator.getCurrentPosition();
-        if (!mounted) return;
-        setState(() {
-          _userPosition = position;
-        });
-        _calculateQiblaDirection(position.latitude, position.longitude);
-      } else {
-        if (!mounted) return;
-        setState(() {
-          _errorMessage = 'لم يتم منح إذن الموقع';
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      if (!mounted) return;
+      Position position = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+        ),
+      );
+
       setState(() {
-        _errorMessage = 'خطأ في الحصول على الموقع: $e';
+        _userPosition = position;
+        _qiblaDirection = _calculateQiblaDirection(
+          position.latitude,
+          position.longitude,
+        );
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'فشل في الحصول على الموقع: $e';
         _isLoading = false;
       });
     }
   }
 
-  void _calculateQiblaDirection(double lat, double lng) {
-    const kaabaLat = 21.4225;
-    const kaabaLng = 39.8262;
-
-    double latRad = lat * pi / 180;
-    double lngRad = lng * pi / 180;
-    double kaabaLatRad = kaabaLat * pi / 180;
-    double kaabaLngRad = kaabaLng * pi / 180;
-
-    double deltaLng = kaabaLngRad - lngRad;
-
-    double x = sin(deltaLng);
-    double y = cos(latRad) * tan(kaabaLatRad) - sin(latRad) * cos(deltaLng);
-    double qiblaDir = atan2(x, y) * 180 / pi;
-
-    if (!mounted) return;
-    setState(() {
-      _qiblaDirection = (qiblaDir + 360) % 360;
-      if (_heading != null) {
-        _isLoading = false;
-      }
-    });
+  void _listenToCompass() {
+    FlutterCompass.events?.listen(
+      (CompassEvent event) {
+        if (mounted) {
+          setState(() {
+            _heading = event.heading;
+            _isLoading = false;
+          });
+        }
+      },
+      onError: (error) {
+        if (mounted) {
+          setState(() {
+            _errorMessage = 'البوصلة غير مدعومة على هذا الجهاز';
+            _isLoading = false;
+          });
+        }
+      },
+    );
   }
 
-  String _getDirectionName(double degrees) {
-    if (degrees >= 337.5 || degrees < 22.5) return 'شمال';
-    if (degrees >= 22.5 && degrees < 67.5) return 'شمال شرق';
-    if (degrees >= 67.5 && degrees < 112.5) return 'شرق';
-    if (degrees >= 112.5 && degrees < 157.5) return 'جنوب شرق';
-    if (degrees >= 157.5 && degrees < 202.5) return 'جنوب';
-    if (degrees >= 202.5 && degrees < 247.5) return 'جنوب غرب';
-    if (degrees >= 247.5 && degrees < 292.5) return 'غرب';
-    if (degrees >= 292.5 && degrees < 337.5) return 'شمال غرب';
-    return 'شمال';
+  double _calculateQiblaDirection(double latitude, double longitude) {
+    double lat1 = latitude * (math.pi / 180.0);
+    double lon1 = longitude * (math.pi / 180.0);
+    double lat2 = kaabaLatitude * (math.pi / 180.0);
+    double lon2 = kaabaLongitude * (math.pi / 180.0);
+
+    double dLon = lon2 - lon1;
+
+    double y = math.sin(dLon) * math.cos(lat2);
+    double x =
+        math.cos(lat1) * math.sin(lat2) -
+        math.sin(lat1) * math.cos(lat2) * math.cos(dLon);
+
+    double qibla = math.atan2(y, x);
+    qibla = qibla * (180.0 / math.pi);
+    qibla = (qibla + 360.0) % 360.0;
+
+    return qibla;
+  }
+
+  double? _calculateCompassAngle() {
+    if (_heading == null || _qiblaDirection == null) return null;
+
+    double direction = _qiblaDirection! - _heading!;
+    return direction * (math.pi / 180.0) * -1;
+  }
+
+  String _getDirectionName(double degree) {
+    if (degree >= 337.5 || degree < 22.5) return 'شمال';
+    if (degree >= 22.5 && degree < 67.5) return 'شمال شرق';
+    if (degree >= 67.5 && degree < 112.5) return 'شرق';
+    if (degree >= 112.5 && degree < 157.5) return 'جنوب شرق';
+    if (degree >= 157.5 && degree < 202.5) return 'جنوب';
+    if (degree >= 202.5 && degree < 247.5) return 'جنوب غرب';
+    if (degree >= 247.5 && degree < 292.5) return 'غرب';
+    if (degree >= 292.5 && degree < 337.5) return 'شمال غرب';
+    return 'غير معروف';
   }
 
   @override
   Widget build(BuildContext context) {
-    double? angle;
-    if (_qiblaDirection != null && _heading != null) {
-      angle = (_qiblaDirection! - _heading!) * (pi / 180);
-    }
+    final angle = _calculateCompassAngle();
 
     return Scaffold(
       backgroundColor: AppColors.fourthColor,
@@ -185,21 +193,21 @@ class _CompassViewState extends State<CompassView>
         elevation: 0,
         title: Text(
           'اتجاه القبلة',
-          style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 22),
+          style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 20.sp),
         ),
         centerTitle: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20.r)),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh, color: AppColors.gold),
+            icon: Icon(Icons.refresh, color: AppColors.gold, size: 22.r),
             onPressed: () {
               setState(() {
                 _isLoading = true;
                 _errorMessage = null;
               });
-              _getUserLocation();
+              _initializeCompass();
             },
           ),
         ],
@@ -230,28 +238,38 @@ class _CompassViewState extends State<CompassView>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 80,
-            height: 80,
+            width: 70.r,
+            height: 70.r,
             decoration: BoxDecoration(
               color: AppColors.secondaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(20.r),
             ),
             child: Icon(
               Icons.compass_calibration,
               color: AppColors.secondaryColor,
-              size: 40,
+              size: 36.r,
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondaryColor),
+          ),
+          SizedBox(height: 16.h),
           Text(
             'جاري تحديد اتجاه القبلة...',
             style: TextStyles.mediumBold.copyWith(
               color: AppColors.secondaryColor,
-              fontSize: 16,
+              fontSize: 15.sp,
             ),
           ),
-          const SizedBox(height: 10),
-          CircularProgressIndicator(color: AppColors.secondaryColor),
+          SizedBox(height: 8.h),
+          Text(
+            'يرجى التأكد من تفعيل خدمة الموقع',
+            style: TextStyles.regular.copyWith(
+              color: Colors.grey[600],
+              fontSize: 13.sp,
+            ),
+          ),
         ],
       ),
     );
@@ -260,56 +278,57 @@ class _CompassViewState extends State<CompassView>
   Widget _buildErrorState() {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: EdgeInsets.all(LayoutConstants.rScreenPadding),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 80,
-              height: 80,
+              width: 70.r,
+              height: 70.r,
               decoration: BoxDecoration(
-                color: Colors.red.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(20),
+                color: AppColors.error.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(20.r),
               ),
-              child: Icon(Icons.error_outline, color: Colors.red, size: 40),
+              child: Icon(
+                Icons.error_outline,
+                color: AppColors.error,
+                size: 36.r,
+              ),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20.h),
             Text(
-              'خطأ في تحديد الاتجاه',
+              'حدث خطأ',
               style: TextStyles.bold.copyWith(
-                color: AppColors.secondaryColor,
-                fontSize: 18,
+                color: AppColors.error,
+                fontSize: 18.sp,
               ),
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 8.h),
             Text(
-              _errorMessage!,
+              _errorMessage ?? 'خطأ غير معروف',
               style: TextStyles.medium.copyWith(
                 color: Colors.grey[600],
-                fontSize: 14,
+                fontSize: 13.sp,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 24.h),
             ElevatedButton.icon(
               onPressed: () {
                 setState(() {
                   _isLoading = true;
                   _errorMessage = null;
                 });
-                _getUserLocation();
+                _initializeCompass();
               },
-              icon: Icon(Icons.refresh),
-              label: Text('إعادة المحاولة'),
+              icon: Icon(Icons.refresh, size: 18.r),
+              label: Text('إعادة المحاولة', style: TextStyle(fontSize: 14.sp)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.secondaryColor,
-                foregroundColor: AppColors.gold,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 12,
-                ),
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 10.h),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                 ),
               ),
             ),
@@ -325,32 +344,32 @@ class _CompassViewState extends State<CompassView>
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 80,
-            height: 80,
+            width: 70.r,
+            height: 70.r,
             decoration: BoxDecoration(
-              color: AppColors.secondaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(20),
+              color: AppColors.gold.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(20.r),
             ),
             child: Icon(
-              Icons.compass_calibration,
-              color: AppColors.secondaryColor,
-              size: 40,
+              Icons.explore_off,
+              color: AppColors.gold,
+              size: 36.r,
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
           Text(
             'لا يمكن تحديد الاتجاه',
             style: TextStyles.bold.copyWith(
               color: AppColors.secondaryColor,
-              fontSize: 18,
+              fontSize: 18.sp,
             ),
           ),
-          const SizedBox(height: 10),
+          SizedBox(height: 8.h),
           Text(
             'تأكد من تفعيل البوصلة والموقع',
             style: TextStyles.medium.copyWith(
               color: Colors.grey[600],
-              fontSize: 14,
+              fontSize: 13.sp,
             ),
           ),
         ],
@@ -360,14 +379,15 @@ class _CompassViewState extends State<CompassView>
 
   Widget _buildCompassView(double angle) {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(LayoutConstants.screenPadding),
+      padding: EdgeInsets.all(LayoutConstants.rScreenPadding),
       child: Column(
         children: [
           _buildHeaderCard(),
-          const SizedBox(height: 30),
+          SizedBox(height: 20.h),
           _buildCompassCard(angle),
-          const SizedBox(height: 30),
+          SizedBox(height: 20.h),
           _buildInfoCards(),
+          SizedBox(height: 24.h),
         ],
       ),
     );
@@ -376,7 +396,7 @@ class _CompassViewState extends State<CompassView>
   Widget _buildHeaderCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -386,25 +406,25 @@ class _CompassViewState extends State<CompassView>
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         boxShadow: CShadow.LG,
       ),
       child: Row(
         children: [
           Container(
-            width: 60,
-            height: 60,
+            width: 52.r,
+            height: 52.r,
             decoration: BoxDecoration(
               color: AppColors.gold.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(15.r),
             ),
             child: Icon(
               Icons.compass_calibration,
               color: AppColors.gold,
-              size: 30,
+              size: 26.r,
             ),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 14.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -413,15 +433,15 @@ class _CompassViewState extends State<CompassView>
                   'اتجاه القبلة',
                   style: TextStyles.bold.copyWith(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 17.sp,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4.h),
                 Text(
                   'تحديد اتجاه الكعبة المشرفة',
                   style: TextStyles.medium.copyWith(
                     color: Colors.white.withOpacity(0.8),
-                    fontSize: 14,
+                    fontSize: 13.sp,
                   ),
                 ),
               ],
@@ -435,21 +455,21 @@ class _CompassViewState extends State<CompassView>
   Widget _buildCompassCard(double angle) {
     return Container(
       width: double.infinity,
-      height: 300,
+      height: 280.h,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         boxShadow: CShadow.MD,
       ),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          // Background compass
+          // Background compass circle
           Container(
-            width: 280,
-            height: 280,
+            width: 250.r,
+            height: 250.r,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(140),
+              borderRadius: BorderRadius.circular(125.r),
               border: Border.all(
                 color: AppColors.secondaryColor.withOpacity(0.2),
                 width: 2,
@@ -465,13 +485,13 @@ class _CompassViewState extends State<CompassView>
                 child: Transform.scale(
                   scale: _pulseAnimation.value,
                   child: Container(
-                    width: 250,
-                    height: 250,
+                    width: 220.r,
+                    height: 220.r,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(125),
+                      borderRadius: BorderRadius.circular(110.r),
                     ),
                     child: ClipRRect(
-                      borderRadius: BorderRadius.circular(125),
+                      borderRadius: BorderRadius.circular(110.r),
                       child: Image.asset(
                         PngAssets.compass,
                         fit: BoxFit.contain,
@@ -479,12 +499,12 @@ class _CompassViewState extends State<CompassView>
                           return Container(
                             decoration: BoxDecoration(
                               color: AppColors.secondaryColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(125),
+                              borderRadius: BorderRadius.circular(110.r),
                             ),
                             child: Icon(
                               Icons.compass_calibration,
                               color: AppColors.secondaryColor,
-                              size: 100,
+                              size: 80.r,
                             ),
                           );
                         },
@@ -497,11 +517,11 @@ class _CompassViewState extends State<CompassView>
           ),
           // Center indicator
           Container(
-            width: 20,
-            height: 20,
+            width: 18.r,
+            height: 18.r,
             decoration: BoxDecoration(
               color: AppColors.gold,
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(9.r),
               boxShadow: [
                 BoxShadow(
                   color: AppColors.gold.withOpacity(0.3),
@@ -526,7 +546,7 @@ class _CompassViewState extends State<CompassView>
           subtitle: _getDirectionName(_qiblaDirection ?? 0),
           color: AppColors.secondaryColor,
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 10.h),
         _buildInfoCard(
           icon: Icons.compass_calibration,
           title: 'اتجاه الجهاز',
@@ -535,7 +555,7 @@ class _CompassViewState extends State<CompassView>
           color: AppColors.primaryColor,
         ),
         if (_userPosition != null) ...[
-          const SizedBox(height: 12),
+          SizedBox(height: 10.h),
           _buildInfoCard(
             icon: Icons.location_on,
             title: 'موقعك الحالي',
@@ -557,25 +577,25 @@ class _CompassViewState extends State<CompassView>
     required Color color,
   }) {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.all(14.r),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: CShadow.SM,
         border: Border.all(color: color.withOpacity(0.1)),
       ),
       child: Row(
         children: [
           Container(
-            width: 50,
-            height: 50,
+            width: 46.r,
+            height: 46.r,
             decoration: BoxDecoration(
               color: color.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(12.r),
             ),
-            child: Icon(icon, color: color, size: 24),
+            child: Icon(icon, color: color, size: 22.r),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 14.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -584,19 +604,19 @@ class _CompassViewState extends State<CompassView>
                   title,
                   style: TextStyles.mediumBold.copyWith(
                     color: AppColors.secondaryColor,
-                    fontSize: 16,
+                    fontSize: 14.sp,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 2.h),
                 Text(
                   value,
-                  style: TextStyles.bold.copyWith(color: color, fontSize: 18),
+                  style: TextStyles.bold.copyWith(color: color, fontSize: 16.sp),
                 ),
                 Text(
                   subtitle,
                   style: TextStyles.regular.copyWith(
                     color: Colors.grey[600],
-                    fontSize: 12,
+                    fontSize: 12.sp,
                   ),
                 ),
               ],

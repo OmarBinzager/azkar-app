@@ -1,12 +1,11 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:new_azkar_app/core/constants/app_colors.dart';
 import 'package:new_azkar_app/core/constants/layout_constants.dart';
 import 'package:new_azkar_app/core/constants/routes.dart';
 import 'package:new_azkar_app/core/constants/shadows.dart';
 import 'package:new_azkar_app/core/constants/text_styles.dart';
-import 'package:new_azkar_app/core/widgets/app_tile.dart';
-import 'package:new_azkar_app/features/public/models/header_model.dart';
-import 'package:new_azkar_app/features/public/providers/headers_provider.dart';
+import 'package:new_azkar_app/core/services/isar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,7 +15,6 @@ class FridayNightView extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final headers = ref.read(headersProvider);
     return Scaffold(
       backgroundColor: AppColors.fourthColor,
       appBar: AppBar(
@@ -25,21 +23,20 @@ class FridayNightView extends ConsumerWidget {
         elevation: 0,
         title: Text(
           'ليلة الجمعة ويومها',
-          style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 22),
+          style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 20.sp),
         ),
         centerTitle: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20.r)),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(LayoutConstants.screenPadding),
+        padding: EdgeInsets.all(LayoutConstants.rScreenPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeaderCard(),
-            const SizedBox(height: 24),
-            // _buildFridayCard(context, headers[126]),
+            SizedBox(height: 20.h),
             _buildFriDayCard(
               icon: FontAwesomeIcons.moon,
               title: 'ما يطلب ليلة الجمعة',
@@ -48,14 +45,10 @@ class FridayNightView extends ConsumerWidget {
               onTap:
                   () => context.pushNamed(
                     Routes.headersViewer,
-                    extra: HeaderModel(
-                      label: 'ما يطلب ليلة الجمعة',
-                      fromHeader: 152,
-                      toHeader: 155,
-                    ),
+                    extra: IsarHelper.getFridayNightCategory(),
                   ),
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 14.h),
             _buildFriDayCard(
               icon: FontAwesomeIcons.sun,
               title: 'ما يطلب يوم الجمعة',
@@ -64,84 +57,11 @@ class FridayNightView extends ConsumerWidget {
               onTap:
                   () => context.pushNamed(
                     Routes.headersViewer,
-                    extra: HeaderModel(
-                      label: 'ما يطلب يوم الجمعة',
-                      fromHeader: 156,
-                      toHeader: 162,
-                    ),
+                    extra: IsarHelper.getFridayDayCategory(),
                   ),
             ),
-            // const SizedBox(height: 32),
+            SizedBox(height: 24.h),
           ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildMainCard({
-    required IconData icon,
-    required String title,
-    required String subtitle,
-    required Color color,
-    required VoidCallback onTap,
-  }) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 12),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: CShadow.MD,
-        border: Border.all(color: color.withOpacity(0.1)),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: color.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Icon(icon, color: color, size: 24),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        title,
-                        style: TextStyles.mediumBold.copyWith(
-                          color: AppColors.secondaryColor,
-                          fontSize: 16,
-                        ),
-                      ),
-                      const SizedBox(height: 4),
-                      Text(
-                        subtitle,
-                        style: TextStyles.regular.copyWith(
-                          color: Colors.grey[600],
-                          fontSize: 14,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Icon(
-                  Icons.arrow_forward_ios,
-                  color: AppColors.secondaryColor.withOpacity(0.6),
-                  size: 16,
-                ),
-              ],
-            ),
-          ),
         ),
       ),
     );
@@ -150,7 +70,7 @@ class FridayNightView extends ConsumerWidget {
   Widget _buildHeaderCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -160,21 +80,21 @@ class FridayNightView extends ConsumerWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         boxShadow: CShadow.LG,
       ),
       child: Row(
         children: [
           Container(
-            width: 60,
-            height: 60,
+            width: 52.r,
+            height: 52.r,
             decoration: BoxDecoration(
               color: AppColors.gold.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(15.r),
             ),
-            child: Icon(Icons.weekend, color: AppColors.gold, size: 30),
+            child: Icon(Icons.weekend, color: AppColors.gold, size: 26.r),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 14.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -183,15 +103,15 @@ class FridayNightView extends ConsumerWidget {
                   'ليلة الجمعة ويومها',
                   style: TextStyles.bold.copyWith(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 17.sp,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4.h),
                 Text(
                   'أدعية وأذكار خاصة بليلة الجمعة ويومها',
                   style: TextStyles.medium.copyWith(
                     color: Colors.white.withOpacity(0.8),
-                    fontSize: 14,
+                    fontSize: 13.sp,
                   ),
                 ),
               ],
@@ -213,67 +133,71 @@ class FridayNightView extends ConsumerWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: CShadow.MD,
         border: Border.all(color: color.withOpacity(0.1)),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.all(20),
+            padding: EdgeInsets.all(16.r),
             child: Column(
               children: [
                 Container(
-                  width: 80,
-                  height: 80,
+                  width: 68.r,
+                  height: 68.r,
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(18.r),
                   ),
-                  child: Icon(icon, color: color, size: 40),
+                  child: Icon(icon, color: color, size: 34.r),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 12.h),
                 Text(
                   title,
                   style: TextStyles.bold.copyWith(
                     color: AppColors.secondaryColor,
-                    fontSize: 18,
+                    fontSize: 16.sp,
                   ),
                   textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 6.h),
                 Text(
                   subtitle,
                   style: TextStyles.medium.copyWith(
                     color: Colors.grey[600],
-                    fontSize: 14,
-                    height: 1.4,
+                    fontSize: 13.sp,
+                    height: 1.3,
                   ),
                   textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 12.h),
                 Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 8,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 14.w,
+                    vertical: 6.h,
                   ),
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(20.r),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.arrow_forward, color: color, size: 16),
-                      const SizedBox(width: 8),
+                      Icon(Icons.arrow_forward, color: color, size: 14.r),
+                      SizedBox(width: 6.w),
                       Text(
                         'عرض المحتوى',
                         style: TextStyles.medium.copyWith(
                           color: color,
-                          fontSize: 14,
+                          fontSize: 13.sp,
                         ),
                       ),
                     ],

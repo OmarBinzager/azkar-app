@@ -25,6 +25,9 @@ class Routes {
   static const search = 'search';
   static const settings = 'settings';
   static const downloads = 'downloads';
+  static const pdfContentDetails = 'pdfContentDetails';
+  static const dalailKhairat = 'dalailKhairat';
+  static const audioPlayer = 'audioPlayer';
 }
 
 final routes = [

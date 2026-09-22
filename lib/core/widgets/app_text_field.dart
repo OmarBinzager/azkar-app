@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:new_azkar_app/core/constants/text_styles.dart';
 import 'package:new_azkar_app/core/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
@@ -73,7 +74,7 @@ class _AppTextFieldState extends State<AppTextField> {
           focusNode: widget.focusNode,
           decoration: InputDecoration(
             suffix: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10),
+              padding: EdgeInsets.symmetric(horizontal: 10.w),
               child: widget.suffix,
             ),
             fillColor: widget.fillColor ?? Colors.white,
@@ -82,22 +83,22 @@ class _AppTextFieldState extends State<AppTextField> {
             hintStyle: TextStyles.medium.copyWith(
               color: AppColors.neutral[400],
             ),
-            contentPadding: const EdgeInsetsDirectional.only(
-              top: 15,
-              start: 10,
-              bottom: 15,
+            contentPadding: EdgeInsetsDirectional.only(
+              top: 12.h,
+              start: 10.w,
+              bottom: 12.h,
             ),
             prefixIcon:
                 widget.icon == null
                     ? null
                     : Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: 8.0,
-                        horizontal: 15,
+                      padding: EdgeInsets.symmetric(
+                        vertical: 8.h,
+                        horizontal: 12.w,
                       ),
                       child: SvgPicture.asset(widget.icon!),
                     ),
-            prefixIconConstraints: const BoxConstraints(maxWidth: 60),
+            prefixIconConstraints: BoxConstraints(maxWidth: 60.w),
             suffixIcon:
                 widget.obscureText
                     ? GestureDetector(
@@ -115,20 +116,20 @@ class _AppTextFieldState extends State<AppTextField> {
                     )
                     : null,
             enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10.r),
               borderSide: BorderSide(color: AppColors.neutral[300]!),
             ),
             border: OutlineInputBorder(
               borderSide: BorderSide(color: AppColors.neutral[300]!),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10.r),
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(color: context.theme.colorScheme.primary),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10.r),
             ),
             errorBorder: OutlineInputBorder(
               borderSide: const BorderSide(color: Colors.red),
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: BorderRadius.circular(10.r),
             ),
           ),
           inputFormatters: widget.textInputFormatters,

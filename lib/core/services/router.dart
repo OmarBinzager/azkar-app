@@ -19,11 +19,14 @@ import 'package:new_azkar_app/features/public/presentation/views/contents_view.d
 import 'package:new_azkar_app/features/public/presentation/views/headers_viewer.dart';
 import 'package:new_azkar_app/features/public/presentation/views/headers_of_headers_viewer.dart';
 import 'package:new_azkar_app/features/settings/presentation/views/downloads_view.dart';
+import 'package:new_azkar_app/features/settings/presentation/views/settings_view.dart';
 import 'package:new_azkar_app/features/splash/views/splash_view.dart';
 import 'package:new_azkar_app/features/the_supplications/presentation/views/the_supplications_view.dart';
-import 'package:new_azkar_app/features/tips_and_etiquette/presentation/views/tips_and_etiquette_view.dart';
-import 'package:new_azkar_app/features/settings/presentation/views/settings_view.dart';
+import 'package:new_azkar_app/features/public/presentation/views/pdf_content_details_view.dart';
+import 'package:new_azkar_app/features/dalail_khairat/presentation/views/dalail_khairat_view.dart';
+import 'package:new_azkar_app/features/public/presentation/views/audio_player_view.dart';
 import 'package:go_router/go_router.dart';
+import 'package:new_azkar_app/features/tips_and_etiquette/presentation/views/tips_and_etiquette_view.dart';
 
 final router = GoRouter(
   initialLocation: '/',
@@ -64,6 +67,33 @@ final router = GoRouter(
       builder:
           (context, state) =>
               ContentDetailsView(content: state.extra as Content),
+    ),
+    GoRoute(
+      name: Routes.pdfContentDetails,
+      path: '/pdfContentDetails',
+      builder: (context, state) {
+        if (state.extra is PdfContentDetailsParams) {
+          return PdfContentDetailsView(
+            params: state.extra as PdfContentDetailsParams,
+          );
+        } else if (state.extra is Content) {
+          final content = state.extra as Content;
+          return PdfContentDetailsView(
+            params: PdfContentDetailsParams(
+              content: content,
+              title: content.text,
+              voiceFile: content.voiceFile,
+              isLiked: content.isLiked,
+            ),
+          );
+        } else {
+          return PdfContentDetailsView(
+            params: PdfContentDetailsParams(
+              title: 'مستند PDF',
+            ),
+          );
+        }
+      },
     ),
     GoRoute(
       name: Routes.headersViewer,
@@ -129,6 +159,16 @@ final router = GoRouter(
       name: Routes.downloads,
       path: '/downloads',
       builder: (context, state) => const DownloadsView(),
+    ),
+    GoRoute(
+      name: Routes.dalailKhairat,
+      path: '/dalailKhairat',
+      builder: (context, state) => const DalailKhairatView(),
+    ),
+    GoRoute(
+      name: Routes.audioPlayer,
+      path: '/audioPlayer',
+      builder: (context, state) => const AudioPlayerView(),
     ),
   ],
 );

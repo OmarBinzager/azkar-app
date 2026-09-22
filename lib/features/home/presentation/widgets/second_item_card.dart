@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:new_azkar_app/core/constants/app_colors.dart';
 import 'package:new_azkar_app/core/constants/text_styles.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +9,8 @@ class SecondItemCard extends StatelessWidget {
 
   const SecondItemCard({
     super.key,
-    required this.label,this.onTap,
+    required this.label,
+    this.onTap,
   });
 
   @override
@@ -16,16 +18,22 @@ class SecondItemCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        height: 50,
-        width:  120,
+        height: 48.h,
+        width: 120.w,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(10)),
+          borderRadius: BorderRadius.all(Radius.circular(10.r)),
           color: AppColors.primaryColor,
           border: Border.all(color: AppColors.neutral.shade600, width: 1.5),
         ),
-        child: Center(child: Text(label, style: TextStyles.medium.copyWith(
-          color: AppColors.fourthColor
-        ))),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyles.medium.copyWith(color: AppColors.fourthColor),
+            textAlign: TextAlign.center,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
       ),
     );
   }

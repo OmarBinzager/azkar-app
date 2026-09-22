@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:new_azkar_app/core/constants/app_colors.dart';
 import 'package:new_azkar_app/core/constants/layout_constants.dart';
 import 'package:new_azkar_app/core/constants/routes.dart';
@@ -30,11 +31,11 @@ class ItemContent extends ConsumerWidget {
         context.pushNamed(Routes.contentDetails, extra: content);
       },
       child: Container(
-        margin: EdgeInsets.only(bottom: 10),
+        margin: EdgeInsets.only(bottom: 10.h),
         width: double.infinity,
-        padding: EdgeInsets.all(LayoutConstants.containerPadding),
+        padding: EdgeInsets.all(LayoutConstants.rContainerPadding),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(8.r),
           color: Colors.white,
         ),
         child: Column(
@@ -46,7 +47,7 @@ class ItemContent extends ConsumerWidget {
               maxLines: 3,
               overflow: TextOverflow.ellipsis,
             ),
-            const SizedBox(height: 10),
+            SizedBox(height: 10.h),
             StatefulBuilder(
               builder:
                   (context, setState) => Row(
@@ -55,7 +56,10 @@ class ItemContent extends ConsumerWidget {
                         visible: isHasMore,
                         child: Text(
                           'إضغط لقراءة المزيد',
-                          style: TextStyle(color: AppColors.warring.shade600),
+                          style: TextStyle(
+                            color: AppColors.warring.shade600,
+                            fontSize: 12.sp,
+                          ),
                         ),
                       ),
                       const Spacer(),
@@ -64,9 +68,10 @@ class ItemContent extends ConsumerWidget {
                         child: Icon(
                           Icons.copy_all_outlined,
                           color: AppColors.secondaryColor,
+                          size: 20.r,
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10.w),
                       content.isLiked
                           ? GestureDetector(
                             onTap: () async {
@@ -74,7 +79,7 @@ class ItemContent extends ConsumerWidget {
                               content.isLiked = false;
                               setState(() {});
                             },
-                            child: Icon(Icons.favorite, color: AppColors.error),
+                            child: Icon(Icons.favorite, color: AppColors.error, size: 20.r),
                           )
                           : GestureDetector(
                             onTap: () async {
@@ -85,14 +90,16 @@ class ItemContent extends ConsumerWidget {
                             child: Icon(
                               Icons.favorite_border,
                               color: AppColors.secondaryColor,
+                              size: 20.r,
                             ),
                           ),
-                      const SizedBox(width: 10),
+                      SizedBox(width: 10.w),
                       GestureDetector(
                         onTap: onShare,
                         child: Icon(
                           Icons.share,
                           color: AppColors.secondaryColor,
+                          size: 20.r,
                         ),
                       ),
                     ],

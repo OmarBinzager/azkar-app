@@ -1,36 +1,38 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:new_azkar_app/core/constants/text_styles.dart';
 import 'package:flutter/material.dart';
 
-class CustomAppBarForNew extends StatelessWidget implements PreferredSizeWidget{
+class CustomAppBarForNew extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-  const CustomAppBarForNew({super.key,required this.title});
+  const CustomAppBarForNew({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(12),
-      margin: const EdgeInsets.all(8),
+      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
+      margin: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
       decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(20)
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20.r),
       ),
       child: Row(
         children: [
-          BackButton(),
+          const BackButton(),
           Expanded(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(title, style: TextStyles.bold),
-              ],
+            child: Text(
+              title,
+              style: TextStyles.bold,
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
+          SizedBox(width: 40.w),
         ],
       ),
     );
   }
 
   @override
-  // TODO: implement preferredSize
-  Size get preferredSize => const Size.fromHeight(65.0);
+  Size get preferredSize => Size.fromHeight(65.h);
 }

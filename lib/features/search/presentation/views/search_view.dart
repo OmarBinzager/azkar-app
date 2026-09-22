@@ -11,6 +11,7 @@ import 'package:new_azkar_app/features/public/providers/contents_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 class SearchView extends ConsumerStatefulWidget {
   const SearchView({Key? key}) : super(key: key);
@@ -158,11 +159,11 @@ class _SearchViewState extends ConsumerState<SearchView> {
         elevation: 0,
         title: Text(
           'البحث في الأذكار',
-          style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 20),
+          style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 18.sp),
         ),
         centerTitle: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20.r)),
         ),
       ),
       body: Column(
@@ -176,11 +177,11 @@ class _SearchViewState extends ConsumerState<SearchView> {
 
   Widget _buildSearchSection() {
     return Container(
-      margin: const EdgeInsets.all(LayoutConstants.screenPadding),
-      padding: const EdgeInsets.all(4),
+      margin: EdgeInsets.all(LayoutConstants.screenPadding.r),
+      padding: EdgeInsets.all(4.r),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: CShadow.MD,
         border: Border.all(
           color: AppColors.secondaryColor.withOpacity(0.1),
@@ -192,13 +193,14 @@ class _SearchViewState extends ConsumerState<SearchView> {
         controller: _searchController,
         focusNode: _searchFocusNode,
         textDirection: TextDirection.rtl,
-        style: TextStyles.medium.copyWith(color: AppColors.secondaryColor),
+        style: TextStyles.medium.copyWith(color: AppColors.secondaryColor, fontSize: 14.sp),
         decoration: InputDecoration(
           hintText: 'ابحث في الأذكار والدعاء...',
-          hintStyle: TextStyles.medium.copyWith(color: Colors.grey[400]),
+          hintStyle: TextStyles.medium.copyWith(color: Colors.grey[400], fontSize: 13.sp),
           prefixIcon: Icon(
             Icons.search,
             color: AppColors.secondaryColor.withOpacity(0.6),
+            size: 22.r,
           ),
           suffixIcon:
               _searchQuery.isNotEmpty
@@ -206,14 +208,15 @@ class _SearchViewState extends ConsumerState<SearchView> {
                     icon: Icon(
                       Icons.clear,
                       color: AppColors.secondaryColor.withOpacity(0.6),
+                      size: 20.r,
                     ),
                     onPressed: _clearSearch,
                   )
                   : null,
           border: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 12,
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 14.w,
+            vertical: 10.h,
           ),
         ),
       ),
@@ -230,8 +233,9 @@ class _SearchViewState extends ConsumerState<SearchView> {
     }
 
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(
-        horizontal: LayoutConstants.screenPadding,
+      padding: EdgeInsets.symmetric(
+        horizontal: LayoutConstants.screenPadding.r,
+        vertical: 8.h,
       ),
       itemCount: _searchResults.length,
       itemBuilder: (context, index) {
@@ -241,72 +245,79 @@ class _SearchViewState extends ConsumerState<SearchView> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            width: 120,
-            height: 120,
-            decoration: BoxDecoration(
-              color: AppColors.secondaryColor.withOpacity(0.1),
-              shape: BoxShape.circle,
-            ),
-            child: Icon(
-              Icons.search,
-              size: 60,
-              color: AppColors.secondaryColor.withOpacity(0.6),
-            ),
-          ),
-          const SizedBox(height: 24),
-          Text(
-            'البحث في الأذكار',
-            style: TextStyles.bold.copyWith(
-              fontSize: 20,
-              color: AppColors.secondaryColor,
-            ),
-          ),
-          const SizedBox(height: 12),
-          Text(
-            'ابحث في أسماء الأذكار أو محتواها\nللوصول السريع إلى ما تريد',
-            style: TextStyles.medium.copyWith(
-              fontSize: 16,
-              color: Colors.grey[600],
-              height: 1.4,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 32),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-            decoration: BoxDecoration(
-              color: AppColors.secondaryColor.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(25),
-              border: Border.all(
-                color: AppColors.secondaryColor.withOpacity(0.3),
-                width: 1,
+    return SingleChildScrollView(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(height: 30.h),
+            Container(
+              width: 90.r,
+              height: 90.r,
+              decoration: BoxDecoration(
+                color: AppColors.secondaryColor.withOpacity(0.1),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.search,
+                size: 45.r,
+                color: AppColors.secondaryColor.withOpacity(0.6),
               ),
             ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Icon(
-                  Icons.lightbulb_outline,
-                  size: 20,
-                  color: AppColors.secondaryColor,
-                ),
-                const SizedBox(width: 8),
-                Text(
-                  'جرب البحث بكلمات مثل: الفجر، الاستغفار',
-                  style: TextStyles.medium.copyWith(
-                    color: AppColors.secondaryColor,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
+            SizedBox(height: 20.h),
+            Text(
+              'البحث في الأذكار',
+              style: TextStyles.bold.copyWith(
+                fontSize: 18.sp,
+                color: AppColors.secondaryColor,
+              ),
             ),
-          ),
-        ],
+            SizedBox(height: 10.h),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 24.w),
+              child: Text(
+                'ابحث في أسماء الأذكار أو محتواها\nللوصول السريع إلى ما تريد',
+                style: TextStyles.medium.copyWith(
+                  fontSize: 14.sp,
+                  color: Colors.grey[600],
+                  height: 1.4,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(height: 24.h),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
+              decoration: BoxDecoration(
+                color: AppColors.secondaryColor.withOpacity(0.1),
+                borderRadius: BorderRadius.circular(25.r),
+                border: Border.all(
+                  color: AppColors.secondaryColor.withOpacity(0.3),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.lightbulb_outline,
+                    size: 18.r,
+                    color: AppColors.secondaryColor,
+                  ),
+                  SizedBox(width: 8.w),
+                  Text(
+                    'جرب البحث بكلمات مثل: الفجر، الاستغفار',
+                    style: TextStyles.medium.copyWith(
+                      color: AppColors.secondaryColor,
+                      fontSize: 12.sp,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 30.h),
+          ],
+        ),
       ),
     );
   }
@@ -317,27 +328,27 @@ class _SearchViewState extends ConsumerState<SearchView> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 100,
-            height: 100,
+            width: 80.r,
+            height: 80.r,
             decoration: BoxDecoration(
               color: Colors.grey.withOpacity(0.1),
               shape: BoxShape.circle,
             ),
-            child: Icon(Icons.search_off, size: 50, color: Colors.grey[400]),
+            child: Icon(Icons.search_off, size: 40.r, color: Colors.grey[400]),
           ),
-          const SizedBox(height: 24),
+          SizedBox(height: 18.h),
           Text(
             'لا توجد نتائج',
             style: TextStyles.bold.copyWith(
-              fontSize: 18,
+              fontSize: 16.sp,
               color: Colors.grey[600],
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 8.h),
           Text(
             'جرب البحث بكلمات أخرى\nأو تحقق من الكتابة',
             style: TextStyles.medium.copyWith(
-              fontSize: 16,
+              fontSize: 13.sp,
               color: Colors.grey[500],
               height: 1.4,
             ),
@@ -350,36 +361,36 @@ class _SearchViewState extends ConsumerState<SearchView> {
 
   Widget _buildSearchResultCard(SearchResult result) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 10.h),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: CShadow.MD,
         border: Border.all(color: AppColors.secondaryColor.withOpacity(0.1)),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           onTap: () => _onResultTap(result),
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(14.r),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 4,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 8.w,
+                        vertical: 3.h,
                       ),
                       decoration: BoxDecoration(
                         color:
                             result.type == SearchResultType.header
                                 ? AppColors.primaryColor.withOpacity(0.1)
                                 : AppColors.secondaryColor.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(8),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
                       child: Text(
                         result.type == SearchResultType.header
@@ -390,7 +401,7 @@ class _SearchViewState extends ConsumerState<SearchView> {
                               result.type == SearchResultType.header
                                   ? AppColors.primaryColor
                                   : AppColors.secondaryColor,
-                          fontSize: 12,
+                          fontSize: 11.sp,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -398,30 +409,31 @@ class _SearchViewState extends ConsumerState<SearchView> {
                     const Spacer(),
                     Icon(
                       Icons.arrow_forward_ios,
-                      size: 16,
+                      size: 14.r,
                       color: AppColors.secondaryColor.withOpacity(0.6),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 10.h),
                 Text(
                   result.type == SearchResultType.header
                       ? result.header.name
                       : result.content!.text,
                   style: TextStyles.medium.copyWith(
                     color: AppColors.secondaryColor,
+                    fontSize: 14.sp,
                     height: 1.4,
                   ),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
                 if (result.type == SearchResultType.content) ...[
-                  const SizedBox(height: 8),
+                  SizedBox(height: 6.h),
                   Text(
                     'من: ${result.header.name}',
                     style: TextStyles.regular.copyWith(
                       color: Colors.grey[600],
-                      fontSize: 13,
+                      fontSize: 12.sp,
                     ),
                   ),
                 ],

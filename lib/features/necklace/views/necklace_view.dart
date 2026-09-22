@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:new_azkar_app/core/constants/app_colors.dart';
 import 'package:new_azkar_app/core/constants/fixed_assets.dart';
 import 'package:new_azkar_app/core/constants/layout_constants.dart';
@@ -13,16 +14,13 @@ class NecklaceView extends ConsumerStatefulWidget {
   const NecklaceView({super.key});
 
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _NecklaceViewState();
+  ConsumerState<NecklaceView> createState() => _NecklaceViewState();
 }
 
 class _NecklaceViewState extends ConsumerState<NecklaceView>
     with TickerProviderStateMixin {
-  TextEditingController textEditingController = TextEditingController(
-    text: '100',
-  );
+  late TextEditingController textEditingController;
   late FocusNode _focusNode;
-
   late AnimationController _pulseController;
   late AnimationController _shakeController;
   late Animation<double> _pulseAnimation;
@@ -31,72 +29,47 @@ class _NecklaceViewState extends ConsumerState<NecklaceView>
   @override
   void initState() {
     super.initState();
+    textEditingController = TextEditingController(text: '100');
     _focusNode = FocusNode();
-    _initializeAnimations();
-    textEditingController.addListener(() {
-      setState(() {});
-    });
-  }
 
-  void _initializeAnimations() {
+    // Animation for counter pulse effect
     _pulseController = AnimationController(
-      duration: const Duration(milliseconds: 300),
+      duration: const Duration(milliseconds: 150),
       vsync: this,
     );
     _pulseAnimation = Tween<double>(begin: 1.0, end: 1.1).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
 
+    // Animation for necklace shake effect
     _shakeController = AnimationController(
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 200),
       vsync: this,
     );
     _shakeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _shakeController, curve: Curves.elasticOut),
+      CurvedAnimation(parent: _shakeController, curve: Curves.elasticIn),
     );
   }
 
   @override
   void dispose() {
-    _pulseController.dispose();
-    _shakeController.dispose();
     textEditingController.dispose();
     _focusNode.dispose();
+    _pulseController.dispose();
+    _shakeController.dispose();
     super.dispose();
   }
 
   void _onCountTap() {
-    final counter = ref.read(necklaceProvider);
-    final target = int.tryParse(textEditingController.text.trim()) ?? 100;
-
-    if (counter < target) {
-      HapticFeedback.vibrate();
-      ref.read(necklaceProvider.notifier).state++;
-      // Safe animation handling
-      try {
-        _pulseController.forward().then((_) => _pulseController.reverse());
-
-        // Shake animation when reaching target
-        if (counter + 1 == target) {
-          _shakeController.forward().then((_) => _shakeController.reset());
-        }
-      } catch (e) {
-        // Handle animation errors gracefully
-        print('Animation error: $e');
-      }
-    }
+    HapticFeedback.lightImpact();
+    ref.read(necklaceProvider.notifier).state++;
+    _pulseController.forward().then((_) => _pulseController.reverse());
+    _shakeController.forward().then((_) => _shakeController.reverse());
   }
 
   void _onReset() {
+    HapticFeedback.mediumImpact();
     ref.read(necklaceProvider.notifier).state = 0;
-
-    // Safe animation handling
-    try {
-      _shakeController.forward().then((_) => _shakeController.reset());
-    } catch (e) {
-      // Handle animation errors gracefully
-      print('Reset animation error: $e');
-    }
   }
 
   void _resetCount() {
@@ -117,33 +90,30 @@ class _NecklaceViewState extends ConsumerState<NecklaceView>
         elevation: 0,
         title: Text(
           'السبحة الإلكترونية',
-          style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 22),
+          style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 20.sp),
         ),
         centerTitle: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20.r)),
         ),
       ),
       body: GestureDetector(
         onTap: () {
-          // Dismiss keyboard when tapping outside the input field
           if (_focusNode.hasFocus) {
             _focusNode.unfocus();
           }
           FocusScope.of(context).unfocus();
         },
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(LayoutConstants.screenPadding),
+          padding: EdgeInsets.all(LayoutConstants.rScreenPadding),
           child: Column(
             children: [
-              // _buildHeaderCard(),
-              // const SizedBox(height: 30),
               _buildTargetInput(),
-              const SizedBox(height: 30),
+              SizedBox(height: 20.h),
               _buildProgressCard(progress, counter, target),
-              const SizedBox(height: 30),
+              SizedBox(height: 20.h),
               _buildNecklaceSection(counter, target),
-              const SizedBox(height: 32),
+              SizedBox(height: 24.h),
             ],
           ),
         ),
@@ -151,71 +121,12 @@ class _NecklaceViewState extends ConsumerState<NecklaceView>
     );
   }
 
-  Widget _buildHeaderCard() {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.primaryColor,
-            AppColors.primaryColor.withOpacity(0.8),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-        borderRadius: BorderRadius.circular(20),
-        boxShadow: CShadow.LG,
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: AppColors.gold.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Icon(
-              Icons.radio_button_checked,
-              color: AppColors.gold,
-              size: 30,
-            ),
-          ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'السبحة الإلكترونية',
-                  style: TextStyles.bold.copyWith(
-                    color: Colors.white,
-                    fontSize: 18,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'عد الأذكار والتسبيح بسهولة',
-                  style: TextStyles.medium.copyWith(
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   Widget _buildTargetInput() {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: CShadow.MD,
       ),
       child: Column(
@@ -225,10 +136,10 @@ class _NecklaceViewState extends ConsumerState<NecklaceView>
             'عدد التسبيح المطلوب',
             style: TextStyles.mediumBold.copyWith(
               color: AppColors.secondaryColor,
-              fontSize: 16,
+              fontSize: 15.sp,
             ),
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 10.h),
           Row(
             children: [
               Expanded(
@@ -239,20 +150,20 @@ class _NecklaceViewState extends ConsumerState<NecklaceView>
                   focusNode: _focusNode,
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 10.w),
               GestureDetector(
                 onTap: _resetCount,
                 child: Container(
-                  width: 50,
-                  height: 50,
+                  width: 48.r,
+                  height: 48.r,
                   decoration: BoxDecoration(
                     color: AppColors.primaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
                   child: Icon(
                     Icons.restart_alt,
                     color: AppColors.primaryColor,
-                    size: 24,
+                    size: 22.r,
                   ),
                 ),
               ),
@@ -265,10 +176,10 @@ class _NecklaceViewState extends ConsumerState<NecklaceView>
 
   Widget _buildProgressCard(double progress, int counter, int target) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: CShadow.MD,
       ),
       child: Column(
@@ -280,48 +191,52 @@ class _NecklaceViewState extends ConsumerState<NecklaceView>
                 'التقدم',
                 style: TextStyles.mediumBold.copyWith(
                   color: AppColors.secondaryColor,
-                  fontSize: 16,
+                  fontSize: 15.sp,
                 ),
               ),
               Text(
                 '$counter / $target',
                 style: TextStyles.bold.copyWith(
                   color: AppColors.primaryColor,
-                  fontSize: 18,
+                  fontSize: 16.sp,
                 ),
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          Stack(
-            children: [
-              Container(
-                width: (MediaQuery.of(context).size.width * .7),
-                height: 12,
-                decoration: BoxDecoration(
-                  color: AppColors.fourthColor,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-              ),
-              AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                width: (MediaQuery.of(context).size.width * .7) * progress,
-                height: 12,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [AppColors.primaryColor, AppColors.gold],
+          SizedBox(height: 14.h),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return Stack(
+                children: [
+                  Container(
+                    width: constraints.maxWidth,
+                    height: 10.h,
+                    decoration: BoxDecoration(
+                      color: AppColors.fourthColor,
+                      borderRadius: BorderRadius.circular(6.r),
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-              ),
-            ],
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    width: constraints.maxWidth * progress,
+                    height: 10.h,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [AppColors.primaryColor, AppColors.gold],
+                      ),
+                      borderRadius: BorderRadius.circular(6.r),
+                    ),
+                  ),
+                ],
+              );
+            },
           ),
-          const SizedBox(height: 12),
+          SizedBox(height: 10.h),
           Text(
             '${(progress * 100).toStringAsFixed(1)}% مكتمل',
             style: TextStyles.medium.copyWith(
               color: Colors.grey[600],
-              fontSize: 14,
+              fontSize: 13.sp,
             ),
           ),
         ],
@@ -331,10 +246,10 @@ class _NecklaceViewState extends ConsumerState<NecklaceView>
 
   Widget _buildNecklaceSection(int counter, int target) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         boxShadow: CShadow.LG,
       ),
       child: GestureDetector(
@@ -344,7 +259,6 @@ class _NecklaceViewState extends ConsumerState<NecklaceView>
             Stack(
               alignment: Alignment.center,
               children: [
-                // Necklace image
                 AnimatedBuilder(
                   animation: _shakeAnimation,
                   builder: (context, child) {
@@ -355,20 +269,20 @@ class _NecklaceViewState extends ConsumerState<NecklaceView>
                           (counter % 2 == 0 ? 1 : -1),
                       child: Image.asset(
                         PngAssets.necklace,
-                        height: 200,
+                        height: 180.h,
                         fit: BoxFit.contain,
                         errorBuilder: (context, error, stackTrace) {
                           return Container(
-                            height: 200,
-                            width: 200,
+                            height: 180.h,
+                            width: 180.h,
                             decoration: BoxDecoration(
                               color: AppColors.primaryColor.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(100),
+                              borderRadius: BorderRadius.circular(90.r),
                             ),
                             child: Icon(
                               Icons.radio_button_checked,
                               color: AppColors.primaryColor,
-                              size: 80,
+                              size: 70.r,
                             ),
                           );
                         },
@@ -376,29 +290,28 @@ class _NecklaceViewState extends ConsumerState<NecklaceView>
                     );
                   },
                 ),
-                // Counter display
                 Positioned(
-                  top: 60,
+                  top: 50.h,
                   child: AnimatedBuilder(
                     animation: _pulseAnimation,
                     builder: (context, child) {
                       return Transform.scale(
                         scale: _pulseAnimation.value,
                         child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 20,
-                            vertical: 12,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 18.w,
+                            vertical: 10.h,
                           ),
                           decoration: BoxDecoration(
                             color: AppColors.primaryColor,
-                            borderRadius: BorderRadius.circular(25),
+                            borderRadius: BorderRadius.circular(25.r),
                             boxShadow: CShadow.MD,
                           ),
                           child: Text(
                             counter.toString(),
                             style: TextStyles.heading1Bold.copyWith(
                               color: AppColors.gold,
-                              fontSize: 28,
+                              fontSize: 26.sp,
                             ),
                           ),
                         ),
@@ -408,8 +321,7 @@ class _NecklaceViewState extends ConsumerState<NecklaceView>
                 ),
               ],
             ),
-            const SizedBox(height: 30),
-            // Control buttons
+            SizedBox(height: 24.h),
             Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -419,32 +331,32 @@ class _NecklaceViewState extends ConsumerState<NecklaceView>
                   onTap: _onReset,
                   color: AppColors.warring,
                 ),
-                SizedBox(height: 10),
+                SizedBox(height: 10.h),
                 Text(
                   'إضغط في اي مكان داخل هذا المربع للتسبيح.',
-                  style: TextStyle(color: Colors.grey[300], fontSize: 12),
+                  style: TextStyle(color: Colors.grey[400], fontSize: 12.sp),
                 ),
               ],
             ),
             if (counter >= target) ...[
-              const SizedBox(height: 20),
+              SizedBox(height: 16.h),
               Container(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.all(14.r),
                 decoration: BoxDecoration(
                   color: AppColors.gold.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                   border: Border.all(color: AppColors.gold.withOpacity(0.3)),
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.check_circle, color: AppColors.gold, size: 20),
-                    const SizedBox(width: 8),
+                    Icon(Icons.check_circle, color: AppColors.gold, size: 20.r),
+                    SizedBox(width: 8.w),
                     Text(
                       'تم إكمال العدد المطلوب!',
                       style: TextStyles.mediumBold.copyWith(
                         color: AppColors.gold,
-                        fontSize: 16,
+                        fontSize: 15.sp,
                       ),
                     ),
                   ],
@@ -467,10 +379,10 @@ class _NecklaceViewState extends ConsumerState<NecklaceView>
     return GestureDetector(
       onTap: isEnabled ? onTap : null,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 12),
+        padding: EdgeInsets.symmetric(horizontal: 18.w, vertical: 10.h),
         decoration: BoxDecoration(
           color: isEnabled ? color : Colors.grey[300],
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           boxShadow: isEnabled ? CShadow.SM : null,
         ),
         child: Column(
@@ -478,14 +390,14 @@ class _NecklaceViewState extends ConsumerState<NecklaceView>
             Icon(
               icon,
               color: isEnabled ? Colors.white : Colors.grey[600],
-              size: 28,
+              size: 24.r,
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 6.h),
             Text(
               label,
               style: TextStyles.medium.copyWith(
                 color: isEnabled ? Colors.white : Colors.grey[600],
-                fontSize: 14,
+                fontSize: 13.sp,
               ),
             ),
           ],

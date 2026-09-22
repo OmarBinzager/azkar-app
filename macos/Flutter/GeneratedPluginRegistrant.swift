@@ -8,7 +8,7 @@ import Foundation
 import audioplayers_darwin
 import flutter_timezone
 import geolocator_apple
-import isar_flutter_libs
+import isar_community_flutter_libs
 import package_info_plus
 import path_provider_foundation
 import share_plus

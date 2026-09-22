@@ -15,6 +15,7 @@ import 'package:new_azkar_app/features/prayer_times/model/prayer_times_model.dar
 import 'package:new_azkar_app/features/public/models/header_model.dart';
 import 'package:new_azkar_app/features/public/providers/headers_provider.dart';
 import 'package:new_azkar_app/features/public/providers/contents_provider.dart';
+import 'package:new_azkar_app/core/services/isar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -79,7 +80,7 @@ class _HomeViewState extends ConsumerState<HomeView>
   @override
   Widget build(BuildContext context) {
     final double spacing = 14;
-    final headers = ref.read(headersProvider);
+    final headers = ref.watch(headersProvider);
     ref.read(contentsListProvider);
     final prayerTimes = ref.watch(prayerTimesProvider);
 
@@ -175,6 +176,11 @@ class _HomeViewState extends ConsumerState<HomeView>
           ),
           Row(
             children: [
+              _buildIconButton(
+                icon: Icons.headphones_rounded,
+                onTap: () => context.pushNamed(Routes.audioPlayer),
+                isIcon: true,
+              ),
               const SizedBox(width: 8),
               _buildIconButton(
                 icon: Icons.search,
@@ -478,8 +484,9 @@ class _HomeViewState extends ConsumerState<HomeView>
   // --- More visually distinct Add button for Fast Access ---
   // All fast access section, add button, item, and related methods are removed.
 
-  // --- Restructured main features: first 4 as grid, last 3 as list ---
+  // --- Restructured main features: first 6 as grid (2x3), last 2 as full-width banner cards ---
   Widget _buildMainCardsGrid(double spacing) {
+    final headers = ref.read(headersProvider);
     final mainFeatures = [
       {
         'label': 'القرآن الكريم',
@@ -488,15 +495,37 @@ class _HomeViewState extends ConsumerState<HomeView>
         'gradient': [AppColors.secondaryColor, AppColors.primaryColor],
       },
       {
-        'label': 'الصلوات',
+        'label': 'أدعية الصلوات',
         'icon': Icons.mosque,
         'onTap': () => context.pushNamed(Routes.prayers),
         'gradient': [AppColors.secondaryColor, AppColors.primaryColor],
       },
       {
-        'label': 'الأذكار',
+        'label': 'أذكار يومية',
         'icon': FontAwesomeIcons.handsPraying,
         'onTap': () => context.pushNamed(Routes.theSupplications),
+        'gradient': [AppColors.secondaryColor, AppColors.primaryColor],
+      },
+      {
+        'label': 'أذكار النوم',
+        'icon': Icons.nightlight_round,
+        'onTap': () async {
+          final currentHeaders = ref.read(headersProvider);
+          if (currentHeaders.isNotEmpty &&
+              IsarHelper.sleepHeaderIndex < currentHeaders.length) {
+            context.pushNamed(
+              Routes.contents,
+              extra: currentHeaders[IsarHelper.sleepHeaderIndex],
+            );
+          } else {
+            final header = await ref
+                .read(headersProvider.notifier)
+                .getHeaderById(IsarHelper.sleepHeaderIndex + 1);
+            if (context.mounted) {
+              context.pushNamed(Routes.contents, extra: header);
+            }
+          }
+        },
         'gradient': [AppColors.secondaryColor, AppColors.primaryColor],
       },
       {
@@ -506,23 +535,9 @@ class _HomeViewState extends ConsumerState<HomeView>
         'gradient': [AppColors.secondaryColor, AppColors.primaryColor],
       },
       {
-        'label': 'نصائح وآداب عامة',
-        'icon': FontAwesomeIcons.handHoldingHeart,
-        'onTap': () => context.pushNamed(Routes.tipsAndEtiquette),
-        'gradient': [AppColors.secondaryColor, AppColors.primaryColor],
-      },
-      {
         'label': 'دَلَائِلُ الخَيْرَاتِ',
         'icon': FontAwesomeIcons.handHoldingHand,
-        'onTap':
-            () => context.pushNamed(
-              Routes.headersViewer,
-              extra: HeaderModel(
-                fromHeader: 82,
-                toHeader: 92,
-                label: 'دَلَائِلُ الخَيْرَاتِ وَشَوَارِقُ الأَنوَار',
-              ),
-            ),
+        'onTap': () => context.pushNamed(Routes.dalailKhairat),
         'gradient': [AppColors.secondaryColor, AppColors.primaryColor],
       },
       {
@@ -531,11 +546,17 @@ class _HomeViewState extends ConsumerState<HomeView>
         'onTap': () => context.pushNamed(Routes.fridayNight),
         'gradient': [AppColors.secondaryColor, AppColors.primaryColor],
       },
+      {
+        'label': 'نصائح وآداب عامة',
+        'icon': FontAwesomeIcons.handHoldingHeart,
+        'onTap': () => context.pushNamed(Routes.tipsAndEtiquette),
+        'gradient': [AppColors.secondaryColor, AppColors.primaryColor],
+      },
     ];
-    // First 4 as grid
-    final gridFeatures = mainFeatures.take(4).toList();
-    // Last 3 as list
-    final listFeatures = mainFeatures.skip(4).toList();
+    // First 6 as grid (3 rows of 2)
+    final gridFeatures = mainFeatures.take(6).toList();
+    // Last 2 as full-width banner cards
+    final listFeatures = mainFeatures.skip(6).toList();
 
     return Column(
       children: [

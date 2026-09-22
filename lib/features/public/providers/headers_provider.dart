@@ -13,6 +13,11 @@ class HeadersList extends Notifier<List<Header>> {
     state = await IsarServices().loadAllHeaders();
   }
 
+  Future refresh() async {
+    state = [];
+    await _load();
+  }
+
   Future<Header> getHeaderById(int headerId) async {
     return await IsarServices().loadHeaderById(headerId);
   }

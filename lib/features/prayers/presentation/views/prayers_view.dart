@@ -1,11 +1,10 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:new_azkar_app/core/constants/app_colors.dart';
-import 'package:new_azkar_app/core/constants/fixed_assets.dart';
 import 'package:new_azkar_app/core/constants/layout_constants.dart';
 import 'package:new_azkar_app/core/constants/routes.dart';
 import 'package:new_azkar_app/core/constants/shadows.dart';
 import 'package:new_azkar_app/core/constants/text_styles.dart';
-import 'package:new_azkar_app/core/widgets/app_tile.dart';
-import 'package:new_azkar_app/features/public/models/header_model.dart';
+import 'package:new_azkar_app/core/services/isar_helper.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -23,20 +22,20 @@ class PrayersView extends ConsumerWidget {
         elevation: 0,
         title: Text(
           'الصلوات',
-          style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 22),
+          style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 20.sp),
         ),
         centerTitle: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20.r)),
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(LayoutConstants.screenPadding),
+        padding: EdgeInsets.all(LayoutConstants.rScreenPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildHeaderCard(),
-            const SizedBox(height: 24),
+            SizedBox(height: 20.h),
             _buildSectionTitle('الصلوات الخمس و الوتر'),
             _buildPrayerCard(
               icon: Icons.wb_sunny,
@@ -46,11 +45,7 @@ class PrayersView extends ConsumerWidget {
               onTap:
                   () => context.pushNamed(
                     Routes.headersViewer,
-                    extra: HeaderModel(
-                      label: 'صلاة الفجر',
-                      fromHeader: 0,
-                      toHeader: 12,
-                    ),
+                    extra: IsarHelper.getFajrCategory(),
                   ),
             ),
             _buildPrayerCard(
@@ -61,11 +56,7 @@ class PrayersView extends ConsumerWidget {
               onTap:
                   () => context.pushNamed(
                     Routes.headersViewer,
-                    extra: HeaderModel(
-                      label: 'الإشراق والضحى',
-                      fromHeader: 13,
-                      toHeader: 15,
-                    ),
+                    extra: IsarHelper.getIshraqCategory(),
                   ),
             ),
             _buildPrayerCard(
@@ -76,11 +67,7 @@ class PrayersView extends ConsumerWidget {
               onTap:
                   () => context.pushNamed(
                     Routes.headersViewer,
-                    extra: HeaderModel(
-                      label: 'صلاة الظهر',
-                      fromHeader: 16,
-                      toHeader: 24,
-                    ),
+                    extra: IsarHelper.getZuhrCategory(),
                   ),
             ),
             _buildPrayerCard(
@@ -91,11 +78,7 @@ class PrayersView extends ConsumerWidget {
               onTap:
                   () => context.pushNamed(
                     Routes.headersViewer,
-                    extra: HeaderModel(
-                      label: 'صلاة العصر',
-                      fromHeader: 25,
-                      toHeader: 37,
-                    ),
+                    extra: IsarHelper.getAsrCategory(),
                   ),
             ),
             _buildPrayerCard(
@@ -106,11 +89,7 @@ class PrayersView extends ConsumerWidget {
               onTap:
                   () => context.pushNamed(
                     Routes.headersViewer,
-                    extra: HeaderModel(
-                      label: 'صلاة المغرب',
-                      fromHeader: 38,
-                      toHeader: 52,
-                    ),
+                    extra: IsarHelper.getMaghribCategory(),
                   ),
             ),
             _buildPrayerCard(
@@ -121,11 +100,7 @@ class PrayersView extends ConsumerWidget {
               onTap:
                   () => context.pushNamed(
                     Routes.headersViewer,
-                    extra: HeaderModel(
-                      label: 'صلاة العشاء',
-                      fromHeader: 53,
-                      toHeader: 60,
-                    ),
+                    extra: IsarHelper.getIshaCategory(),
                   ),
             ),
             _buildPrayerCard(
@@ -136,14 +111,10 @@ class PrayersView extends ConsumerWidget {
               onTap:
                   () => context.pushNamed(
                     Routes.headersViewer,
-                    extra: HeaderModel(
-                      label: 'صلاة الوتر',
-                      fromHeader: 61,
-                      toHeader: 63,
-                    ),
+                    extra: IsarHelper.getWitrCategory(),
                   ),
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 24.h),
           ],
         ),
       ),
@@ -153,7 +124,7 @@ class PrayersView extends ConsumerWidget {
   Widget _buildHeaderCard() {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -163,21 +134,21 @@ class PrayersView extends ConsumerWidget {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         boxShadow: CShadow.LG,
       ),
       child: Row(
         children: [
           Container(
-            width: 60,
-            height: 60,
+            width: 52.r,
+            height: 52.r,
             decoration: BoxDecoration(
               color: AppColors.gold.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(15.r),
             ),
-            child: Icon(Icons.mosque, color: AppColors.gold, size: 30),
+            child: Icon(Icons.mosque, color: AppColors.gold, size: 26.r),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 14.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -186,15 +157,15 @@ class PrayersView extends ConsumerWidget {
                   'الصلوات',
                   style: TextStyles.bold.copyWith(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 17.sp,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 4.h),
                 Text(
                   'أدعية وأذكار الصلوات الخمس والوتر',
                   style: TextStyles.medium.copyWith(
                     color: Colors.white.withOpacity(0.8),
-                    fontSize: 14,
+                    fontSize: 13.sp,
                   ),
                 ),
               ],
@@ -207,12 +178,12 @@ class PrayersView extends ConsumerWidget {
 
   Widget _buildSectionTitle(String title) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 12, top: 8),
+      padding: EdgeInsets.only(bottom: 10.h, top: 6.h),
       child: Text(
         title,
         style: TextStyles.mediumBold.copyWith(
           color: AppColors.secondaryColor,
-          fontSize: 16,
+          fontSize: 15.sp,
         ),
       ),
     );
@@ -226,32 +197,32 @@ class PrayersView extends ConsumerWidget {
     required VoidCallback onTap,
   }) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 10.h),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: CShadow.MD,
         border: Border.all(color: color.withOpacity(0.1)),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(14.r),
             child: Row(
               children: [
                 Container(
-                  width: 50,
-                  height: 50,
+                  width: 46.r,
+                  height: 46.r,
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
-                  child: Icon(icon, color: color, size: 24),
+                  child: Icon(icon, color: color, size: 22.r),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 14.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,24 +231,29 @@ class PrayersView extends ConsumerWidget {
                         title,
                         style: TextStyles.mediumBold.copyWith(
                           color: AppColors.secondaryColor,
-                          fontSize: 16,
+                          fontSize: 15.sp,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 4.h),
                       Text(
                         subtitle,
                         style: TextStyles.regular.copyWith(
                           color: Colors.grey[600],
-                          fontSize: 14,
+                          fontSize: 13.sp,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ],
                   ),
                 ),
+                SizedBox(width: 8.w),
                 Icon(
                   Icons.arrow_forward_ios,
                   color: AppColors.secondaryColor.withOpacity(0.6),
-                  size: 16,
+                  size: 15.r,
                 ),
               ],
             ),

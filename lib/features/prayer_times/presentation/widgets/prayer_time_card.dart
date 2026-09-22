@@ -1,5 +1,5 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:new_azkar_app/core/constants/app_colors.dart';
-import 'package:new_azkar_app/core/constants/layout_constants.dart';
 import 'package:new_azkar_app/core/constants/shadows.dart';
 import 'package:new_azkar_app/core/constants/text_styles.dart';
 import 'package:flutter/material.dart';
@@ -26,32 +26,32 @@ class PrayerTimeCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 10.h),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: CShadow.MD,
         border: isActive ? Border.all(color: cardColor, width: 2) : null,
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
+          borderRadius: BorderRadius.circular(16.r),
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(14.r),
             child: Row(
               children: [
                 Container(
-                  width: 50,
-                  height: 50,
+                  width: 46.r,
+                  height: 46.r,
                   decoration: BoxDecoration(
                     color: cardColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
-                  child: Icon(Icons.mosque, color: cardColor, size: 24),
+                  child: Icon(Icons.mosque, color: cardColor, size: 22.r),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 14.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,15 +60,17 @@ class PrayerTimeCard extends StatelessWidget {
                         title,
                         style: TextStyles.mediumBold.copyWith(
                           color: AppColors.secondaryColor,
-                          fontSize: 16,
+                          fontSize: 15.sp,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 2.h),
                       Text(
                         time,
                         style: TextStyles.bold.copyWith(
                           color: cardColor,
-                          fontSize: 20,
+                          fontSize: 18.sp,
                         ),
                       ),
                     ],
@@ -76,19 +78,20 @@ class PrayerTimeCard extends StatelessWidget {
                 ),
                 if (isActive)
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 8.w,
+                      vertical: 3.h,
                     ),
+                    margin: EdgeInsets.only(left: 8.w),
                     decoration: BoxDecoration(
                       color: cardColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Text(
                       'القادمة',
                       style: TextStyles.regular.copyWith(
                         color: cardColor,
-                        fontSize: 12,
+                        fontSize: 11.sp,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -96,7 +99,7 @@ class PrayerTimeCard extends StatelessWidget {
                 Icon(
                   Icons.arrow_forward_ios,
                   color: AppColors.secondaryColor.withOpacity(0.6),
-                  size: 16,
+                  size: 15.r,
                 ),
               ],
             ),

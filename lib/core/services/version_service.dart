@@ -28,7 +28,6 @@ class VersionService {
 
       if (lastVersion == null || lastVersion != currentVersionCode) {
         // App has been updated or is running for the first time
-        await prefs.setString(_lastVersionKey, currentVersionCode);
         return true;
       }
 
@@ -36,6 +35,19 @@ class VersionService {
     } catch (e) {
       // If we can't determine version, assume no update
       return false;
+    }
+  }
+
+  /// Save current app version as last stored version
+  static Future<void> saveCurrentVersion() async {
+    try {
+      final packageInfo = await PackageInfo.fromPlatform();
+      final currentVersionCode =
+          '${packageInfo.version}+${packageInfo.buildNumber}';
+      final prefs = await _prefs;
+      await prefs.setString(_lastVersionKey, currentVersionCode);
+    } catch (e) {
+      // Ignore error
     }
   }
 

@@ -1,3 +1,4 @@
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:new_azkar_app/core/constants/app_colors.dart';
 import 'package:new_azkar_app/core/constants/layout_constants.dart';
 import 'package:new_azkar_app/core/constants/shadows.dart';
@@ -19,7 +20,6 @@ class PrayerTimesView extends ConsumerStatefulWidget {
 
 class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
   Timer? _timer;
-  String _timeRemaining = '';
 
   @override
   void initState() {
@@ -35,9 +35,7 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
 
   void _startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        // Timer will update the countdown
-      });
+      if (mounted) setState(() {});
     });
   }
 
@@ -53,17 +51,17 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
         elevation: 0,
         title: Text(
           'أوقات الصلاة',
-          style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 22),
+          style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 20.sp),
         ),
         centerTitle: true,
         actions: [
           IconButton(
-            icon: Icon(Icons.refresh, color: AppColors.gold),
+            icon: Icon(Icons.refresh, color: AppColors.gold, size: 22.r),
             onPressed: () => ref.refresh(prayerTimesProvider),
           ),
         ],
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(20.r)),
         ),
       ),
       body: prayerTimes.when(
@@ -79,16 +77,16 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
     final nextPrayer = data.getNextPrayerInfo(now);
 
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(LayoutConstants.screenPadding),
+      padding: EdgeInsets.all(LayoutConstants.rScreenPadding),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildLocationCard(data),
-          const SizedBox(height: 20),
+          SizedBox(height: 16.h),
           _buildNextPrayerCard(nextPrayer, data),
-          const SizedBox(height: 24),
+          SizedBox(height: 20.h),
           _buildPrayerTimesGrid(data, nextPrayer),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
         ],
       ),
     );
@@ -97,7 +95,7 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
   Widget _buildLocationCard(PrayerTimesModel data) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -107,21 +105,21 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         boxShadow: CShadow.LG,
       ),
       child: Row(
         children: [
           Container(
-            width: 60,
-            height: 60,
+            width: 52.r,
+            height: 52.r,
             decoration: BoxDecoration(
               color: AppColors.gold.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(15),
+              borderRadius: BorderRadius.circular(15.r),
             ),
-            child: Icon(Icons.location_on, color: AppColors.gold, size: 30),
+            child: Icon(Icons.location_on, color: AppColors.gold, size: 26.r),
           ),
-          const SizedBox(width: 16),
+          SizedBox(width: 14.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,35 +128,36 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
                   'موقعك الحالي',
                   style: TextStyles.medium.copyWith(
                     color: Colors.white.withOpacity(0.8),
-                    fontSize: 14,
+                    fontSize: 13.sp,
                   ),
                 ),
-                const SizedBox(height: 4),
+                SizedBox(height: 2.h),
                 Text(
                   data.city ?? 'غير محدد',
                   style: TextStyles.bold.copyWith(
                     color: Colors.white,
-                    fontSize: 18,
+                    fontSize: 17.sp,
                   ),
                 ),
-                const SizedBox(height: 4),
-                Row(
+                SizedBox(height: 2.h),
+                Wrap(
+                  spacing: 6.w,
                   children: [
                     Text(
                       DateFormat('EEEE, d MMM yyyy,', 'ar').format(DateTime.now()),
                       style: TextStyles.regular.copyWith(
                         color: Colors.white.withOpacity(0.7),
-                        fontSize: 13,
+                        fontSize: 12.sp,
                       ),
                     ),
-                    SizedBox(width: 5,),
-                    Text(
-                      data.hijriDate!,
-                      style: TextStyles.regular.copyWith(
-                        color: Colors.white.withOpacity(0.7),
-                        fontSize: 13,
+                    if (data.hijriDate != null)
+                      Text(
+                        data.hijriDate!,
+                        style: TextStyles.regular.copyWith(
+                          color: Colors.white.withOpacity(0.7),
+                          fontSize: 12.sp,
+                        ),
                       ),
-                    ),
                   ],
                 ),
               ],
@@ -174,7 +173,7 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(16.r),
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
@@ -184,7 +183,7 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(20.r),
         boxShadow: CShadow.LG,
       ),
       child: Column(
@@ -192,15 +191,15 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
           Row(
             children: [
               Container(
-                width: 50,
-                height: 50,
+                width: 46.r,
+                height: 46.r,
                 decoration: BoxDecoration(
                   color: AppColors.gold.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                 ),
-                child: Icon(Icons.access_time, color: AppColors.gold, size: 24),
+                child: Icon(Icons.access_time, color: AppColors.gold, size: 22.r),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 14.w),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -209,14 +208,14 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
                       'الصلاة القادمة',
                       style: TextStyles.medium.copyWith(
                         color: Colors.white.withOpacity(0.8),
-                        fontSize: 14,
+                        fontSize: 13.sp,
                       ),
                     ),
                     Text(
                       nextPrayer['name'] ?? '',
                       style: TextStyles.bold.copyWith(
                         color: Colors.white,
-                        fontSize: 18,
+                        fontSize: 17.sp,
                       ),
                     ),
                   ],
@@ -224,7 +223,7 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
               ),
             ],
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 12.h),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -232,13 +231,14 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
                 'الوقت المتبقي',
                 style: TextStyles.medium.copyWith(
                   color: Colors.white.withOpacity(0.8),
+                  fontSize: 14.sp,
                 ),
               ),
               Text(
                 nextPrayer['timeRemaining'] ?? '',
                 style: TextStyles.bold.copyWith(
                   color: AppColors.gold,
-                  fontSize: 20,
+                  fontSize: 18.sp,
                 ),
               ),
             ],
@@ -300,11 +300,11 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
         Text(
           'أوقات الصلاة',
           style: TextStyles.bold.copyWith(
-            fontSize: 20,
+            fontSize: 18.sp,
             color: AppColors.secondaryColor,
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 12.h),
         ...prayers.map((prayer) => _buildPrayerCard(prayer)),
       ],
     );
@@ -312,10 +312,10 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
 
   Widget _buildPrayerCard(Map<String, dynamic> prayer) {
     return Container(
-      margin: const EdgeInsets.only(bottom: 12),
+      margin: EdgeInsets.only(bottom: 10.h),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(16.r),
         boxShadow: CShadow.MD,
         border:
             prayer['isNext']
@@ -325,24 +325,22 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(16),
-          onTap: () {
-            // Could add prayer-specific actions here
-          },
+          borderRadius: BorderRadius.circular(16.r),
+          onTap: () {},
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(14.r),
             child: Row(
               children: [
                 Container(
-                  width: 50,
-                  height: 50,
+                  width: 46.r,
+                  height: 46.r,
                   decoration: BoxDecoration(
                     color: prayer['color'].withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(12.r),
                   ),
-                  child: Icon(Icons.mosque, color: prayer['color'], size: 24),
+                  child: Icon(Icons.mosque, color: prayer['color'], size: 22.r),
                 ),
-                const SizedBox(width: 16),
+                SizedBox(width: 14.w),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -353,25 +351,25 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
                             prayer['name'],
                             style: TextStyles.mediumBold.copyWith(
                               color: AppColors.secondaryColor,
-                              fontSize: 16,
+                              fontSize: 15.sp,
                             ),
                           ),
                           if (prayer['isNext']) ...[
-                            const SizedBox(width: 8),
+                            SizedBox(width: 8.w),
                             Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 2,
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 8.w,
+                                vertical: 2.h,
                               ),
                               decoration: BoxDecoration(
                                 color: prayer['color'].withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(8),
+                                borderRadius: BorderRadius.circular(8.r),
                               ),
                               child: Text(
                                 'القادمة',
                                 style: TextStyles.regular.copyWith(
                                   color: prayer['color'],
-                                  fontSize: 12,
+                                  fontSize: 11.sp,
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
@@ -379,12 +377,12 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
                           ],
                         ],
                       ),
-                      const SizedBox(height: 4),
+                      SizedBox(height: 2.h),
                       Text(
                         prayer['time'],
                         style: TextStyles.bold.copyWith(
                           color: prayer['color'],
-                          fontSize: 20,
+                          fontSize: 18.sp,
                         ),
                       ),
                     ],
@@ -393,7 +391,7 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
                 Icon(
                   Icons.arrow_forward_ios,
                   color: AppColors.secondaryColor.withOpacity(0.6),
-                  size: 16,
+                  size: 15.r,
                 ),
               ],
             ),
@@ -406,51 +404,51 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
   Widget _buildErrorState(BuildContext context, WidgetRef ref) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(LayoutConstants.screenPadding),
+        padding: EdgeInsets.all(LayoutConstants.rScreenPadding),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Container(
-              width: 120,
-              height: 120,
+              width: 90.r,
+              height: 90.r,
               decoration: BoxDecoration(
                 color: AppColors.error.withOpacity(0.1),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.location_off, size: 60, color: AppColors.error),
+              child: Icon(Icons.location_off, size: 45.r, color: AppColors.error),
             ),
-            const SizedBox(height: 24),
+            SizedBox(height: 20.h),
             Text(
               'لا يمكن تحديد موقعك',
               style: TextStyles.bold.copyWith(
-                fontSize: 20,
+                fontSize: 18.sp,
                 color: AppColors.secondaryColor,
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 8.h),
             Text(
               'قم بتفعيل خدمة الموقع في جهازك\nثم اضغط على تحديث',
               style: TextStyles.medium.copyWith(
-                fontSize: 16,
+                fontSize: 14.sp,
                 color: Colors.grey[600],
                 height: 1.4,
               ),
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 32),
+            SizedBox(height: 24.h),
             ElevatedButton.icon(
               onPressed: () => ref.refresh(prayerTimesProvider),
-              icon: const Icon(Icons.refresh),
-              label: const Text('تحديث'),
+              icon: Icon(Icons.refresh, size: 18.r),
+              label: Text('تحديث', style: TextStyle(fontSize: 14.sp)),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.secondaryColor,
-                foregroundColor: AppColors.gold,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 12,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(
+                  horizontal: 24.w,
+                  vertical: 10.h,
                 ),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(12.r),
                 ),
               ),
             ),
@@ -466,22 +464,29 @@ class _PrayerTimesViewState extends ConsumerState<PrayerTimesView> {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Container(
-            width: 80,
-            height: 80,
+            width: 70.r,
+            height: 70.r,
             decoration: BoxDecoration(
               color: AppColors.secondaryColor.withOpacity(0.1),
-              shape: BoxShape.circle,
+              borderRadius: BorderRadius.circular(20.r),
             ),
             child: Icon(
               Icons.access_time,
-              size: 40,
               color: AppColors.secondaryColor,
+              size: 36.r,
             ),
           ),
-          const SizedBox(height: 16),
+          SizedBox(height: 20.h),
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(AppColors.secondaryColor),
+          ),
+          SizedBox(height: 16.h),
           Text(
             'جاري تحميل أوقات الصلاة...',
-            style: TextStyles.medium.copyWith(color: AppColors.secondaryColor),
+            style: TextStyles.mediumBold.copyWith(
+              color: AppColors.secondaryColor,
+              fontSize: 15.sp,
+            ),
           ),
         ],
       ),

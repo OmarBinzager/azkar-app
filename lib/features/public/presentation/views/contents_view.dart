@@ -1,14 +1,9 @@
-import 'dart:convert';
-// import 'dart:ffi';
-
 import 'package:new_azkar_app/core/constants/app_colors.dart';
 import 'package:new_azkar_app/core/constants/layout_constants.dart';
 import 'package:new_azkar_app/core/constants/routes.dart';
 import 'package:new_azkar_app/core/constants/text_styles.dart';
-import 'package:new_azkar_app/core/widgets/item_content.dart';
 import 'package:new_azkar_app/features/home/entities/content.dart';
 import 'package:new_azkar_app/features/home/entities/header.dart';
-import 'package:new_azkar_app/features/public/models/header_model.dart';
 import 'package:new_azkar_app/features/public/providers/contents_provider.dart';
 import 'package:new_azkar_app/features/public/providers/headers_provider.dart';
 import 'package:new_azkar_app/features/quran/views/quran_page.dart';
@@ -16,33 +11,33 @@ import 'package:flutter/gestures.dart';
 import 'package:new_azkar_app/core/extensions/context_extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:audioplayers/audioplayers.dart';
 import 'package:new_azkar_app/core/services/isar_helper.dart';
 import 'package:go_router/go_router.dart';
 import 'package:quran/quran.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:path_provider/path_provider.dart';
-import 'dart:io';
 import 'package:flutter/services.dart';
 import 'dart:async';
 
-import 'package:string_validator/string_validator.dart';
 import 'package:new_azkar_app/core/providers/settings_provider.dart';
+import 'package:new_azkar_app/core/providers/global_audio_provider.dart';
+import 'package:new_azkar_app/core/models/audio_item.dart';
+import 'package:new_azkar_app/features/dalail_khairat/presentation/views/dalail_khairat_view.dart';
+import 'package:new_azkar_app/features/public/presentation/views/pdf_content_details_view.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 // Add available fonts
 const List<Map<String, String>> quranFonts = [
-  {'name': 'خط نبي القرآن', 'code': TextStyles.nabiQuranFont},
+  // {'name': 'خط نبي القرآن', 'code': TextStyles.nabiQuranFont},
   {'name': 'الخط العثماني', 'code': TextStyles.uthmanicQuranFont},
-  {'name': 'خط أميري', 'code': 'Amiri'},
-  {'name': 'خط لوتس', 'code': 'mylotus'},
-  {'name': 'خط لوتس لينو', 'code': 'Lotus Linotype'},
+  // {'name': 'خط أميري', 'code': 'Amiri'},
+  // {'name': 'خط لوتس', 'code': 'mylotus'},
+  // {'name': 'خط لوتس لينو', 'code': 'Lotus Linotype'},
 ];
 const List<Map<String, String>> contentFonts = [
-  {'name': 'خط أميري', 'code': 'Amiri-Regular'},
-  {'name': 'خط المسيري', 'code': 'ElMessiri'},
-  {'name': 'خط النسخ', 'code': 'Traditional Naskh'},
-  {'name': 'خط الثلث', 'code': 'A Thuluth'},
+  // {'name': 'خط أميري', 'code': 'Amiri-Regular'},
+  // {'name': 'خط المسيري', 'code': 'ElMessiri'},
+  // {'name': 'خط النسخ', 'code': 'Traditional Naskh'},
+  // {'name': 'خط الثلث', 'code': 'A Thuluth'},
   {'name': 'خط لوتس', 'code': 'mylotus'},
   {'name': 'خط لوتس لينو', 'code': 'Lotus Linotype'},
 ];
@@ -58,17 +53,11 @@ class ContentsView extends ConsumerStatefulWidget {
 
 class _ContentsViewState extends ConsumerState<ContentsView>
     with SingleTickerProviderStateMixin {
-  final AudioPlayer _audioPlayer = AudioPlayer();
-  bool _isPlaying = false;
-  bool _isLoading = false;
   bool _firstBuild = true;
   bool _autoPlayStopped = false;
-  Duration _duration = Duration.zero;
-  Duration _position = Duration.zero;
   Content? content;
   double fontSize = 22;
   double _currentSessionFontSize = 22;
-  double _audioSpeed = 1.0;
   bool _showAudioControls = true;
   Timer? _hideAudioControlsTimer;
   final ScrollController _scrollController = ScrollController();
@@ -85,11 +74,6 @@ class _ContentsViewState extends ConsumerState<ContentsView>
   late AnimationController _overscrollResetController;
   late Animation<double> _overscrollResetAnimation;
 
-  // Download state
-  bool _isDownloading = false;
-  double _downloadProgress = 0.0; // 0.0 -> 1.0
-  String? _localAudioPath;
-
   @override
   void initState() {
     super.initState();
@@ -97,7 +81,6 @@ class _ContentsViewState extends ConsumerState<ContentsView>
     _currentSessionFontSize = settings.fontSize;
     _initializeContent();
     _scrollController.addListener(_handleScroll);
-    _setupAudioListeners();
     _startHideAudioControlsTimer();
     _overscrollResetController = AnimationController(
       vsync: this,
@@ -125,7 +108,7 @@ class _ContentsViewState extends ConsumerState<ContentsView>
     // Find next header (if any)
     final allHeaders = IsarHelper.headers.length;
     final currentHeaderId = widget.header.id;
-    final nextHeaderId = widget.header.id == 12 ? 14 : widget.header.id + 1;
+    final nextHeaderId = IsarHelper.getNextHeaderId(widget.header.id);
     if (currentHeaderId >= 1 && currentHeaderId < allHeaders) {
       _nextHeader = headerProvider[nextHeaderId - 1];
       _nextHeaderName = _nextHeader?.name;
@@ -135,242 +118,99 @@ class _ContentsViewState extends ConsumerState<ContentsView>
       _nextHeaderName = null;
       _atEndOfHeaders = true;
     }
-    // Initialize audio if available
-    if (content!.hasVoice && content!.voiceFile != null) {
-      _initializeAudio().then((_) {
-        if (settings.autoPlayAudio) {
-          Future.delayed(const Duration(milliseconds: 500), () {
-            if (mounted && !_autoPlayStopped) {
-              _playAudio();
-            }
-          });
+    // Auto play audio if available
+    if (content!.hasVoice && content!.voiceFile != null && settings.autoPlayAudio) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        if (mounted && !_autoPlayStopped) {
+          _playAudio();
         }
       });
     }
   }
 
-  void _setupAudioListeners() {
-    _audioPlayer.onPlayerStateChanged.listen((state) {
-      if (mounted) {
-        setState(() {
-          _isPlaying = state == PlayerState.playing;
-          // Reset auto-play stopped flag when audio finishes naturally
-          if (state == PlayerState.completed) {
-            _autoPlayStopped = false;
-          }
-        });
-      }
-    });
+  List<AudioItem> _getPageAudioItems() {
+    final List<AudioItem> items = [];
+    final allAudios = IsarHelper.getAllAudioItems();
+    final audioMap = {for (final a in allAudios) a.voiceFile: a};
 
-    _audioPlayer.onDurationChanged.listen((duration) {
-      if (mounted) {
-        setState(() {
-          _duration = duration;
-        });
-      }
-    });
-
-    _audioPlayer.onPositionChanged.listen((position) {
-      if (mounted) {
-        setState(() {
-          _position = position;
-        });
-      }
-    });
-  }
-
-  Future<String> _getLocalAudioFilePath() async {
-    final Directory baseDir = await getApplicationDocumentsDirectory();
-    final Directory audioDir = Directory('${baseDir.path}/audios');
-    if (!await audioDir.exists()) {
-      await audioDir.create(recursive: true);
-    }
-    final String fileName = '${content!.voiceFile!}.mp3';
-    return '${audioDir.path}/$fileName';
-  }
-
-  Future<bool> _localAudioExists() async {
-    if (!content!.hasVoice || content!.voiceFile == null) return false;
-    final String path = await _getLocalAudioFilePath();
-    final file = File(path);
-    final exists = await file.exists();
-    if (exists) {
-      _localAudioPath = path;
-    }
-    return exists;
-  }
-
-  Future<void> _downloadAudio() async {
-    if (_isDownloading) return;
-    setState(() {
-      _isDownloading = true;
-      _downloadProgress = 0.0;
-      _isLoading = true;
-    });
-
-    final String url =
-        'https://drive.google.com/uc?export=download&id=${content!.voiceFile!}';
-    final String filePath = await _getLocalAudioFilePath();
-
-    final file = File(filePath);
-    HttpClient? httpClient;
-    try {
-      httpClient = HttpClient();
-      final Uri uri = Uri.parse(url);
-      final HttpClientRequest request = await httpClient.getUrl(uri);
-      final HttpClientResponse response = await request.close();
-
-      if (response.statusCode != 200) {
-        throw HttpException('Failed to download file: ${response.statusCode}');
-      }
-
-      final int? totalBytes =
-          response.contentLength > 0 ? response.contentLength : null;
-
-      final IOSink sink = file.openWrite();
-      int receivedBytes = 0;
-
-      await for (final List<int> chunk in response) {
-        sink.add(chunk);
-        receivedBytes += chunk.length;
-        if (totalBytes != null) {
-          setState(() {
-            _downloadProgress = receivedBytes / totalBytes;
-          });
+    for (final c in _headerContents) {
+      if (c.hasVoice && c.voiceFile != null && c.voiceFile!.isNotEmpty) {
+        if (audioMap.containsKey(c.voiceFile)) {
+          items.add(audioMap[c.voiceFile]!);
+        } else {
+          final cleanTitle = c.text.split('\n').first.trim();
+          items.add(AudioItem(
+            id: c.voiceFile!,
+            title: cleanTitle.isNotEmpty ? cleanTitle : widget.header.name,
+            voiceFile: c.voiceFile!,
+            headerId: widget.header.id,
+            category: widget.header.name,
+          ));
         }
       }
-      await sink.flush();
-      await sink.close();
-
-      _localAudioPath = filePath;
-
-      // After download, set local source
-      await _audioPlayer.setSource(DeviceFileSource(filePath));
-      await _audioPlayer.setVolume(1.0);
-
-      if (mounted) {
-        setState(() {
-          _isDownloading = false;
-          _isLoading = false;
-          _downloadProgress = 1.0;
-        });
-      }
-
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('تم تنزيل الملف الصوتي وحفظه للتشغيل دون إنترنت'),
-          ),
-        );
-      }
-    } catch (e) {
-      // Clean up partial file if any
-      try {
-        if (await file.exists()) {
-          await file.delete();
-        }
-      } catch (_) {}
-
-      if (mounted) {
-        setState(() {
-          _isDownloading = false;
-          _isLoading = false;
-          _downloadProgress = 0.0;
-        });
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('تعذّر تنزيل الملف الصوتي')));
-      }
-    } finally {
-      httpClient?.close(force: true);
     }
+
+    if (items.isEmpty) {
+      items.addAll(allAudios.where((a) => a.headerId == widget.header.id));
+    }
+    return items;
   }
 
-  Future<void> _initializeAudio() async {
-    if (!content!.hasVoice || content!.voiceFile == null) return;
+  void _playPageVoices() {
+    final items = _getPageAudioItems();
+    if (items.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('لا توجد ملفات صوتية مسجلة لهذه الصفحة')),
+      );
+      return;
+    }
 
-    try {
-      setState(() {
-        _isLoading = true;
-      });
+    int startIndex = 0;
+    if (content?.hasVoice == true && content?.voiceFile != null) {
+      final idx = items.indexWhere((it) => it.voiceFile == content!.voiceFile);
+      if (idx != -1) startIndex = idx;
+    }
 
-      // Prefer local if exists
-      if (await _localAudioExists()) {
-        await _audioPlayer.setSource(DeviceFileSource(_localAudioPath!));
-      } else {
-        // No local file: start download but do not auto-play yet
-        await _downloadAudio();
-      }
+    final audioState = ref.read(globalAudioProvider);
+    final isPagePlaying = audioState.isPlaying &&
+        items.any((it) => it.voiceFile == audioState.voiceFile);
 
-      await _audioPlayer.setVolume(1.0);
-
-      setState(() {
-        _isLoading = false;
-      });
-    } catch (e) {
-      print('Error initializing audio: $e');
-      setState(() {
-        _isLoading = false;
-      });
+    if (isPagePlaying) {
+      ref.read(globalAudioProvider.notifier).pause();
+    } else {
+      ref.read(globalAudioProvider.notifier).playQueue(
+        items,
+        initialIndex: startIndex,
+        navigationTarget: widget.header,
+      );
     }
   }
 
   Future<void> _playAudio() async {
     if (!content!.hasVoice || content!.voiceFile == null) return;
-
-    try {
-      // Ensure local file available
-      if (!await _localAudioExists()) {
-        await _downloadAudio();
-      }
-      if (_localAudioPath == null) return;
-
-      setState(() {
-        _isLoading = true;
-      });
-
-      await _audioPlayer.play(DeviceFileSource(_localAudioPath!));
-
-      setState(() {
-        _isLoading = false;
-        _isPlaying = true;
-        _autoPlayStopped =
-            false; // Reset auto-play stopped flag when manually playing
-      });
-    } catch (e) {
-      print('Error playing audio: $e');
-      setState(() {
-        _isLoading = false;
-        _isPlaying = false;
-      });
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('خطأ في تشغيل الملف الصوتي'),
-          duration: const Duration(seconds: 3),
-        ),
+    final items = _getPageAudioItems();
+    if (items.isNotEmpty) {
+      final idx = items.indexWhere((it) => it.voiceFile == content!.voiceFile);
+      await ref.read(globalAudioProvider.notifier).playQueue(
+        items,
+        initialIndex: idx != -1 ? idx : 0,
+        navigationTarget: widget.header,
+      );
+    } else {
+      await ref.read(globalAudioProvider.notifier).playAudio(
+        voiceFile: content!.voiceFile!,
+        title: widget.header.name,
+        navigationTarget: widget.header,
       );
     }
   }
 
   Future<void> _pauseAudio() async {
-    try {
-      await _audioPlayer.pause();
-      setState(() {
-        _isPlaying = false;
-        _autoPlayStopped = true; // Mark that user manually stopped auto-play
-      });
-    } catch (e) {
-      print('Error pausing audio: $e');
-    }
+    await ref.read(globalAudioProvider.notifier).pause();
   }
 
   Future<void> _seekAudio(Duration position) async {
-    try {
-      await _audioPlayer.seek(position);
-    } catch (e) {
-      print('Error seeking audio: $e');
-    }
+    await ref.read(globalAudioProvider.notifier).seek(position);
   }
 
   String _formatDuration(Duration duration) {
@@ -386,6 +226,15 @@ class _ContentsViewState extends ConsumerState<ContentsView>
     }
 
     final settings = ref.watch(settingsProvider);
+    final globalAudioState = ref.watch(globalAudioProvider);
+    final isCurrentPlaying = globalAudioState.voiceFile == content?.voiceFile;
+    final isPlaying = isCurrentPlaying && globalAudioState.isPlaying;
+    final isLoading = isCurrentPlaying && globalAudioState.isLoading;
+    final isDownloading = isCurrentPlaying && globalAudioState.isDownloading;
+    final downloadProgress = isCurrentPlaying ? globalAudioState.downloadProgress : 0.0;
+    final position = isCurrentPlaying ? globalAudioState.position : Duration.zero;
+    final duration = isCurrentPlaying ? globalAudioState.duration : Duration.zero;
+    final audioSpeed = globalAudioState.playbackRate;
 
     final Color iconColor =
         settings.nightMode
@@ -413,7 +262,7 @@ class _ContentsViewState extends ConsumerState<ContentsView>
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          if (_isDownloading) ...[
+          if (isDownloading) ...[
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -422,8 +271,8 @@ class _ContentsViewState extends ConsumerState<ContentsView>
                   height: 20,
                   child: CircularProgressIndicator(
                     value:
-                        _downloadProgress > 0 && _downloadProgress < 1.0
-                            ? _downloadProgress
+                        downloadProgress > 0 && downloadProgress < 1.0
+                            ? downloadProgress
                             : null,
                     strokeWidth: 3,
                     color: iconColor,
@@ -431,8 +280,8 @@ class _ContentsViewState extends ConsumerState<ContentsView>
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  _downloadProgress > 0
-                      ? 'جارٍ تنزيل الصوت ${(100 * _downloadProgress).toStringAsFixed(0)}%'
+                  downloadProgress > 0
+                      ? 'جارٍ تنزيل الصوت ${(100 * downloadProgress).toStringAsFixed(0)}%'
                       : 'جارٍ تنزيل الصوت...',
                   style: TextStyles.medium.copyWith(
                     color: textColor,
@@ -443,36 +292,8 @@ class _ContentsViewState extends ConsumerState<ContentsView>
             ),
             const SizedBox(height: 8),
           ],
-          // Auto-play indicator
-          if (settings.autoPlayAudio &&
-              !_isPlaying &&
-              !_isLoading &&
-              !_autoPlayStopped &&
-              !_isDownloading)
-            Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.play_circle_outline, color: iconColor, size: 16),
-                  const SizedBox(width: 4),
-                  Text(
-                    'تشغيل تلقائي',
-                    style: TextStyles.medium.copyWith(
-                      color: iconColor,
-                      fontSize: 12,
-                    ),
-                  ),
-                ],
-              ),
-            ),
           // Progress bar
-          if (_duration.inSeconds > 0)
+          if (duration.inSeconds > 0)
             SliderTheme(
               data: SliderThemeData(
                 trackHeight: 4,
@@ -484,12 +305,12 @@ class _ContentsViewState extends ConsumerState<ContentsView>
                 overlayColor: overlayColor,
               ),
               child: Slider(
-                value: _position.inSeconds.toDouble().clamp(
+                value: position.inSeconds.toDouble().clamp(
                   0.0,
-                  _duration.inSeconds.toDouble(),
+                  duration.inSeconds.toDouble(),
                 ),
                 min: 0,
-                max: _duration.inSeconds.toDouble(),
+                max: duration.inSeconds.toDouble(),
                 onChanged: (value) {
                   _seekAudio(Duration(seconds: value.toInt()));
                   _startHideAudioControlsTimer();
@@ -498,21 +319,21 @@ class _ContentsViewState extends ConsumerState<ContentsView>
             ),
 
           // Duration and position
-          if (_duration.inSeconds > 0)
+          if (duration.inSeconds > 0)
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    _formatDuration(_position),
+                    _formatDuration(position),
                     style: TextStyles.medium.copyWith(
                       color: textColor,
                       fontSize: 12,
                     ),
                   ),
                   Text(
-                    _formatDuration(_duration),
+                    _formatDuration(duration),
                     style: TextStyles.medium.copyWith(
                       color: textColor,
                       fontSize: 12,
@@ -526,15 +347,15 @@ class _ContentsViewState extends ConsumerState<ContentsView>
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (_duration.inSeconds > 0) ...[
+              if (duration.inSeconds > 0) ...[
                 IconButton(
                   icon: Icon(Icons.replay_10, color: iconColor, size: 30),
                   onPressed:
-                      _isDownloading
+                      isDownloading
                           ? null
                           : () {
                             final newPosition =
-                                _position - const Duration(seconds: 10);
+                                position - const Duration(seconds: 10);
                             if (newPosition.inSeconds >= 0) {
                               _seekAudio(newPosition);
                             }
@@ -546,10 +367,10 @@ class _ContentsViewState extends ConsumerState<ContentsView>
 
               GestureDetector(
                 onTap: () {
-                  if (_isDownloading) return;
-                  _isLoading
+                  if (isDownloading) return;
+                  isLoading
                       ? null
-                      : (_isPlaying ? _pauseAudio() : _playAudio());
+                      : (isPlaying ? _pauseAudio() : _playAudio());
                   _showControlsAndRestartTimer();
                 },
                 child: Container(
@@ -560,11 +381,11 @@ class _ContentsViewState extends ConsumerState<ContentsView>
                     color: iconColor.withOpacity(0.1),
                   ),
                   child: Icon(
-                    _isDownloading
+                    isDownloading
                         ? Icons.downloading
-                        : _isLoading
+                        : isLoading
                         ? Icons.hourglass_empty
-                        : (_isPlaying ? Icons.pause : Icons.play_arrow),
+                        : (isPlaying ? Icons.pause : Icons.play_arrow),
                     color: iconColor,
                     size: 30,
                   ),
@@ -587,41 +408,39 @@ class _ContentsViewState extends ConsumerState<ContentsView>
                   ),
                 ),
                 onPressed:
-                    _isDownloading
+                    isDownloading
                         ? null
                         : () async {
-                          setState(() {
-                            // Cycle through common speeds: 1.0, 1.25, 1.5, 2.0
-                            if (_audioSpeed == 1.0) {
-                              _audioSpeed = 1.25;
-                            } else if (_audioSpeed == 1.25) {
-                              _audioSpeed = 1.5;
-                            } else if (_audioSpeed == 1.5) {
-                              _audioSpeed = 2.0;
+                            double nextSpeed = 1.0;
+                            if (audioSpeed == 1.0) {
+                              nextSpeed = 1.25;
+                            } else if (audioSpeed == 1.25) {
+                              nextSpeed = 1.5;
+                            } else if (audioSpeed == 1.5) {
+                              nextSpeed = 2.0;
                             } else {
-                              _audioSpeed = 1.0;
+                              nextSpeed = 1.0;
                             }
-                          });
-                          await _audioPlayer.setPlaybackRate(_audioSpeed);
-                          _startHideAudioControlsTimer();
-                        },
+                            ref.read(globalAudioProvider.notifier).setPlaybackRate(nextSpeed);
+                            _startHideAudioControlsTimer();
+                          },
                 child: Text(
-                  '${_audioSpeed}x',
+                  '${audioSpeed}x',
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
               ),
               // --- End speed control button ---
-              if (_duration.inSeconds > 0) ...[
+              if (duration.inSeconds > 0) ...[
                 const SizedBox(width: 16),
                 IconButton(
                   icon: Icon(Icons.forward_10, color: iconColor, size: 30),
                   onPressed:
-                      _isDownloading
+                      isDownloading
                           ? null
                           : () {
                             final newPosition =
-                                _position + const Duration(seconds: 10);
-                            if (newPosition.inSeconds <= _duration.inSeconds) {
+                                position + const Duration(seconds: 10);
+                            if (newPosition.inSeconds <= duration.inSeconds) {
                               _seekAudio(newPosition);
                             }
                             _startHideAudioControlsTimer();
@@ -714,7 +533,6 @@ class _ContentsViewState extends ConsumerState<ContentsView>
 
   @override
   void dispose() {
-    _audioPlayer.dispose();
     _hideAudioControlsTimer?.cancel();
     _scrollController.dispose();
     _overscrollResetController.dispose();
@@ -968,7 +786,7 @@ class _ContentsViewState extends ConsumerState<ContentsView>
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const SizedBox(height: 10),
+        SizedBox(height: 10.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
@@ -984,13 +802,13 @@ class _ContentsViewState extends ConsumerState<ContentsView>
                     });
                   },
                   child: Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(6.r),
                     decoration: BoxDecoration(
                       color:
                           settings.nightMode
                               ? AppColors.secondaryColor[100]?.withOpacity(0.1)
                               : AppColors.secondaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Icon(
                       Icons.text_decrease,
@@ -998,11 +816,11 @@ class _ContentsViewState extends ConsumerState<ContentsView>
                           settings.nightMode
                               ? AppColors.secondaryColor[100]
                               : AppColors.secondaryColor,
-                      size: 20,
+                      size: 18.r,
                     ),
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 6.w),
                 Text(
                   '${_currentSessionFontSize.toInt()}',
                   style: TextStyles.medium.copyWith(
@@ -1010,26 +828,26 @@ class _ContentsViewState extends ConsumerState<ContentsView>
                         settings.nightMode
                             ? AppColors.secondaryColor[100]
                             : AppColors.secondaryColor,
-                    fontSize: 14,
+                    fontSize: 13.sp,
                   ),
                 ),
-                const SizedBox(width: 8),
+                SizedBox(width: 6.w),
                 GestureDetector(
                   onTap: () {
                     setState(() {
-                      if (_currentSessionFontSize < 30) {
+                      if (_currentSessionFontSize < 35) {
                         _currentSessionFontSize += 1;
                       }
                     });
                   },
                   child: Container(
-                    padding: const EdgeInsets.all(8),
+                    padding: EdgeInsets.all(6.r),
                     decoration: BoxDecoration(
                       color:
                           settings.nightMode
                               ? AppColors.secondaryColor[100]?.withOpacity(0.1)
                               : AppColors.secondaryColor.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(8.r),
                     ),
                     child: Icon(
                       Icons.text_increase,
@@ -1037,7 +855,7 @@ class _ContentsViewState extends ConsumerState<ContentsView>
                           settings.nightMode
                               ? AppColors.secondaryColor[100]
                               : AppColors.secondaryColor,
-                      size: 20,
+                      size: 18.r,
                     ),
                   ),
                 ),
@@ -1045,33 +863,43 @@ class _ContentsViewState extends ConsumerState<ContentsView>
             ),
             // Copy, share, and font buttons
             Row(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 GestureDetector(
                   onTap: () => onCopy(context),
-                  child: Icon(
-                    Icons.copy_all_outlined,
-                    color:
-                        settings.nightMode
-                            ? AppColors.secondaryColor[100]
-                            : AppColors.secondaryColor,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 4.w),
+                    child: Icon(
+                      Icons.copy_all_outlined,
+                      size: 20.r,
+                      color:
+                          settings.nightMode
+                              ? AppColors.secondaryColor[100]
+                              : AppColors.secondaryColor,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 10),
                 GestureDetector(
                   onTap: onShare,
-                  child: Icon(
-                    Icons.share,
-                    color:
-                        settings.nightMode
-                            ? AppColors.secondaryColor[100]
-                            : AppColors.secondaryColor,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 4.w),
+                    child: Icon(
+                      Icons.share,
+                      size: 20.r,
+                      color:
+                          settings.nightMode
+                              ? AppColors.secondaryColor[100]
+                              : AppColors.secondaryColor,
+                    ),
                   ),
                 ),
-                const SizedBox(width: 10),
-                // Font selection buttons (moved here)
+                // Font selection buttons
                 IconButton(
+                  padding: EdgeInsets.all(4.r),
+                  constraints: const BoxConstraints(),
                   icon: Icon(
                     Icons.font_download,
+                    size: 20.r,
                     color:
                         settings.nightMode
                             ? AppColors.secondaryColor[100]
@@ -1081,8 +909,11 @@ class _ContentsViewState extends ConsumerState<ContentsView>
                   onPressed: () => _showFontPicker(context, true),
                 ),
                 IconButton(
+                  padding: EdgeInsets.all(4.r),
+                  constraints: const BoxConstraints(),
                   icon: Icon(
                     Icons.font_download_outlined,
+                    size: 20.r,
                     color:
                         settings.nightMode
                             ? AppColors.secondaryColor[100]
@@ -1091,11 +922,55 @@ class _ContentsViewState extends ConsumerState<ContentsView>
                   tooltip: 'تغيير خط النص',
                   onPressed: () => _showFontPicker(context, false),
                 ),
+                // Play page voices in order
+                Builder(
+                  builder: (ctx) {
+                    final audioState = ref.watch(globalAudioProvider);
+                    final pageItems = _getPageAudioItems();
+                    final isPagePlaying = audioState.isPlaying &&
+                        pageItems.any((it) => it.voiceFile == audioState.voiceFile);
+
+                    return IconButton(
+                      padding: EdgeInsets.all(4.r),
+                      constraints: const BoxConstraints(),
+                      icon: Icon(
+                        isPagePlaying
+                            ? Icons.pause_circle_filled_rounded
+                            : Icons.volume_up_rounded,
+                        size: 22.r,
+                        color: isPagePlaying
+                            ? AppColors.gold
+                            : (settings.nightMode
+                                ? AppColors.secondaryColor[100]
+                                : AppColors.secondaryColor),
+                      ),
+                      tooltip: isPagePlaying
+                          ? 'إيقاف الصوت مؤقتاً'
+                          : 'تشغيل صوتيات الصفحة بالترتيب',
+                      onPressed: _playPageVoices,
+                    );
+                  },
+                ),
+                // Dedicated Audio Player View Button
+                IconButton(
+                  padding: EdgeInsets.all(4.r),
+                  constraints: const BoxConstraints(),
+                  icon: Icon(
+                    Icons.headphones_rounded,
+                    size: 20.r,
+                    color:
+                        settings.nightMode
+                            ? AppColors.secondaryColor[100]
+                            : AppColors.secondaryColor,
+                  ),
+                  tooltip: 'المشغل الصوتي',
+                  onPressed: () => context.pushNamed(Routes.audioPlayer),
+                ),
               ],
             ),
           ],
         ),
-        const SizedBox(height: 15),
+        SizedBox(height: 14.h),
         Text.rich(
           buildStyledText(
             context,
@@ -1253,14 +1128,7 @@ class _ContentsViewState extends ConsumerState<ContentsView>
           recognizer:
               TapGestureRecognizer()
                 ..onTap =
-                    () => context.pushNamed(
-                      Routes.headersViewer,
-                      extra: HeaderModel(
-                        fromHeader: 130,
-                        toHeader: 136,
-                        label: 'دلائل الخيرات',
-                      ),
-                    ),
+                    () => context.pushNamed(Routes.dalailKhairat),
         ),
       );
 
@@ -1361,10 +1229,36 @@ class _ContentsViewState extends ConsumerState<ContentsView>
                 recognizer:
                     TapGestureRecognizer()
                       ..onTap = () async {
-                        final header = await ref
-                            .watch(headersProvider.notifier)
-                            .getHeaderById(int.parse(headerNumber));
-                        context.pushNamed(Routes.contents, extra: header);
+                        final parsedId = int.tryParse(headerNumber);
+                        final dalailItem = DalailKhairatView.getDalailItem(
+                          headerId: parsedId,
+                          text: headerText,
+                        );
+                        if (dalailItem != null) {
+                          if (context.mounted) {
+                            context.pushNamed(
+                              Routes.pdfContentDetails,
+                              extra: PdfContentDetailsParams(
+                                title: dalailItem.subtitle != null &&
+                                        dalailItem.subtitle!.isNotEmpty
+                                    ? '${dalailItem.title} - ${dalailItem.subtitle}'
+                                    : dalailItem.title,
+                                pdfPath: dalailItem.pdfUrl,
+                                voiceFile: dalailItem.voiceFile,
+                              ),
+                            );
+                          }
+                          return;
+                        }
+
+                        if (parsedId != null) {
+                          final header = await ref
+                              .watch(headersProvider.notifier)
+                              .getHeaderById(parsedId);
+                          if (context.mounted) {
+                            context.pushNamed(Routes.contents, extra: header);
+                          }
+                        }
                       },
               ),
             );
@@ -1387,15 +1281,7 @@ class _ContentsViewState extends ConsumerState<ContentsView>
               recognizer:
                   TapGestureRecognizer()
                     ..onTap =
-                        () => context.pushNamed(
-                          Routes.headersViewer,
-                          extra: HeaderModel(
-                            fromHeader: 130,
-                            toHeader: 140,
-                            label:
-                                'دَلَائِلُ الخَيْرَاتِ وَشَوَارِقُ الأَنوَار',
-                          ),
-                        ),
+                        () => context.pushNamed(Routes.dalailKhairat),
             ),
           );
         }

@@ -7,6 +7,9 @@ import 'package:new_azkar_app/features/public/providers/headers_provider.dart';
 import 'package:new_azkar_app/features/public/models/header_model.dart';
 import 'package:new_azkar_app/features/public/models/header_of_header_model.dart';
 import 'package:new_azkar_app/features/home/entities/header.dart';
+import 'package:new_azkar_app/core/services/isar_helper.dart';
+import 'package:new_azkar_app/core/models/audio_item.dart';
+import 'package:new_azkar_app/core/providers/global_audio_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,10 +19,44 @@ class HeadersViewer extends ConsumerWidget {
 
   const HeadersViewer({super.key, required this.headerModel});
 
+  List<AudioItem> _getSectionAudioItems(WidgetRef ref) {
+    if (headerModel.headers == null || headerModel.headers!.isEmpty) {
+      return const [];
+    }
+    final allHeaders = ref.read(headersProvider);
+    final allAudios = IsarHelper.getAllAudioItems();
+    final headerIndices = headerModel.headers!;
+
+    final Map<int, List<AudioItem>> audiosByHeaderId = {};
+    for (final a in allAudios) {
+      if (a.headerId != null) {
+        audiosByHeaderId.putIfAbsent(a.headerId!, () => []).add(a);
+      }
+    }
+
+    final List<AudioItem> sectionAudios = [];
+    for (final idx in headerIndices) {
+      if (idx >= 0 && idx < allHeaders.length) {
+        final hId = allHeaders[idx].id;
+        final items = audiosByHeaderId[hId];
+        if (items != null && items.isNotEmpty) {
+          sectionAudios.addAll(items);
+        }
+      }
+    }
+
+    return sectionAudios;
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final headers = ref.read(headersProvider);
     final headerCount = headerModel.headers!.length;
+    final audioState = ref.watch(globalAudioProvider);
+    final audioNotifier = ref.read(globalAudioProvider.notifier);
+    final sectionAudios = _getSectionAudioItems(ref);
+    final isSectionPlaying = audioState.isPlaying &&
+        sectionAudios.any((a) => a.voiceFile == audioState.voiceFile);
 
     return Scaffold(
       backgroundColor: AppColors.fourthColor,
@@ -35,13 +72,44 @@ class HeadersViewer extends ConsumerWidget {
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(bottom: Radius.circular(20)),
         ),
+        actions: [
+          if (sectionAudios.isNotEmpty)
+            IconButton(
+              icon: Icon(
+                isSectionPlaying
+                    ? Icons.pause_circle_filled_rounded
+                    : Icons.volume_up_rounded,
+                color: isSectionPlaying ? AppColors.gold : Colors.white,
+              ),
+              tooltip: isSectionPlaying
+                  ? 'إيقاف الصوت مؤقتاً'
+                  : 'تشغيل صوتيات القسم بالترتيب',
+              onPressed: () {
+                if (isSectionPlaying) {
+                  audioNotifier.pause();
+                } else {
+                  audioNotifier.playQueue(sectionAudios, initialIndex: 0);
+                }
+              },
+            ),
+          IconButton(
+            icon: const Icon(Icons.headphones_rounded, color: AppColors.gold),
+            tooltip: 'المشغل الصوتي',
+            onPressed: () => context.pushNamed(Routes.audioPlayer),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(LayoutConstants.screenPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildHeaderCard(headerCount),
+            _buildHeaderCard(
+              headerCount,
+              sectionAudios,
+              isSectionPlaying,
+              audioNotifier,
+            ),
             const SizedBox(height: 24),
             ...buildContent(ref, context),
             const SizedBox(height: 32),
@@ -51,7 +119,12 @@ class HeadersViewer extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeaderCard(int headerCount) {
+  Widget _buildHeaderCard(
+    int headerCount,
+    List<AudioItem> sectionAudios,
+    bool isSectionPlaying,
+    GlobalAudioNotifier audioNotifier,
+  ) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
@@ -67,44 +140,93 @@ class HeadersViewer extends ConsumerWidget {
         borderRadius: BorderRadius.circular(20),
         boxShadow: CShadow.LG,
       ),
-      child: Row(
+      child: Column(
         children: [
-          Container(
-            width: 60,
-            height: 60,
-            decoration: BoxDecoration(
-              color: AppColors.gold.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(15),
-            ),
-            child: Icon(
-              Icons.menu_book_rounded,
-              color: AppColors.gold,
-              size: 30,
-            ),
+          Row(
+            children: [
+              Container(
+                width: 60,
+                height: 60,
+                decoration: BoxDecoration(
+                  color: AppColors.gold.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(15),
+                ),
+                child: const Icon(
+                  Icons.menu_book_rounded,
+                  color: AppColors.gold,
+                  size: 30,
+                ),
+              ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      headerModel.label,
+                      style: TextStyles.bold.copyWith(
+                        color: Colors.white,
+                        fontSize: 18,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      '$headerCount ${headerCount == 1 ? 'قسم' : 'أقسام'}',
+                      style: TextStyles.medium.copyWith(
+                        color: Colors.white.withOpacity(0.8),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  headerModel.label,
-                  style: TextStyles.bold.copyWith(
-                    color: Colors.white,
-                    fontSize: 18,
+          if (sectionAudios.isNotEmpty) ...[
+            const SizedBox(height: 14),
+            InkWell(
+              borderRadius: BorderRadius.circular(12),
+              onTap: () {
+                if (isSectionPlaying) {
+                  audioNotifier.pause();
+                } else {
+                  audioNotifier.playQueue(sectionAudios, initialIndex: 0);
+                }
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppColors.gold,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        isSectionPlaying
+                            ? Icons.pause_rounded
+                            : Icons.play_arrow_rounded,
+                        color: AppColors.secondaryColor,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        isSectionPlaying
+                            ? 'إيقاف مؤقت لصوتيات القسم'
+                            : 'استماع لصوتيات القسم بالترتيب (${sectionAudios.length} مقاطع)',
+                        style: TextStyles.bold.copyWith(
+                          color: AppColors.secondaryColor,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  '$headerCount ${headerCount == 1 ? 'قسم' : 'أقسام'}',
-                  style: TextStyles.medium.copyWith(
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: 14,
-                  ),
-                ),
-              ],
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -115,14 +237,16 @@ class HeadersViewer extends ConsumerWidget {
     List<Widget> widgets = [];
     int itemIndex = 0;
     for (int index in headerModel.headers!) {
-      final header = headers[index];
+      if (index >= 0 && index < headers.length) {
+        final header = headers[index];
 
-      widgets.add(
-        Padding(
-          padding: const EdgeInsets.only(bottom: 12),
-          child: _buildContentCard(context, header, itemIndex++, index),
-        ),
-      );
+        widgets.add(
+          Padding(
+            padding: const EdgeInsets.only(bottom: 12),
+            child: _buildContentCard(context, header, itemIndex++, index),
+          ),
+        );
+      }
     }
 
     return widgets;
@@ -134,7 +258,7 @@ class HeadersViewer extends ConsumerWidget {
     int itemIndex,
     int originalIndex,
   ) {
-    final isSpecialCase = originalIndex == 12; // Special case for index 12
+    final isSpecialCase = IsarHelper.isHeaderWithSubHeaders(originalIndex);
 
     return Container(
       width: double.infinity,
@@ -155,24 +279,7 @@ class HeadersViewer extends ConsumerWidget {
             if (isSpecialCase) {
               context.pushNamed(
                 Routes.headersOfHeadersViewer,
-                extra: HeaderOfHeaderModel(
-                  label: 'أذكار وأوراد اليومية',
-                  headers: [
-                    HeaderModel(
-                      label: 'أذكار وأوراد تقرأ صباحًا',
-                      headers: [93, 95, 97, 99, 101, 102, 103, 105, 106],
-                    ),
-                    HeaderModel(
-                      label: 'أذكار وأوراد تقرأ مساء',
-                      headers: [94, 96, 98, 100, 101, 102, 104, 105, 106],
-                    ),
-                    HeaderModel(
-                      label: 'أذكار وأوراد تقرأ صباحًا أو مساء',
-                      fromHeader: 107,
-                      toHeader: 125,
-                    ),
-                  ],
-                ),
+                extra: IsarHelper.getDailyAzkarCategory(),
               );
             } else {
               context.pushNamed(Routes.contents, extra: header);

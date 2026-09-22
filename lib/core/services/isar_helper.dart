@@ -1,5 +1,8 @@
+import 'package:new_azkar_app/core/models/audio_item.dart';
 import 'package:new_azkar_app/features/home/entities/content.dart';
 import 'package:new_azkar_app/features/home/entities/header.dart';
+import 'package:new_azkar_app/features/public/models/header_model.dart';
+import 'package:new_azkar_app/features/public/models/header_of_header_model.dart';
 
 class IsarHelper {
   static int incrementedHeaderId = 1;
@@ -7,321 +10,386 @@ class IsarHelper {
   static int todayazkar = -1;
 
   static int labledHeaderId(String name) {
-    return 0;
+    final header = headers.firstWhere(
+      (h) => h.name.trim() == name.trim(),
+      orElse: () => Header(-1, ''),
+    );
+    return header.id;
   }
 
-  static List<Header> headers = [
-    /// صلاة الفجر
-    Header(incrementedHeaderId++, 'دعاء الفجر'), // 1
-    Header(incrementedHeaderId++, 'أذكار بعد طلوع الفجر'),
-    Header(incrementedHeaderId++, 'دعاء بعد سنة الفجر وقبل صلاة الفجر'),
-    Header(incrementedHeaderId++, 'قراءة سورة طه'),
-    Header(
-      incrementedHeaderId++,
-      'عمل الإمام عبد الله الحدّاد  والحبيب عبد الرحمن المشهور في سورتي صلاة الفجر',
-    ),
-    Header(incrementedHeaderId++, 'أذكار ما بعد الصلاة'),
-    Header(incrementedHeaderId++, 'دعاء اللّطف'),
-    Header(
-      incrementedHeaderId++,
-      'عمل الإمام الغزاليّ في قراءة سورة الفاتحة بعد الصّلوات',
-    ),
-    Header(
-      incrementedHeaderId++,
-      'دعاء الفاتحة للإمام الحبيب عبد الله الحدّاد رضي الله عنه',
-    ),
-    Header(incrementedHeaderId++, 'سورة ﴿يس﴾ والدعاء بعدها'),
-    Header(incrementedHeaderId++, 'المسبعات'),
-    Header(
-      incrementedHeaderId++,
-      'الأذكار العشرة للحبيب عليّ بن حسنٍ العطّاس رضي الله عنه',
-    ),
-    Header(
-      // 13
-      incrementedHeaderId++,
-      'الاشتغال بمُطالَعَةٍ أَوْ قِرَاءَةِ قُرآنِ أَوْ ذِكْرٍ إلى الإِشْراقِ، ومن الأذكار الأذكار اليومية',
-    ),
+  static const Map<String, String> googleDriveAudios = {
+    '01دعاء الفجر.mp3': '1NE0agYOtPvh0_kbuDjIvpsaHsnbaTmAQ',
+    '02أذكار بعد طلوع الفجر.mp3': '1DIIi04zd_R1Xuh9mHb-vu12b5r_UYYfA',
+    '03دعاء_بعد_سنة_الفجر_وقبل_صلاة_الفجر.mp3':
+        '10T8UGM3QaYcU2zBSh43kG59-dotJTJBd',
+    '04سورة طه.mp3': '13WRRGRJE-6wLVachgk6R6DDOb1aL9S2X',
+    '05أذكار مابعد الصلاة.mp3': '18JIMi0UhEnGoNeFVNHAloWi_9Oa_2nCs',
+    '07الأذكار_العشرة_للحبيب_علي_بن_حسن_العطاس_رضي_عنه.mp3':
+        '1TAsQEHEa4SvuWgVkx_4fnqWfJoIXfOwo',
+    '41المسبعات.mp3': '1y-AZxE35e1818smMyCh5waJALP64TNQP',
+    '08ركعتا الإشراق والدعاء بعدها.mp3': '1b82G9Cuo1fMZVQjAuYTCBh8uPkAvIxg1',
+    '09دعاء الاستخارة.mp3': '1Zan6MTw1pevPjGJWTGg1s_w_LiTzHRIa',
+    '10صلاة الضحى.mp3': '1Z7U-Jz4Onnx2kAWsvq1EzzVBs-oeyqdV',
+    'حزب البحر للإمام الشاذلي / 25حزب البحر':
+        '1w1AOARSdMJhQJV2HS4zSLxD_WVHremHT',
+    'دعاء الكرب.mp3': '1UYE3rxVKUx2bUHlTq5L4jGKoCWawHJlQ',
+    'دعاء الإمداد بالقوة.mp3': '1mXtyEkGckwTRHpE4Il0wOhZxlNoBCB4D',
+    'سورة الواقعة.mp3 / 19الدعاء بعد الواقعة':
+        '1nFP2Im9h5w1YSGCn6pmbvdtETZ2hnWTl',
+    '20مايقال فبيل الغروب.mp3': '1N4fYSP89lrY32ORPSkGygbVVw6yzIpH3',
+    '21مايقال بعد سماع الأذان.mp3': '1SQ5YW9FnxJWDcJUhONHThybHHVGlW5We',
+    'راتب_الإمام_عبدالله_بن_علوي_الحداد.mp3':
+        '1ZiEN8-3aJGcZHIxrDb9UE9PDDPgSEcZJ',
+    'راتب_الإمام_عمر_بن_عبدالرحمن_العطاس.mp3':
+        '1EUMC-ZRCeQkl-cXtS8FuwrX-FHmOzrYu',
+    '29دعاء بعد الوتر.mp3': '1JIk9GsIC5wjKLVob5F147hvORiZatIQN',
+    'حزب النصر.mp3': '1dUG88heXJ_bNFGUJFVDso1L0eU-m6c07',
+    'دعاء افتتاح الدلائل (first in Dalail Khairat)':
+        '11bVqJXT6cjeZUxZA4wD4BlV6FmtOWxVZ',
+    '54الحزب الاول من الدلائل.mp3': '1hlV-BfFY5GNeu7Wc_wdA9BCY2n4ouLhl',
+    '55الحزب الثاني من الدلائل.mp3': '1NqgD6xoQTTZtRAbLzvr58fATakXo6iE2',
+    '56الحزب الثالث من الدلائل.mp3': '1w9uuN6fh-lpM5OWQxM-2uobJzvVjjZba',
+    '57الحزب الرابع من الدلائل.mp3': '1iD7aCuWjyRhHBpOinLNj9idvTVDXpwUE',
+    '58الحزب الخامس من الدلائل.mp3': '1SJ-Fbr5fAFWl-mhkbQv8xisYxBeTiBht',
+    '59الحزب الاالسادس من الدلائل.mp3': '1G6SfAVUAeCnYGvcNpTi2EckSXgrWJ1sQ',
+    '60الحزب السابع من الدلائل.mp3': '1FlBbPwqR9SQwFn0aDfS3bpXa7JAlXS7h',
+    '35اسم الله الليطف والدعاء بعده.mp3': '1OB6P3a3rkswQ0h0mkXhbtZvms6a81xU4',
+    '47حزب الفتح والنصر.mp3': '15tiNMjIDoT7OKylFRKE6Rc9X_RECFPFD',
+    '43المنجيات / المهلكات / المنقذات': '1uzY__6vCPOlFm3Aimqsh-xxjDb3c26rr',
+    '46بعض السور التي يطلب قراءتها.mp3': '1CUwFFcVbYp6-nsUxCdD1H7sCyH2HKAdX',
+    '33قصيد ببسم الله مولانا ابتدينا.mp3': '1kgforkEff3qNMv7eZ81LFZg-0UBQcA9b',
+    '36آيات الكفاية.mp3': '1MC4IwBJFgPirg97KNqB4UuMru1As_CCY',
+    '37آيات الحرز.mp3': '1i6CKDhz-Rv1Ai8whAWHCeRsF9S69oaX1',
+    'ورد الإمام ابي بكر السكران.mp3 / 25عقيدة الشيخ علي':
+        '1pbFtdfksbGQdHmNooxa9W4A-WrYx56zI',
+    'ورد الشّيخ أبي بكرٍ بن سالمٍ باعلوي': '1bI3SFC9MOw_qfbygCuMBMytCAoYNzd-a',
+    'ورد الإمام النووي.mp3': '1ek2tnjJvmT3DAZMmpCtlcv1gIpsjDtdZ',
+    '38ورد الحبيب عقيل بن يحي.mp3': '1FL66tccQcl1GL7oduwX9oHm8Yf5QwQO6',
+    '39ورد_سيدنا_الإمام_شيخان_بن_علي_بن_هاشم.mp3':
+        '1S_Jze1oU7SfY0PgeKvw-rLrXu-HMnU1U',
+    '40المعشرات.mp3': '1iaTfbFLj5j_UKHTSo9gs-EgVG1EzosRG',
+    '42دعاء الفرج.mp3': '173EUrCR8R6fwBnlZzpwP21_e7jpcn0Aa',
+    '48حزب البر للشاذلي.mp3': '1bcHt_nVi6nkbcQfcMBuOW_kz9wu8ouo_',
+    '49دعاء_لسيدنا_الخضر_والياس.mp3': '1_Kj_JY3GhfOjNlmAs59tDU_ipPcHCXQl',
+    '51من اوراد ابن عربي.mp3': '1b077ognN5AVL9hK92ZOIB_HvnKaWyvd8',
+    '61دعاء آية الكرسي.mp3': '1OqVWFRTEQTYH_FVFkyKb2uLmfpIA2T8P',
+    '62ذكر لكل مطلب.mp3': '14BTNWZr22OWazicTarB970HIVYy3NxYT',
+    '63تعوذات ورقي نافعة.mp3': '1ydofyj3QkoV0lX4WiYlTue_3NKqieDJX',
+    '64دعاء_يقرأ_صباحا_للحفظ_من_الأعداء.mp3':
+        '1UyrXeG96FdOejZVauzavFMP7GKUsA8nJ',
+    '65حزب الحجب للشاذلي.mp3': '11acitT6Cwae7w_jzcsleswQi0HdgKx-t',
+    '66دعاء_منسوب_لأم_قطب_الدين_السنباطي.mp3':
+        '1clgfih68shl-IJ1-fd6i6bSFQwNwpxOC',
+    '67دعاء للحفظ.mp3': '1umWy8kVOvhXFOcHvqbZ_nCCDeQp9t9hM',
+    '68دعاء يقرأ على الأعداء.mp3': '11U2uRhm3OFaDA8iwWbU6fqG8zGZ06wyR',
+    '69ذكر للفتوح وتحصيل العلم.mp3': '1ypaUvpmCfYK3mENet4hVIDo3RHAMqFDE',
+    '70دعاء لقوة الحافظة.mp3': '1yonI42oaZP0WgNtz9reB5VxzuuQ8-koi',
+    'دعاء نبوي.mp3': '1a2fZ1ldb2-gdAK5_oiATI8nbSE8iUWbC',
+    'الورد اللطيف.mp3': '11bVqJXT6cjeZUxZA4wD4BlV6FmtOWxVZ',
+    '06عمل_الإمام_الغزالي_في_قراءة_سورة_الفاتحة_بعد_الفجر.mp3':
+        '17ZqVCIQaHxV5r4FyDSKU32cPmzyKR1YF',
+    '11قبلية الظهر.mp3': '1W407B3pcCjZlafRDT7ovpZcy6MiNyUhL',
+    '12أذكار مابعد صلاة الظهر.mp3': '1ji6boYMkUhPKvH8dmVtpHy5gDBLgN-EE',
+    '13عمل_الإمام_الغزالي_في_قراءة_سورة_الفاتحة_بعد_العصر.mp3':
+        '1r87532WIkBSmtvnbfnAf9DIy96GRLbe7',
+    '14ورد الجلالة.mp3': '1rhbgYkmOLPG5veHf9eJWL1OuzAshWfG4',
+    '15قبلية العصر.mp3': '1A67iq2S1kingsLFAA2alpZKL8N-t40RZ',
+    '16الاستغفار.mp3': '1P9pj7_XlVzUcpEEEjOhNgLw8bkO3JNKp',
+    '17أذكار مابعد صلاة العصر.mp3': '1sECNACM469PwfIeiVnoEqcO6rDC_QVjT',
+    '18عمل_الإمام_الغزالي_في_قراءة_سورة_الفاتحة_بعد_الصلوات.mp3':
+        '1AM0X79rgJUKHhLE1CNx7IS-r4lYk_Ho3',
+    '19الدعاء بعد الواقعة.mp3': '17AGOqyO0BRljNwhxvolazdFEefM26HaP',
+    '22أذكار مابعد صلاة المغرب.mp3': '1NIDxZMw4i29AWjk6YgkFQ3g13xATiT8N',
+    '23عمل_الإمام_الغزالي_في_قراءة_سورة_الفاتحة_بعد_الصلوات.mp3':
+        '1qcYp1JlL5_uIOfQFxk-mQibTifg0tKwb',
+    '24بعدية المغرب.mp3': '1Yv75UDr2BYdz3pZfQu7hqJSgwZipylJE',
+    '25عقيدة_سيدنا_الشيخ_علي_بن_أبي_بكر_السكران_رضي_الله_عنه.mp3':
+        '199wkhcX8BWEV_QWEq3Skx7-uANJTXZFb',
+    '26قبلية العشاء.mp3': '1siLadeKSKMb1KcgFejXx637Y7ABrjnSz',
+    '27أذكار مابعد صلاة العشاء.mp3': '1nRVAR-voH6g6IF7tr1n6Pir6vHEDLXnC',
+    '28عمل_الإمام_الغزالي_في_قراءة_سورة_الفاتحة_بعد_الصلوات.mp3':
+        '11V7fUXhdOuRfVYeVElaFoBLB3Jd7iYGb',
+    '30حزب النصر.mp3': '1jkB3-UIw6qYt5KAFXoQz_gM4LSiA_W8o',
+    '31آداب الاستيقاظ.mp3': '1TD7B7vXeUkM-8RBQdlr_WXLrCZ3x-SLs',
+    '32آداب النوم.mp3': '1XiyzcoYR-4uLVeQJWlDdXIGpTJ6ujffP',
+    '34قصيدة_ببسم_الله_أبدي_في_مقالي_الشيخ_علي_بن_أبي_بكر_السكران.mp3':
+        '1FAoRoZtjcQUpt1buUHM4mRyI5tso0ID8',
+    '44المهلكات.mp3': '1otbILgztIvysOumGT7sGkmz3xWi-SZZn',
+    '45المنقدات.mp3': '1PGDNSSj9JD6GcvQ8aULvx-P7NQLQdxcZ',
+    '09دعاء الاستخارة - Copy.mp3': '1YjlCEXjz5o5d1urTYIQfCM0zSHEioz5k',
+    '50من أسماء الله الحسنى.mp3': '1rTnwifL5Wm4FzkJKAM454Z5KwBpXytnt',
+    '52راتب_سيدنا_الإمام_الحبيب_عبدالله_بن_حسين_بلفقيه_رضي_اللع_عنه.mp3':
+        '1BI8ux7T7LionZWh12I_LwBsCnpSVdbJc',
+    '53صلاة تعدل بالدلائل.mp3': '1kTjhoJyPS-yWO6aBWZUbGyE2NW7O1WKf',
+    '71سور مطلوبة يوم الجمعة.mp3': '1n7D6bIlj58N_N6d0elXEq2e9F2lNIv82',
+    '43المنجيات.mp3': '1uzY__6vCPOlFm3Aimqsh-xxjDb3c26rr',
+    '48حزب البر للشاذلي رضي الله عنه.mp3': '1bcHt_nVi6nkbcQfcMBuOW_kz9wu8ouo_',
+    '49دعاء_لسيدنا_الخضر_والياس_عليهما_السلام.mp3':
+        '1_Kj_JY3GhfOjNlmAs59tDU_ipPcHCXQl',
+    '68دعاء بقرأ على الأعداء.mp3': '11U2uRhm3OFaDA8iwWbU6fqG8zGZ06wyR',
+  };
 
-    /// الإشراق والضحى
-    Header(incrementedHeaderId++, 'ركعتا الإشراق والدعاء بعدهما'), // 14
-    Header(incrementedHeaderId++, 'دعاء الاستخارة'),
-    Header(incrementedHeaderId++, 'صلاة الضحى'), // 16
-    ///  صلاة الظهر
-    Header(incrementedHeaderId++, 'قبلية الظهر'), // 17
-    Header(incrementedHeaderId++, 'سورتا صلاة الظهر'),
-    Header(incrementedHeaderId++, 'أذكار ما بعد الصلاة'),
-    Header(incrementedHeaderId++, 'دعاء اللّطف'),
-    Header(
-      incrementedHeaderId++,
-      'عمل الإمام الغزاليّ في قراءة سورة الفاتحة بعد الصّلوات',
-    ),
-    Header(
-      incrementedHeaderId++,
-      'دعاء الفاتحة للإمام الحبيب عبد الله الحدّاد رضي الله عنه',
-    ),
-    Header(incrementedHeaderId++, 'سورة ﴿يس﴾ والدعاء بعدها'),
-    Header(incrementedHeaderId++, 'بعدية الظهر'),
-    Header(incrementedHeaderId++, 'ورد الجلالة'), //25
-    ///   صلاة العصر
-    Header(incrementedHeaderId++, 'قبلية العصر'), // 26
-    Header(incrementedHeaderId++, 'الاستغفار'),
-    Header(incrementedHeaderId++, 'سورتا صلاة العصر'),
-    Header(incrementedHeaderId++, 'أذكار ما بعد الصلاة'),
-    Header(incrementedHeaderId++, 'دعاء اللّطف'),
-    Header(
-      incrementedHeaderId++,
-      'عمل الإمام الغزاليّ في قراءة سورة الفاتحة بعد الصّلوات',
-    ),
-    Header(
-      incrementedHeaderId++,
-      'دعاء الفاتحة للإمام الحبيب عبد الله الحدّاد رضي الله عنه',
-    ),
-    Header(incrementedHeaderId++, 'سورة ﴿يس﴾ والدعاء بعدها'),
-    Header(incrementedHeaderId++, 'حزب البحر للإمام الشاذلي'),
-    Header(incrementedHeaderId++, 'دعاء الكرب'),
-    Header(incrementedHeaderId++, 'دعاء الإمداد بالقوّة'),
-    Header(incrementedHeaderId++, 'سورة الواقعة والدعاء بعدها'),
-    Header(incrementedHeaderId++, 'ما يقال قبيل الغروب'), // 38
-    ///  صلاة المغرب
-    Header(incrementedHeaderId++, 'ما يقال بعد سماع الأذان'), // 39
-    Header(
-      incrementedHeaderId++,
-      'عمل الإمام عبد الله الحدّاد  والحبيب عبد الرحمن المشهور في سورتي صلاة المغرب',
-    ),
-    Header(incrementedHeaderId++, 'أذكار ما بعد الصلاة'),
-    Header(incrementedHeaderId++, 'دعاء اللّطف'),
-    Header(
-      incrementedHeaderId++,
-      'عمل الإمام الغزاليّ في قراءة سورة الفاتحة بعد الصّلوات',
-    ),
-    Header(
-      incrementedHeaderId++,
-      'دعاء الفاتحة للإمام الحبيب عبد الله الحدّاد رضي الله عنه',
-    ),
-    Header(incrementedHeaderId++, 'سورة ﴿يس﴾ والدعاء بعدها'),
-    Header(incrementedHeaderId++, 'بعدية المغرب'),
-    Header(incrementedHeaderId++, 'قبلية المغرب'),
-    Header(incrementedHeaderId++, 'صلاة الأوابين'),
-    Header(incrementedHeaderId++, 'راتب الامام الحداد'),
-    Header(
-      incrementedHeaderId++,
-      'عقيدة سيّدنا الشّيخ عليّ بن أبي بكرٍ السّكران رضي الله عنه',
-    ),
-    Header(incrementedHeaderId++, 'راتب العطّاس'),
-    Header(incrementedHeaderId++, 'الدّعاء بعد راتب العطّاس'),
-    Header(
-      // 53
-      incrementedHeaderId++,
-      'الأذكار العشرة للحبيب عليّ بن حسنٍ العطّاس رضي الله عنه',
-    ),
+  // --- Category Getters for UI to avoid hardcoded indices ---
 
-    ///   صلاة العشاء
-    Header(incrementedHeaderId++, 'قبلية العشاء'), // 54
-    Header(
-      incrementedHeaderId++,
-      'عمل الإمام عبد الله الحدّاد  والحبيب عبد الرحمن المشهور في سورتي صلاة العشاء',
-    ),
-    Header(incrementedHeaderId++, 'أذكار ما بعد الصلاة'),
-    Header(incrementedHeaderId++, 'دعاء اللّطف'),
-    Header(
-      incrementedHeaderId++,
-      'عمل الإمام الغزاليّ في قراءة سورة الفاتحة بعد الصّلوات',
-    ),
-    Header(
-      incrementedHeaderId++,
-      'دعاء الفاتحة للإمام الحبيب عبد الله الحدّاد رضي الله عنه',
-    ),
-    Header(incrementedHeaderId++, 'سورة ﴿يس﴾ والدعاء بعدها'),
-    Header(incrementedHeaderId++, 'بعدية العشاء'), // 61
-    /// صلاة الوتر
-    Header(incrementedHeaderId++, 'صلاة الوتر'), // 62
-    Header(incrementedHeaderId++, 'دعاء بعد الوتر'),
-    Header(incrementedHeaderId++, 'حزب النّصر'), //64
-    /// الآداب يومية
-    /// آداب يومية
-    Header(incrementedHeaderId++, 'آداب الاستيقاظ'), // 65
-    Header(incrementedHeaderId++, 'آداب لبس الثّوب'), // 66
-    /// آداب الطهارة
-    Header(incrementedHeaderId++, 'آداب الدّخول إلى الخلاء'), // 67
-    Header(incrementedHeaderId++, 'آداب الخروج من الخلاء'),
-    Header(incrementedHeaderId++, 'آداب الوضوء'), //69
-    /// آداب الخروج للمسجد
-    Header(incrementedHeaderId++, 'دعاء الخروج إلى المسجد'), // 70
-    Header(incrementedHeaderId++, 'دعاء الدّخول إلى المسجد'),
-    Header(incrementedHeaderId++, 'سنة تحية المسجد وآداب المكث به'),
-    Header(incrementedHeaderId++, 'آداب الخروج من المسجد'),
-    Header(incrementedHeaderId++, ' دعاء الخروج من المنزل'),
-    Header(incrementedHeaderId++, 'دعاء دخول المنزل'),
-    Header(incrementedHeaderId++, 'آداب خلع الثوب ولبسه'),
-    Header(incrementedHeaderId++, 'آداب الأكل'),
-    Header(incrementedHeaderId++, 'دعاء مغادرة المجلس'),
-    Header(incrementedHeaderId++, 'آداب النّوم'), // 79
-    /// نصائح وآداب
-    Header(incrementedHeaderId++, 'نصائح عامّةٌ'), // 80
-    Header(incrementedHeaderId++, 'نصائح لطالب العلم'), // 81
-    Header(incrementedHeaderId++, 'من آداب طالب العلم'), // 82
-    /// دلائل الخيرات
-    Header(
-      incrementedHeaderId++,
-      'مقدمة الجزولي',
-    ), // neccessary from start to end
-    Header(incrementedHeaderId++, 'فصل في فضل الصلاة على النبي'),
-    Header(incrementedHeaderId++, 'دعاء افتتاح الدلائل'),
-    Header(incrementedHeaderId++, 'دعاء يقرأ بعد الأسماء الشريفة'),
-    Header(incrementedHeaderId++, 'حزب يوم الاثنين'),
-    Header(incrementedHeaderId++, 'حزب يوم الثلاثاء'),
-    Header(incrementedHeaderId++, 'حزب يوم الاربعاء'),
-    Header(incrementedHeaderId++, 'حزب يوم الخميس'),
-    Header(incrementedHeaderId++, 'حزب يوم الجمعة'),
-    Header(incrementedHeaderId++, 'حزب يوم السبت'),
-    Header(incrementedHeaderId++, 'حزب يوم الاحد'), // 93
-    /// الأذكار
+  // Prayers View Categories
+  static HeaderModel getFajrCategory() =>
+      HeaderModel(label: 'صلاة الفجر', fromHeader: 0, toHeader: 12);
+  static HeaderModel getIshraqCategory() =>
+      HeaderModel(label: 'الإشراق والضحى', fromHeader: 13, toHeader: 15);
+  static HeaderModel getZuhrCategory() =>
+      HeaderModel(label: 'صلاة الظهر', fromHeader: 16, toHeader: 24);
+  static HeaderModel getAsrCategory() =>
+      HeaderModel(label: 'صلاة العصر', fromHeader: 25, toHeader: 37);
+  static HeaderModel getMaghribCategory() =>
+      HeaderModel(label: 'صلاة المغرب', fromHeader: 38, toHeader: 52);
+  static HeaderModel getIshaCategory() =>
+      HeaderModel(label: 'صلاة العشاء', fromHeader: 53, toHeader: 60);
+  static HeaderModel getWitrCategory() =>
+      HeaderModel(label: 'صلاة الوتر', fromHeader: 61, toHeader: 63);
 
-    ///  أذكار وأوراد اليومية
-    ///  أذكار وأوراد تقرأ صباحًا
-    Header(
-      incrementedHeaderId++,
-      'الورد اللّطيف للحبيب عبد الله الحدّاد رضي الله عنه',
-    ),
-    Header(
-      incrementedHeaderId++,
-      'راتب سيّدنا الإمام الحبيب عبد الله بن حسينٍ بلفقيه ـ رضي الله عنه',
-    ),
-    Header(incrementedHeaderId++, 'اسم الله اللّطيف والدّعاء بعده (بعد الفجر)'),
-    Header(incrementedHeaderId++, 'المسبّعات  (قبل الإشراق)'),
-    Header(incrementedHeaderId++, 'حزب الفتح والنّصر  (بعد صلاة الصبح)'),
-    Header(
-      incrementedHeaderId++,
-      'الأذكار العشرة للحبيب عليّ بن حسنٍ العطّاس رضي الله عنه (بعد الفجر)',
-    ),
+  // Everyday Etiquette View Categories & Individual Headers
+  static HeaderModel getTaharahCategory() =>
+      HeaderModel(label: 'آداب الطهارة', fromHeader: 66, toHeader: 68);
+  static HeaderModel getMosqueCategory() =>
+      HeaderModel(label: 'آداب الخروج للمسجد', fromHeader: 69, toHeader: 72);
 
-    ///  أذكار وأوراد تقرأ مساءً
-    Header(
-      incrementedHeaderId++,
-      'الورد اللّطيف للحبيب عبد الله الحدّاد رضي الله عنه',
-    ),
-    Header(
-      incrementedHeaderId++,
-      'راتب سيّدنا الإمام الحبيب عبد الله بن حسينٍ بلفقيه ـ رضي الله عنه',
-    ),
-    Header(
-      incrementedHeaderId++,
-      'اسم الله اللّطيف والدّعاء بعده (بعد المغرب)',
-    ),
-    Header(incrementedHeaderId++, 'المسبّعات'),
-    Header(
-      incrementedHeaderId++,
-      'الأذكار العشرة للحبيب عليّ بن حسنٍ العطّاس رضي الله عنه (بعد المغرب)',
-    ),
-    Header(incrementedHeaderId++, 'حزب البحر (بعد العصر)'),
-    Header(
-      incrementedHeaderId++,
-      'حزب النصر للإمام أبي الحسن الشاذلي رضي الله عنه (بعد العشاء)',
-    ),
-    Header(incrementedHeaderId++, 'راتب الامام الحداد (بعد العشاء)'),
-    Header(
-      incrementedHeaderId++,
-      'عقيدة سيّدنا الشّيخ عليّ بن أبي بكرٍ السّكران رضي الله عنه',
-    ),
-    Header(incrementedHeaderId++, 'راتب العطّاس'),
-    Header(incrementedHeaderId++, 'الدّعاء بعد راتب العطّاس'),
+  static int get wakeUpHeaderIndex => 64;
+  static int get wearDressHeaderIndex => 65;
+  static int get exitHomeHeaderIndex => 73;
+  static int get enterHomeHeaderIndex => 74;
+  static int get undressClothesHeaderIndex => 75;
+  static int get eatingHeaderIndex => 76;
+  static int get leaveCouncilHeaderIndex => 77;
+  static int get sleepHeaderIndex => 78;
+  static int get morningAndEveningRemembrancesHeaderIndex => 12;
+  static int get immunizationRemembrancesHeaderIndex => 11;
 
-    // مشترك بينهم
-    Header(incrementedHeaderId++, 'المنجيات والمهلكات، والمنقذات'),
-    Header(incrementedHeaderId++, 'بعض السّور  التي يطلب قراءتها'),
-    Header(
-      incrementedHeaderId++,
-      'من وصايا الحبيب عليّ بن حسنٍ العطّاس رضي الله عنه',
-    ),
+  // Tips & Etiquette View Individual Headers
+  static int get generalTipsHeaderIndex => 79;
+  static int get seekerTipsHeaderIndex => 80;
+  static int get seekerEtiquetteHeaderIndex => 81;
 
-    ///  أذكار وأوراد تقرأ صباحًا أو مساء
-    Header(incrementedHeaderId++, 'قصيدة ببسم الله مولانا ابتدينا'),
-    Header(
-      incrementedHeaderId++,
-      'قصيدة ببسم الله أبدي في مقالي الشَّيْخِ عَلِيِّ بْنِ أَبِي بَكْرٍ السَّكْرَانِ',
-    ),
-    Header(incrementedHeaderId++, 'آيات الكفاية'),
-    Header(incrementedHeaderId++, 'آيات الحرز'),
-    Header(incrementedHeaderId++, 'حزب النّصر على الأعداء للإمام الحداد'),
-    Header(
-      incrementedHeaderId++,
-      'الورد اللّطيف للحبيب عبد الله الحدّاد رضي الله عنه',
-    ),
-    Header(incrementedHeaderId++, 'ورد سيّدنا أبي بكرٍ السّكران رضي الله عنه'),
-    Header(incrementedHeaderId++, 'ورد الشّيخ أبي بكرٍ بن سالمٍ باعلوي'),
-    Header(incrementedHeaderId++, 'ورد الإمام النّووي'),
-    Header(incrementedHeaderId++, 'ورد الحبيب عقيل بن يحيـى'),
-    Header(incrementedHeaderId++, 'ورد سيّدنا الإمام شيخان بن عليٍّ بن هاشمٍ'),
-    Header(incrementedHeaderId++, 'المعشّرات'),
-    Header(incrementedHeaderId++, 'دعاء الفرج'),
-    Header(incrementedHeaderId++, 'دعاء الكرب'),
-    Header(incrementedHeaderId++, 'حزب البرّ للشاذليّ رضي الله عنه'),
-    Header(incrementedHeaderId++, 'دعاءٌ لسيّدنا الخضر وإلياس عليهما السّلام'),
-    Header(incrementedHeaderId++, 'من أسماء الله الحسنى'),
-    Header(incrementedHeaderId++, 'من أوراد ابن عربي'),
-    Header(incrementedHeaderId++, ' دلائل الخيرات'),
-    Header(incrementedHeaderId++, 'قراءة القرآن'), // 133
-    /// أذكار وأدعية خاصة
-    Header(incrementedHeaderId++, 'ما يقال خلف الجنازة'), // 134
-    Header(incrementedHeaderId++, ' ما يطلب عند السفر'),
-    Header(incrementedHeaderId++, 'دعاء آية الكرسيّ'),
-    Header(incrementedHeaderId++, 'ذكر لكل مطلب'),
-    Header(incrementedHeaderId++, 'تعوّذاتٌ ورقىً نافعةٌ'),
-    Header(incrementedHeaderId++, 'آياتٌ تكتب للحفظ'),
-    Header(
-      incrementedHeaderId++,
-      'فائدةٌ في فضل نسب النّبيّ صلّى الله عليه وآله وسلّم',
-    ),
-    Header(incrementedHeaderId++, 'دعاءٌ يقرأ صباحاً للحفظ من الأعداء'),
-    Header(incrementedHeaderId++, ' حزب الحجب للشاذلي'),
-    Header(incrementedHeaderId++, ' دعاء منسوب لأم قطب الدين السنباطي'),
-    Header(incrementedHeaderId++, 'دعاء للحفظ'),
-    Header(incrementedHeaderId++, 'فائدةٌ لقضاء الحاجة وكفاية العدو'),
-    Header(incrementedHeaderId++, 'دعاء يقرأ على الأعداء'),
-    Header(incrementedHeaderId++, 'فائدةٌ لمن خاف مكر قومٍ'),
-    Header(incrementedHeaderId++, ' ذكر للفتوح وتحصيل العلم'),
-    Header(incrementedHeaderId++, 'دعاء لقوة الحافظة'),
-    Header(incrementedHeaderId++, ' أذكار لطلب الرزق وقضاء الدين'),
-    Header(incrementedHeaderId++, 'فائدةٌ لإذهاب الوجع'),
-    Header(
-      incrementedHeaderId++,
-      'دعاء لتنزيه القلب عن التعلق بما دون الله',
-    ), // 126
-    ///  ما يطلب ليلة الجمعة ويومها
-    ///
-    /// ما يطلب ليلة الجمعة
-    Header(incrementedHeaderId++, 'قراءة سورة الكهف'), // 144
-    Header(
-      incrementedHeaderId++,
-      'الإكثار من الصلاة على النبي صلى الله عليه وسلم',
-    ),
-    Header(
-      incrementedHeaderId++,
-      'قراءة آخر سورة الجاثية، وجعل ثوابه للوالدين',
-    ),
-    Header(incrementedHeaderId++, 'دعاء لطلب المغفرة للوالدين'), // 147
-    /// ما يطلب يوم الجمعة
-    Header(incrementedHeaderId++, 'توزيع الأوقات في العبادة و التبكير للجامع'),
-    Header(incrementedHeaderId++, 'سور يطلب قراءتها يوم الجمعة'),
-    Header(
-      incrementedHeaderId++,
-      'الإكثار من الصلاة على النبي صلى الله عليه وسلم',
-    ),
-    Header(
-      incrementedHeaderId++,
-      'صيغة خاصة من الصلاة على النبي صلى الله عليه وسلم',
-    ),
-    Header(incrementedHeaderId++, 'أربع ركعات فضيلة'),
-    Header(incrementedHeaderId++, 'أذكار بعد صلاة الجمعة'),
-    Header(incrementedHeaderId++, 'ما يقال بعد الانصرف من صلاة الجمعة'), // 154
-  ];
+  // Daily Supplications Category (Morning & Evening groups)
+  static HeaderOfHeaderModel getDailyAzkarCategory() => HeaderOfHeaderModel(
+    label: 'أذكار وأوراد اليومية',
+    headers: [
+      HeaderModel(
+        label: 'أعمال الصباح (من نصف  الليل إلى الزوال)',
+        // headers: const [93, 94, 95, 96, 97, 98, 110, 111, 112],
+        headers: const [
+          113,
+          114,
+          115,
+          116,
+          97,
+          94,
+          59,
+          // 164 (out of bounds index, headers count is 163: 0..162)
+          95,
+          110,
+          111,
+          98,
+          117,
+          // 99,
+          93,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          128,
+          108,
+          96,
+          112,
+          129,
+          130,
+          140,
+          131,
+          132,
+        ],
+      ),
+      HeaderModel(
+        label: 'أعمال المساء (من الزوال إلى نصف  الليل)',
+        headers: const [
+          9, //1
+          112, //2
+          104, //3
+          126, //4
+          36, //5
+          127, //6
+          105, //7
+          102, //8
+          124, //9
+          111, //10
+          106, //11
+          49, //12
+          103, //13
+          101, //14
+          110, //15
+          97, //16
+          99, //17
+          50, //18
+          100, //20
+          109, //21
+          51, //22
+        ],
+        // headers: const [
+        //   99,
+        //   100,
+        //   101,
+        //   102,
+        //   103,
+        //   104,
+        //   105,
+        //   110,
+        //   111,
+        //   112,
+        //   106,
+        //   107,
+        //   108,
+        //   109,
+        // ],
+      ),
+      // HeaderModel(
+      //   label: 'أذكار وأوراد تقرأ صباحًا أو مساء',
+      //   fromHeader: 113,
+      //   toHeader: 132,
+      // ),
+    ],
+  );
 
-  static List<Content> contents = [
-    /// صلاة الفجر
-    Content(
-      incrementedContentId,
-      //      1,
-      '''«اللَّهُمَّ إنِّي أَسْأَلُكَ رَحْمَةً مِنْ عِنْدِكَ تَهْدِي بِهَا قَلْبِي، وتَجْمَعُ بِهَا شَمْلِي، وَتَلُمُّ بِهَا شَعَثِي، وَتَرُدُّ بِهَا أُلْفَتِي، وتُصْلِحُ بِهَا دِيْنِي، وَتَحْفَظُ بِهَا غَائِبِي، وَتَرْفَعُ بِهَا شَاهِدِيْ، وتُزَكِّي بِهَا عَمَلِي، وتُبَيِّضُ بِهَا وَجْهِي، وتُلْهِمُنِي بِهَا رُشْدِي، وَتَعْصِمُنِي بِهَا مِنْ كُلِّ سُوءٍ.
+  static HeaderModel getSpecialSupplicationsCategory() =>
+      HeaderModel(label: 'أذكار وأدعية خاصة', fromHeader: 133, toHeader: 151);
+
+  // Friday Night & Day Categories
+  static HeaderModel getFridayNightCategory() =>
+      HeaderModel(label: 'ما يطلب ليلة الجمعة', fromHeader: 152, toHeader: 155);
+  static HeaderModel getFridayDayCategory() =>
+      HeaderModel(label: 'ما يطلب يوم الجمعة', fromHeader: 156, toHeader: 162);
+
+  // Dalail al-Khairat Categories
+  static HeaderModel getDalailCategory() =>
+      HeaderModel(label: 'دلائل الخيرات', fromHeader: 130, toHeader: 136);
+
+  static HeaderModel getDalailFullCategory() => HeaderModel(
+    label: 'دَلَائِلُ الخَيْرَاتِ وَشَوَارِقُ الأَنوَار',
+    fromHeader: 130,
+    toHeader: 140,
+  );
+
+  // Special UI Checks / Navigation Skippers
+  static bool isHeaderWithSubHeaders(int originalIndex) => originalIndex == 12;
+  static int getNextHeaderId(int currentHeaderId) =>
+      currentHeaderId == 12 ? 14 : currentHeaderId + 1;
+
+  static List<AudioItem> getAllAudioItems() {
+    final List<AudioItem> items = [];
+    final Set<String> seenItemKeys = {};
+    final Set<String> seenFids = {};
+
+    // 1. From _pairs (primary source with direct Header association)
+    for (int i = 0; i < _pairs.length; i++) {
+      final pair = _pairs[i];
+      if (pair.hasVoice &&
+          pair.voiceFile != null &&
+          pair.voiceFile!.isNotEmpty) {
+        final fid = pair.voiceFile!;
+        final headerId = i + 1;
+        final itemKey = '${fid}_$headerId';
+        if (!seenItemKeys.contains(itemKey)) {
+          seenItemKeys.add(itemKey);
+          seenFids.add(fid);
+          String category = 'أذكار وأدعية';
+          if (headerId <= 13) {
+            category = 'صلاة الفجر';
+          } else if (headerId <= 16) {
+            category = 'الإشراق والضحى';
+          } else if (headerId <= 25) {
+            category = 'صلاة الظهر';
+          } else if (headerId <= 38) {
+            category = 'صلاة العصر';
+          } else if (headerId <= 53) {
+            category = 'صلاة المغرب';
+          } else if (headerId <= 65) {
+            category = 'صلاة العشاء';
+          } else if (headerId >= 83 && headerId <= 93) {
+            category = 'دلائل الخيرات';
+          } else if (headerId >= 94 && headerId <= 101) {
+            category = 'الرواتب والأوراد';
+          } else if (headerId >= 152 && headerId <= 163) {
+            category = 'يوم الجمعة وليلتها';
+          }
+
+          items.add(
+            AudioItem(
+              id: itemKey,
+              title: pair.headerName,
+              voiceFile: fid,
+              headerId: headerId,
+              category: category,
+            ),
+          );
+        }
+      }
+    }
+
+    // 2. Add remaining from googleDriveAudios if any not in _pairs
+    for (final entry in googleDriveAudios.entries) {
+      final fid = entry.value;
+      final rawName = entry.key;
+      if (!seenFids.contains(fid) && !rawName.contains('Copy')) {
+        seenFids.add(fid);
+        String cleanTitle = rawName.replaceAll('.mp3', '').trim();
+        cleanTitle = cleanTitle.replaceFirst(RegExp(r'^\d+'), '').trim();
+        cleanTitle = cleanTitle.replaceAll('_', ' ').trim();
+
+        items.add(
+          AudioItem(
+            id: fid,
+            title: cleanTitle.isEmpty ? rawName : cleanTitle,
+            voiceFile: fid,
+            category: 'أذكار وأدعية',
+          ),
+        );
+      }
+    }
+
+    return items;
+  }
+
+  static final List<Header> headers =
+      _pairs.asMap().entries.map((entry) {
+        return Header(entry.key + 1, entry.value.headerName);
+      }).toList();
+
+  static final List<Content> contents =
+      _pairs
+          .asMap()
+          .entries
+          .where((entry) => entry.value.contentText != null)
+          .map((entry) {
+            final index = entry.key;
+            final p = entry.value;
+            final targetId = index + 1;
+            return Content(
+              targetId,
+              p.contentText!,
+              p.isLiked,
+              targetId,
+              hasVoice: p.hasVoice,
+              voiceFile: p.voiceFile,
+            );
+          })
+          .toList();
+
+  static const List<_HeaderContentPair> _pairs = [
+    _HeaderContentPair(
+      headerName: 'دعاء الفجر',
+      contentText:
+          '''«اللَّهُمَّ إنِّي أَسْأَلُكَ رَحْمَةً مِنْ عِنْدِكَ تَهْدِي بِهَا قَلْبِي، وتَجْمَعُ بِهَا شَمْلِي، وَتَلُمُّ بِهَا شَعَثِي، وَتَرُدُّ بِهَا أُلْفَتِي، وتُصْلِحُ بِهَا دِيْنِي، وَتَحْفَظُ بِهَا غَائِبِي، وَتَرْفَعُ بِهَا شَاهِدِيْ، وتُزَكِّي بِهَا عَمَلِي، وتُبَيِّضُ بِهَا وَجْهِي، وتُلْهِمُنِي بِهَا رُشْدِي، وَتَعْصِمُنِي بِهَا مِنْ كُلِّ سُوءٍ.
         اللَّهُمَّ إِنِّي أَسْأَلُكَ إِيْمَاناً خالِصاً يُباشِرُ قَلْبِي، وأَسْأَلُكَ يَقِيناً صادِقاً حَتَّى أَعْلَمَ أَنَّهُ لَنْ يُصِيْبَنِي إِلاَّ مَا كَتَبْتَهُ عَلَيَّ، وَرَضِّنِي بِما قَسَمْتَهُ لِي.
         اللَّهُمَّ إنِّي أَسْأَلُكَ إِيْماناً صادِقاً وَيَقِيناً لَيْسَ بَعْدَهُ كُفْرٌ، وأَسْأَلُكَ رَحْمَةً أَنالُ بِهَا شَرَفَ كَرامَتِكَ في الدُّنْيا وَالآخِرَةِ.
         اللَّهُمَّ إِنِّي أَسْأَلُكَ الصَّبْرَ عِنْدَ القَضَاءِ، والفَوْزَ عِنْدَ اللِّقاءِ، وَمَنازِلَ الشُّهَداءِ، وَعَيْشَ السُّعَداءِ، والنَّصْرَ عَلَى الأَعْدَاءِ، ومُرَافَقَةَ الأنبياءِ.
@@ -334,41 +402,44 @@ class IsarHelper {
         اللَّهُمَّ اجْعَلْ لِي نُوراً في قَلْبِي، ونُوراً في قَبْرِي، وَنُوراً في سَمْعِي، وَنُوراً في بَصَرِي، وَنُوراً في شَعَرِيْ، وَنُورَاً في بَشَرِيْ، وَنُوراً في لَحْمِي، وَنُوراً في دَمِي، وَنُوراً في عِظامِي، وَنُوراً في عَصَبِيْ، وَنُوراً مِنْ بَيْنِ يَدَيَّ، وَنُوراً مِنْ خَلْفِي، وَنُوراً عَنْ يَمِيْني، ونوراً عَنْ شِمالي، وَنُوراً مِنْ فَوقِي، وَنُوراً مِنْ تَحتِي.
         اللَّهُمَّ زِدْنِي نُوراً، وأَعطْنِي نُوراً أَعْظَمَ نُورٍ، وَاجْعَلْ لِي نُوراً بِرَحْمَتِكَ يا أَرْحَمَ الرَّاحِمِيْنَ».
         ''',
-      false,
-      incrementedContentId++, //1,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1NE0agYOtPvh0_kbuDjIvpsaHsnbaTmAQ',
     ),
-    Content(
-      incrementedContentId,
-      //      2,
-      '''
+    _HeaderContentPair(
+      headerName: 'أذكار بعد طلوع الفجر',
+      contentText: '''
 سُبْحانَ اللهِ وَبِحَمْدِهِ، سُبْحانَ اللهِ العَظِيْمِ، أَسْتَغْفِرُ اللهَ. "مِئَةَ مَرَّةٍ".
 ياحيّ, ياقَيّوُمْ, لا إله إلا أنْت "أربعين مرة".
 أَسْتَغْفِرُ الله لِلْمُؤْمِنِيْنَ وَالمُؤْمِناتِ "سبعاً وعِشرينَ مَرَّةً".
 لا إِلهَ إِلاَّ اللهُ، المَلِكُ الحَقُّ المُبِيْنُ "مِئَةَ مَرَّةٍ" ويمكن أن تقرأ هذا الذكر الأخير فِي هٰذا الوَقْتِ، أَوْ بَعْدَ الظُّهْرِ.
 ''',
-      false,
-      incrementedContentId++, //2,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1DIIi04zd_R1Xuh9mHb-vu12b5r_UYYfA',
     ),
-    Content(
-      incrementedContentId,
-      //      6,
-      '''«إِلٰهِيْ بِحُرْمَةِ الحَسَنِ، وَأَخِيْهِ، وَجَدِّهِ، وَبَنِيْهِ، وَأُمِّهِ، وَأَبِيْهِ، نَجِّنيْ مِنَ الغَمِّ الَّذِي أَنا فِيْهِ، يا حَيُّ، يا قَيُّومُ، يا ذا الجَلالِ وَالإِكْرامِ، أَسْأَلُكَ أَنْ تُحْيِـيَ قَلْبِيْ بِنُورِ مَعْرِفَتِكَ. يا اللهُ.. يا اللهُ.. يا  أَرْحَمَ الرَّاحِمِيْنَ».
-        وَهو مِمَّا يُؤْثَرُ لِحِفْظِ الإِسْلامِ، وَالوَفاةِ عَلَيْهِ ، ونَقَلَهَ الحَبِيْبُ عَلوِيُّ بْنُ أَحْمَدَ بْنِ حَسنِ الحَدَّادُ فِي بَعْضِ كُتُبِهِ، عَنْ الإِمام أَبِي عِيْسَى التِّرْمِذِيِّ فِي رُؤْيا عَظِيْمَةٍ رَآها.
+    _HeaderContentPair(
+      headerName: 'دعاء بعد سنة الفجر وقبل صلاة الفجر',
+      contentText:
+          '''«إِلٰهِيْ بِحُرْمَةِ الحَسَنِ، وَأَخِيْهِ، وَجَدِّهِ، وَبَنِيْهِ، وَأُمِّهِ، وَأَبِيْهِ، نَجِّنيْ مِنَ الغَمِّ الَّذِي أَنا فِيْهِ، يا حَيُّ، يا قَيُّومُ، يا ذا الجَلالِ وَالإِكْرامِ، أَسْأَلُكَ أَنْ تُحْيِـيَ قَلْبِيْ بِنُورِ مَعْرِفَتِكَ. يا اللهُ.. يا اللهُ.. يا  أَرْحَمَ الرَّاحِمِيْنَ».
+        "وَهو مِمَّا يُؤْثَرُ لِحِفْظِ الإِسْلامِ، وَالوَفاةِ عَلَيْهِ ، ونَقَلَهَ الحَبِيْبُ عَلوِيُّ بْنُ أَحْمَدَ بْنِ حَسنِ الحَدَّادُ فِي بَعْضِ كُتُبِهِ، عَنْ الإِمام أَبِي عِيْسَى التِّرْمِذِيِّ فِي رُؤْيا عَظِيْمَةٍ رَآها."
         ''',
-      false,
-      incrementedContentId++, //3,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '10T8UGM3QaYcU2zBSh43kG59-dotJTJBd',
     ),
-    Content(
-      incrementedContentId,
-      //      7,
-      '''مَنْ وَاظَبَ عَلَى قِرَاءَةِ سورة (طٰه[20]) عِنْدَ طُلُوعِ الفَجْرِ كُلَّ يَوْمٍ، أَقلُّ مَا يَرَى مِنْ بَرَكَتِهَا أَنَّهُ يَدْخُلُ عَلَيْهِ فِي ذٰلِكَ الْيَوْمِ رِزْقٌ جَدِيْدٌ، لَمْ يَكُنْ لَهُ إِلَيْهِ تَشَوُّفٌ، وَتُقْضَى حَوائِجُهُ فِي ذلِكَ اليَوْمِ، وَتَلِينُ لَهُ الْقُلوبُ، وَيُنْصَرُ عَلَى الأَعْدَاءِ، وَلَهَا مِنَ الْفَضْلِ مَا لاَ يَنْحَصِرُ.''',
-      false,
-      incrementedContentId++, //4,
+    _HeaderContentPair(
+      headerName: 'قراءة سورة طه',
+      contentText:
+          '''مَنْ وَاظَبَ عَلَى قِرَاءَةِ سورة (طٰه[20]) عِنْدَ طُلُوعِ الفَجْرِ كُلَّ يَوْمٍ، أَقلُّ مَا يَرَى مِنْ بَرَكَتِهَا أَنَّهُ يَدْخُلُ عَلَيْهِ فِي ذٰلِكَ الْيَوْمِ رِزْقٌ جَدِيْدٌ، لَمْ يَكُنْ لَهُ إِلَيْهِ تَشَوُّفٌ، وَتُقْضَى حَوائِجُهُ فِي ذلِكَ اليَوْمِ، وَتَلِينُ لَهُ الْقُلوبُ، وَيُنْصَرُ عَلَى الأَعْدَاءِ، وَلَهَا مِنَ الْفَضْلِ مَا لاَ يَنْحَصِرُ.''',
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '13WRRGRJE-6wLVachgk6R6DDOb1aL9S2X',
     ),
-    Content(
-      incrementedContentId,
-      //      8,
-      '''
+    _HeaderContentPair(
+      headerName:
+          'عمل الإمام عبد الله الحدّاد  والحبيب عبد الرحمن المشهور في سورتي صلاة الفجر',
+      contentText: '''
 "يوم الجمعة": السجدة والإنسان
 "يوم السبت" | الإمام الحداد : العاديات والقارعة | الحبيب عبدالرحمن المشهور : الانفطار والكوثر
 "يوم الأحد" | الإمام الحداد : الضحى وألم نشرح | الحبيب عبدالرحمن المشهور : المطففين والانشقاق
@@ -377,13 +448,11 @@ class IsarHelper {
 "يوم الأربعاء" | الإمام الحداد : والليل والضحى | الحبيب عبدالرحمن المشهور : البلد والشمس
 "يوم الخميس" | الإمام الحداد : البيّنة والعاديات | الحبيب عبدالرحمن المشهور : الليل والضحى
         ''',
-      false,
-      incrementedContentId++, //5,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      15,
-      '''
+    _HeaderContentPair(
+      headerName: 'أذكار ما بعد الصلاة',
+      contentText: '''
 أَسْتَغْفِرُ الله العَظِيمَ، الَّذِي لا إلهَ إِلاَّ هُوَ الحَيَّ القَيُّومَ، وَأَتُوبُ إِلَيْهِ.
 اللَّهُمَّ أَنْتَ السَّلامُ، وَمِنْكَ السَّلامُ، تَبَارَكْتَ يا ذَا الجَلالِ والإِكرامِ، سُبحانَ رَبِّيَ العَلِيِّ الأَعْلَى، لا إِلٰهَ إِلاَّ اللهُ وَحْدَهُ لا شَرِيْكَ لَهُ، لَهُ المُلْكُ، وَلَهُ الحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.
 اللَّهُمَّ لا مَانِعَ لِما أَعْطَيْتَ، ولا مُعْطِيَ لما مَنَعْتَ، وَلا رَادَّ لِما قَضَيْتَ، وَلاَ يَنْفَعُ ذَا الجَدِّ مِنْكَ الجَدُّ، لا إِلهَ إِلاَّ اللهُ، وَلاَ نَعْبُدُ إِلاَّ إِيَّاهُ أَهْلَ الفَضْلِ والنِّعَمِ، والثَّناءِ الحَسَنِ، لا إِلهَ إِلاَّ اللهُ، ولا نَعْبُدُ إِلاَّ إِيَّاهُ مُخْلِصِيْنَ لَهُ الدِّينَ وَلَوْ كَرِهَ الكَافِرونَ
@@ -391,9 +460,9 @@ class IsarHelper {
 «لا إِلهَ إِلاَّ اللهُ وَحْدَهُ لا شَرِيْكَ لَهُ، لَهُ المُلْكُ، وَلَهُ الحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ» "عَشْراً".
  «اللَّهُمَّ أَجِرْنِي مِنَ النَّارِ» "سَبْعاً".
 «يَا فَتَّاحُ» "إِحْدَى وسَبْعيْنَ مَرَّةً"؛ مَعَ وَضْعِ يَدِكَ اليُمْنَى عَلَى صَدْرِكَ، فإِنَّها مُجَرَّبَةٌ لِلفُتُوحِ.
+وأقرأ أيضاً ويدك على صدرك
 بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
 ﴿  أَلَمْ نَشْرَحْ لَكَ صَدْرَكَ ١ وَوَضَعْنَا عَنكَ وِزْرَكَ ٢ ٱلَّذِىٓ أَنقَضَ ظَهْرَكَ ٣ وَرَفَعْنَا لَكَ ذِكْرَكَ ٤ فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا ٥ إِنَّ مَعَ ٱلْعُسْرِ يُسْرًۭا ٦ فَإِذَا فَرَغْتَ فَٱنصَبْ ٧ وَإِلَىٰ رَبِّكَ فَٱرْغَب ٨ ﴾.
-وَيَدُكَ عَلَى صَدْرِكَ. 
 واقرأ آيَةَ الكُرْسِي.
 فَفِي ذلِكَ فَوائِدُ مَذْكُورَةٌ عَنِ الكُمَّلِ الرَّاسِخِيْنَ في قَدَمِ الاتِّباعِ لِسَيِّدِ المُرسَلِيْنَ وَغَيْرُ ذلِكَ كَثِيرٌ. 
 ثُمَّ ادْعُ اللهَ، وَلْيَكُنْ مِنْ دُعائِكَ: «اللَّهُمَّ ارْزُقْنِي فَهْمَ النَّبِيِّيْنَ، وَحِفْظَ المُرْسَلِيْنَ، وسُرْعَةَ إِلهامِ المَلائِكَةِ المُقَرِّبِيْنَ.
@@ -404,50 +473,56 @@ class IsarHelper {
 وَالأدْعِيَةُ كَثِيرةٌ، وَقَدْ ذَكَرَ الإمام الغَزَالِي ـ رحمه الله تعالى ـ في «البدايَةِ» مِنْهَا شَيْئاً كَثِيراً، فَادْعُ بِما شِئْتَ.
 ثُمَّ بَعْدَ ذلِكَ اشْتَغِلْ بمُصافَحَةِ إِخْوانِكَ، لا سيَّما بَعْدَ هذا الفرض، وعِنْدَ كُلِّ لِقاءٍ؛ مَعَ مُراعاةِ الأَدَبِ في الظاهِرِ وَالباطِنِ، وَلاَ يَخْفَىٰ ذلِكَ عَلَى كُلِّ مَنْ لَهُ بَصِيْرَةٌ مُنِيْرَةٌ، وَسَرِيْرَةٌ مُسْتَنِيرَةٌ.
 ''',
-      false,
-      incrementedContentId++, //6,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '18JIMi0UhEnGoNeFVNHAloWi_9Oa_2nCs',
     ),
-    Content(
-      incrementedContentId,
-      //      23,
-      '''«يا اللهُ.. يا لَطِيْفُ.. يا رَزَّاقُ.. يا  قَوِيُّ.. يا عَزِيْزُ "ثلاثاً" أَسْأَلُكَ تَأَلُّهاً إِلَيْكَ، وَاسْتِغْراقاً فِيْكَ، وَفَناءً بِكَ عَمَّنْ سِواكَ، وَلُطْفاً مِنْ لَدُنْكَ شَامِلاً جَلِيّاً وَخَفِيّاً، وَرِزْقاً طَيِّباً وَاسِعاً هَنِيْئَاً مَرِيْئاً، وَقُوَّةً فِي الإِيْمانِ وَفِي اليَقِيْنِ، وَصَلابَةً فِي الحَقِّ وَالدِّيْنِ، وَعِزّاً بِكَ يَدُوْمُ وَيَتَخَلَّدُ، وَشَرَفاً يَبْقَى وَيَتأَبَّدُ، لاَ يَشُوْبُهُ تَكَبُّرٌ، وَلا عُتُوٌّ، وَلاَ إِرادَةُ فَسادٍ فِي الأَرْضِ وَلاَ عُلُوٌّ، إِنَّكَ سَمِيْعٌ قَرِيْبٌ مُجِيْبٌ».وهو لِلإِمَامِ الْحَبِيبِ عَبْدِ اللهِ الْحَدَّادِ رَضِيَ اللهُ عَنْهُ.''',
-      false,
-      incrementedContentId++, //7,
+    _HeaderContentPair(
+      headerName: 'دعاء اللّطف للامام الحداد رضي اللّه عنه',
+      contentText:
+          '''«يا اللهُ.. يا لَطِيْفُ.. يا رَزَّاقُ.. يا  قَوِيُّ.. يا عَزِيْزُ "ثلاثاً" أَسْأَلُكَ تَأَلُّهاً إِلَيْكَ، وَاسْتِغْراقاً فِيْكَ، وَفَناءً بِكَ عَمَّنْ سِواكَ، وَلُطْفاً مِنْ لَدُنْكَ شَامِلاً جَلِيّاً وَخَفِيّاً، وَرِزْقاً طَيِّباً وَاسِعاً هَنِيْئَاً مَرِيْئاً، وَقُوَّةً فِي الإِيْمانِ وَفِي اليَقِيْنِ، وَصَلابَةً فِي الحَقِّ وَالدِّيْنِ، وَعِزّاً بِكَ يَدُوْمُ وَيَتَخَلَّدُ، وَشَرَفاً يَبْقَى وَيَتأَبَّدُ، لاَ يَشُوْبُهُ تَكَبُّرٌ، وَلا عُتُوٌّ، وَلاَ إِرادَةُ فَسادٍ فِي الأَرْضِ وَلاَ عُلُوٌّ، إِنَّكَ سَمِيْعٌ قَرِيْبٌ مُجِيْبٌ».''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //24,
-      '''تقرأ (الفاتحة[1]) "إحْدَى وَعِشْرِينَ مَرَّةً".''',
-      false,
-      incrementedContentId++, //8
+    _HeaderContentPair(
+      headerName: 'عمل الإمام الغزاليّ في قراءة سورة الفاتحة بعد الصّلوات',
+      contentText: '''تقرأ (الفاتحة[1]) "إحْدَى وَعِشْرِينَ مَرَّةً".''',
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '17ZqVCIQaHxV5r4FyDSKU32cPmzyKR1YF',
     ),
-    Content(
-      incrementedContentId,
-      //      25,
-      '''«الحَمْدُ للهِ رَبِّ العَالَمِيْنَ، حَمْداً يُوافِي نِعَمَهُ وَيُكَافِئُ مَزِيدَه، اللَّهُمَّ صَلِّ عَلَى سَيِّدِنا مُحَمَّدٍ وَعَلَى أَهْلِ بَيْتِهِ وَصَحْبِهِ وَسَلِّم، اللَّهُمَّ إِنِّي أَسْأَلُكَ بِحَقِّ الفَاتِحَةِ المُعَظَّمَةِ والسَّبْعِ المَثَانِي أَنْ تَفْتَحَ لَنا بِكُلِّ خَيْرٍ، وَأَنْ تَتَفَضَّلَ عَلَيْنَا بِكُلِّ خَيْرٍ، وَأَنْ تَجْعَلَنَا مِنْ أَهْلِ الخَيْرِ، وَأَنْ تُعَامِلَنَا مُعَامَلَتَكَ لأهْلِ الخَيْرِ، وَأَنْ تَحْفَظَنا فِي أَدْيانِنا وَأَنْفُسِنَا وَأَوْلاَدِنا وَأَهْلِينَا وَأَصْحَابِنَا وَأَحْبَابِنا مِنْ كُلِّ مِحْنَةٍ وَفِتْنَةٍ وَبُؤْسٍ وَضَيْرٍ، إِنَّكَ وَلِيُّ كُلِّ خَيْرٍ، وَمُتَفَضِّلٌ بِكُلِّ خَيْرٍ، وَمُعْطِي كُلَّ خَيْرٍ بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ، يَا أَرْحَمَ الرَّاحِمِيْنَ، يَا أَرْحَمَ الرَّاحِمِيْنَ».''',
-      false,
-      incrementedContentId++, //9,
+    _HeaderContentPair(
+      headerName: 'دعاء الفاتحة للإمام الحبيب عبد الله الحدّاد رضي الله عنه',
+      contentText:
+          '''«الحَمْدُ للهِ رَبِّ العَالَمِيْنَ، حَمْداً يُوافِي نِعَمَهُ وَيُكَافِئُ مَزِيدَه، اللَّهُمَّ صَلِّ عَلَى سَيِّدِنا مُحَمَّدٍ وَعَلَى أَهْلِ بَيْتِهِ وَصَحْبِهِ وَسَلِّم، اللَّهُمَّ إِنِّي أَسْأَلُكَ بِحَقِّ الفَاتِحَةِ المُعَظَّمَةِ والسَّبْعِ المَثَانِي أَنْ تَفْتَحَ لَنا بِكُلِّ خَيْرٍ، وَأَنْ تَتَفَضَّلَ عَلَيْنَا بِكُلِّ خَيْرٍ، وَأَنْ تَجْعَلَنَا مِنْ أَهْلِ الخَيْرِ، وَأَنْ تُعَامِلَنَا مُعَامَلَتَكَ لأهْلِ الخَيْرِ، وَأَنْ تَحْفَظَنا فِي أَدْيانِنا وَأَنْفُسِنَا وَأَوْلاَدِنا وَأَهْلِينَا وَأَصْحَابِنَا وَأَحْبَابِنا مِنْ كُلِّ مِحْنَةٍ وَفِتْنَةٍ وَبُؤْسٍ وَضَيْرٍ، إِنَّكَ وَلِيُّ كُلِّ خَيْرٍ، وَمُتَفَضِّلٌ بِكُلِّ خَيْرٍ، وَمُعْطِي كُلَّ خَيْرٍ بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِيْنَ، يَا أَرْحَمَ الرَّاحِمِيْنَ، يَا أَرْحَمَ الرَّاحِمِيْنَ».''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      26,
-      '''اقْرَأْ ( يس[36])  بَعْدَ كُلِّ فَرْضٍ، وَعِنْدَ كُلِّ مُهِمٍّ. فإن كانت لك حاجة أو أمر فَسَمِّهِ وَقُلْ بَعْدَ قِراءَتِها:
+    _HeaderContentPair(
+      headerName: 'سورة ﴿يس﴾ والدعاء بعدها',
+      contentText:
+          '''اقْرَأْ ( يس[36])  بَعْدَ كُلِّ فَرْضٍ، وَعِنْدَ كُلِّ مُهِمٍّ. فإن كانت لك حاجة أو أمر فَسَمِّهِ وَقُلْ بَعْدَ قِراءَتِها:
         «اللَّهُمَّ إنَّا نَسْتَحْفِظُكَ وَنَسْتَوْدِعُكَ أَدْيانَنا، وَأَنْفُسَنا، وَأَهْلَنا، وَأَوْلادَنا، وَأَمْوالَنا، وكُلَّ شَيء أَعْطَيْتَنا. اللَّهُمَّ اجْعَلْنا فِي كَنَفِكَ، وَأَمَانِكَ، وَجِوارِكَ، وَعِياذِكَ، مِنْ كُلِّ شَيْطانٍ مَرِيْدٍ، وَجَبَّارٍ عَنِيْدٍ، وَذِيْ عَيْنٍ، وَذِيْ بَغْيٍ، وَمِنْ شَرِّ كُلِّ ذِي شَرٍّ؛ إِنَّكَ عَلَى كُلِّ شَيْءٍ قَدِيْرٌ. اللَّهُمَّ جَمِّلْنا بِالعافِيَةِ وَالسَّلاَمَةِ، وَحَقِّقْنَا بِالتَّقْوَى والاسْتِقَامَةِ، وَأَعِذْنا مِنْ مُوجِباتِ النَّدامَةِ، إِنَّكَ سَمِيْعُ الدُّعاءِ. اللَّهُمَّ اغْفرْ لَنا، وَلوالِدِيْنَا، ولأَوْلاَدِنا، وَمَشايِخِنا، وَلإِخْوانِنا فِي الدِّيْنِ، وَلأَصْحابِنا، وَأَحْبابِنا، وَلِمَنْ أَحَبَّنَا فِيْكَ، ولِمَنْ أَحْسَنَ إلَيْنَا، وَللمُؤْمِنِيْنَ وَالمُؤْمِناتِ، وَالمُسْلِمِيْنَ وَالمُسْلِماتِ، يَا  رَبَّ العالَمِيْنَ، وَصَلَّىٰ اللهُ عَلَىٰ سَيِّدِنا مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ، وَارْزُقْنا كَمالَ المُتابَعَةِ لَهُ ظاهِراً وَباطِناً فِي عافِيَةٍ وَسَلامَةٍ، بِرَحْمَتِكَ يا أَرْحَمَ الرَّاحِمِيْنَ».
         ''',
-      false,
-      incrementedContentId++, //10,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      27,
-      '''﴿الفاتحة﴾ "سَبْعاً"، وَ﴿الناس﴾ "سَبْعاً"، وَ﴿الفَلَقُ﴾ "سَبْعاً"، وَ﴿ الإِخْلاصُ﴾ "سَبْعاً"، و﴿الكَافِرُونَ﴾ "سَبْعاً"، وآيةُ الكرسيِّ "سَبْعاً"، سُبْحانَ اللهِ وَالحَمْدُ للهِ وَلا إِلهَ إِلاَّ اللهُ وَاللهُ أَكْبَرُ "سَبْعاً"، اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلِّمْ "سَبْعاً"، أَسْتَغْفِرُ اللهَ العَظِيْمَ لِيْ وَلِوَالِدَيَّ وَلْلمُؤْمِنِيْنَ وَالمُؤْمِناتِ، وَالمُسْلِمِيْنَ وَالمُسْلِماتِ، الأَحْياءِ مِنْهُمْ وَالأَمْواتِ، إِنَّكَ قَرِيْبٌ مُجِيْبُ الدَّعَواتِ "سَبْعاً"، اللَّهُمَّ افْعَلْ بِيْ وَبِهِمْ عاجِلاً وَآجِلاً فِي الدُّنْيا وَالآخِرَةِ مَا أَنْتَ لَهُ أَهْلٌ، وَلاَ تَفْعَلْ بِنَا يا مَوْلانا ما نَحْنُ لَهُ أَهْلٌ إِنَّكَ غَفُوْرٌ حَلِيْمٌ، جَوَادٌ كَرِيْمٌ، رَؤُوفٌ رَحِيْمٌ "سَبْعاً".''',
-      false,
-      incrementedContentId++, //11,
+    _HeaderContentPair(
+      headerName: 'المسبعات',
+      contentText: '''﴿الفاتحة﴾ "سَبْعاً"،
+وَ﴿الناس﴾ "سَبْعاً"،
+وَ﴿الفَلَقُ﴾ "سَبْعاً"، 
+وَ﴿ الإِخْلاصُ﴾ "سَبْعاً"،
+و﴿الكَافِرُونَ﴾ "سَبْعاً"،
+آيةُ الكرسيِّ "سَبْعاً"،
+سُبْحانَ اللهِ وَالحَمْدُ للهِ وَلا إِلهَ إِلاَّ اللهُ وَاللهُ أَكْبَرُ "سَبْعاً"،
+اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلِّمْ "سَبْعاً"،
+أَسْتَغْفِرُ اللهَ العَظِيْمَ لِيْ وَلِوَالِدَيَّ وَلْلمُؤْمِنِيْنَ وَالمُؤْمِناتِ، وَالمُسْلِمِيْنَ وَالمُسْلِماتِ، الأَحْياءِ مِنْهُمْ وَالأَمْواتِ، إِنَّكَ قَرِيْبٌ مُجِيْبُ الدَّعَواتِ "سَبْعاً"، 
+اللَّهُمَّ افْعَلْ بِيْ وَبِهِمْ عاجِلاً وَآجِلاً فِي الدُّنْيا وَالآخِرَةِ مَا أَنْتَ لَهُ أَهْلٌ، وَلاَ تَفْعَلْ بِنَا يا مَوْلانا ما نَحْنُ لَهُ أَهْلٌ إِنَّكَ غَفُوْرٌ حَلِيْمٌ، جَوَادٌ كَرِيْمٌ، رَؤُوفٌ رَحِيْمٌ "سَبْعاً".''',
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1y-AZxE35e1818smMyCh5waJALP64TNQP',
     ),
-    Content(
-      incrementedContentId,
-      //      28,
-      '''٭ بِسْمِ الله الرَّحْمنِ الرَّحِيْمِ "مِئَةَ مَرَّةٍ".
+    _HeaderContentPair(
+      headerName: 'الأذكار العشرة للحبيب عليّ بن حسنٍ العطّاس رضي الله عنه',
+      contentText: '''٭ بِسْمِ الله الرَّحْمنِ الرَّحِيْمِ "مِئَةَ مَرَّةٍ".
 الحَمْدُ للهِ رَبِّ العَالَمِيْنَ "مِئَةَ مَرَّةٍ".
 اللَّهُمَّ صَلِّ عَلَىٰ سَيِّدِنا مُحَمَّدٍ وَعَلَىٰ آلِ سَيِّدِنا مُحَمَّدٍ وَسَلِّمْ "مِئَةَ مَرَّةٍ".
 لا إِلهَ إِلاَّ الله مُحَمَّدٌ رَسُولُ الله "مِئَةَ مَرَّةٍ".
@@ -457,17 +532,21 @@ class IsarHelper {
 سُوْرَةُ (الإِخْلاصِ) "مِئَةَ مَرَّةٍ".
 حَسْبُنَا اللهُ وَنِعْمَ الوَكِيْلُ ـ "مِئَةَ مَرَّةٍ".
 اللَّهُمَّ صَلِّ عَلَىٰ سَيِّدِنا مُحَمَّدٍ النَّبيِّ الأُمِّيِّ، وَعَلَى آلِ سَيِّدِنا مُحَمَّدٍ وَسَلِّمْ "ثَلاثَ مَرَّاتٍ".
-وَلا تَسْتَعْظِمْ ذلِكَ وَتَقُولُ: إِنَّ عَدَدَ مِئَةٍ لِكُلِّ ذِكْرٍ كَثِيْرٌ، فَإِذَا وَاظَبْتَ عَلَيْها فَإِنَّها تَسْهُلُ عَلَى اللِّسانِ، وَتَقْطَعُها فِي أَسْرَعِ وَقْتٍ، وَلاَ بَأْسَ بِحَمْلِ المَسْبَحَةِ فِي بَعْضِ الأَحْيانِ، لِضَبْطِ العَدَدِ لا لِلْفَخْرِ وَالتَّصَنُّعِ وَالتَّزْيِيْفِ عَلَىٰ النَّاسِ! ـ وَيُعْتَبَرُ ذلِكَ تَدْلِيْساً، وَيَكُوْنُ ذٰلِكَ كَمَنْ يَشْهَدُ زُوْراً، وَيَرْتَكِبُ فُجُوراً وقد رَتَّبَها الحَبِيْبُ عَلِيُّ بْنُ حَسَنٍ العَطَّاسُ، وَأَمَرَ بَقِراءَتِها مَعَ الحَثِّ مِنْهُ عَلَى ذٰلِكَ، وَالبِشارَةِ لِمَنْ واظَبَ عَلَيْها بِبُلُوغِ المَرامِ بَعْدَ الصُّبْحِ، وَبَعْدَ المَغْرِبِ؛ وفِيْها الخَيْرَ وَالبَرَكَةَ. !
+((وَلا تَسْتَعْظِمْ ذلِكَ وَتَقُولُ: إِنَّ عَدَدَ مِئَةٍ لِكُلِّ ذِكْرٍ كَثِيْرٌ، فَإِذَا وَاظَبْتَ عَلَيْها فَإِنَّها تَسْهُلُ عَلَى اللِّسانِ، وَتَقْطَعُها فِي أَسْرَعِ وَقْتٍ، وَلاَ بَأْسَ بِحَمْلِ المَسْبَحَةِ فِي بَعْضِ الأَحْيانِ، لِضَبْطِ العَدَدِ لا لِلْفَخْرِ وَالتَّصَنُّعِ وَالتَّزْيِيْفِ عَلَىٰ النَّاسِ! ـ وَيُعْتَبَرُ ذلِكَ تَدْلِيْساً، وَيَكُوْنُ ذٰلِكَ كَمَنْ يَشْهَدُ زُوْراً، وَيَرْتَكِبُ فُجُوراً وقد رَتَّبَها الحَبِيْبُ عَلِيُّ بْنُ حَسَنٍ العَطَّاسُ، وَأَمَرَ بَقِراءَتِها مَعَ الحَثِّ مِنْهُ عَلَى ذٰلِكَ، وَالبِشارَةِ لِمَنْ واظَبَ عَلَيْها بِبُلُوغِ المَرامِ بَعْدَ الصُّبْحِ، وَبَعْدَ المَغْرِبِ؛ وفِيْها الخَيْرَ وَالبَرَكَةَ. !ٍ))
 ''',
-      false,
-      incrementedContentId++, //12,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1TAsQEHEa4SvuWgVkx_4fnqWfJoIXfOwo',
     ),
-
-    /// الإشراق والضحى
-    Content(
-      ++incrementedContentId,
-      //      39,
-      '''إذَا ارْتفَعَتِ الشَّمْسُ قَدْرَ رُمْحٍ، فَارْكَعْ رَكْعَتَيْنِ وَانْوِ بِهِما سُنَّةَ الإِشْراقِ، وَبِنِيَّةِ التَّوفِيْقِ للشُّكْرِ وَالاسْتِخَارَةِ في كُلِّ عَمَلٍ تُرِيْدُ أَنْ تَعْمَلَهُ في اليَوْمِ وَاللَّيْلَةِ، وَالحِفْظِ في جَمِيْعِ الأُمورِ، وَكِفايَةِ جَمِيْع الأَشْرارِ وَالشُّرورِ، وَنيَّةِ الاستِعاذَةِ مِنْ شَرِّ اليَوْم واللَّيْلَةِ، وَنيَّةِ التَّوبَةِ وَقَضاءِ الحاجَةِ ـ كَمَا هُوَ عَمَلُ بَعْضِهِمْ ـ وَاقْرَأْ في الأُوْلَى:
+    _HeaderContentPair(
+      headerName:
+          'الاشتغال بمُطالَعَةٍ أَوْ قِرَاءَةِ قُرآنِ أَوْ ذِكْرٍ إلى الإِشْراقِ، ومن الأذكار الأذكار اليومية',
+      contentText: null,
+    ),
+    _HeaderContentPair(
+      headerName: 'ركعتا الإشراق والدعاء بعدهما',
+      contentText:
+          '''إذَا ارْتفَعَتِ الشَّمْسُ قَدْرَ رُمْحٍ، فَارْكَعْ رَكْعَتَيْنِ وَانْوِ بِهِما سُنَّةَ الإِشْراقِ، وَبِنِيَّةِ التَّوفِيْقِ للشُّكْرِ وَالاسْتِخَارَةِ في كُلِّ عَمَلٍ تُرِيْدُ أَنْ تَعْمَلَهُ في اليَوْمِ وَاللَّيْلَةِ، وَالحِفْظِ في جَمِيْعِ الأُمورِ، وَكِفايَةِ جَمِيْع الأَشْرارِ وَالشُّرورِ، وَنيَّةِ الاستِعاذَةِ مِنْ شَرِّ اليَوْم واللَّيْلَةِ، وَنيَّةِ التَّوبَةِ وَقَضاءِ الحاجَةِ ـ كَمَا هُوَ عَمَلُ بَعْضِهِمْ ـ وَاقْرَأْ في الأُوْلَى:
 بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
 ﴿  قُلْ يَـٰٓأَيُّهَا ٱلْكَـٰفِرُونَ ١ لَآ أَعْبُدُ مَا تَعْبُدُونَ ٢ وَلَآ أَنتُمْ عَـٰبِدُونَ مَآ أَعْبُدُ ٣ وَلَآ أَنَا۠ عَابِدٌۭ مَّا عَبَدتُّمْ ٤ وَلَآ أَنتُمْ عَـٰبِدُونَ مَآ أَعْبُدُ ٥ لَكُمْ دِينُكُمْ وَلِىَ دِينِ ٦ ﴾ وآية: ﴿  وَلَوْ أَنَّهُمْ إِذ ظَّلَمُوٓا۟ أَنفُسَهُمْ جَآءُوكَ فَٱسْتَغْفَرُوا۟ ٱللَّهَ وَٱسْتَغْفَرَ لَهُمُ ٱلرَّسُولُ لَوَجَدُوا۟ ٱللَّهَ تَوَّابًۭا رَّحِيمًۭا ٦٤ ﴾.
 وفي الثّانية:
@@ -479,66 +558,66 @@ class IsarHelper {
 اللَّهُمَّ لا تُشْمِتْ بي عَدُوِّيْ، وَلاَ تَسُؤْ بِي صَدِيْقِيْ، وَلاَ تَجْعَلْ مُصِيْبَتِي فِي دِيْنِيْ، وَلاَ تَجْعَلِ الدُّنْيا أَكْبَرَ هَمِّي، وَلاَ مَبْلَغَ عِلْمِيْ، وَلاَ تُسَلِّطْ عَلَيَّ بِذَنْبِي مَنْ لاَ يَرْحَمُنِي.
 اللَّهُمَّ إِنِّي أَعُوْذُ بِكَ مِنَ الذُّنُوبِ الَّتِي تُزِيْلُ النِّعَمَ، وَأَعُوذُ بِكَ مِنَ الذُّنُوبِ الَّتِيْ تُوجِبُ النِّقَمَ، أَعُوْذُ بِوَجْهِ اللهِ الكَرِيْمِ، وَكَلِماتِ اللهِ التَّامَّاتِ، الَّتِي لاَ يُجاوِزُهُنَّ بَرٌّ وَلاَ فاجِرٌ، مِنْ شَرِّ مَا يَنْزِلُ مِنَ السَّمَاءِ، أَوْ يَعْرُجُ فِيْها، ومِنْ شَرِّ مَا ذَرَأَ فِي الأَرْضِ، وَمَا يَخْرُجُ مِنْها، وَمِنْ فِتَنِ اللَّيْلِ وَالنَّهارِ إِلاَّ طارِقاً يَطْرُقُ بِخَيْرٍ يَا رَحْمنُ، أَعُوْذُ بِاسْمِكَ وَكَلِماتِكَ التَّامَّةِ، مِنْ شَرِّ مَا يَجْرِيْ بِاللَّيْلِ وَالنَّهارِ، إِنَّ رَبِّيَ اللهُ لاَ إِلٰهَ إِلاَّ هُوَ عَلَيْهِ تَوَكَّلْتُ، وَهُوَ رَبُّ العَرْشِ العَظِيْم».
 ''',
-      false,
-      incrementedContentId++, //14,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1b82G9Cuo1fMZVQjAuYTCBh8uPkAvIxg1',
     ),
-    Content(
-      incrementedContentId,
-      //      40,
-      '''اللَّهُمَّ إِنِّي أَسْتَخِيْرُكَ بِعِلْمِكَ، وَأَسْتَقْدِرُكَ بِقُدْرَتِكَ، وَأَسْأَلُكَ مِنْ فَضْلِكَ العَظِيْمِ؛ فَإِنَّكَ تَقْدِرُ وَلاَ أَقْدِرُ، وَتَعْلَمُ وَلاَ أَعْلَمُ، وَأَنْتَ عَلاَّمُ الغُيُوبِ.
+    _HeaderContentPair(
+      headerName: 'دعاء الاستخارة',
+      contentText:
+          '''اللَّهُمَّ إِنِّي أَسْتَخِيْرُكَ بِعِلْمِكَ، وَأَسْتَقْدِرُكَ بِقُدْرَتِكَ، وَأَسْأَلُكَ مِنْ فَضْلِكَ العَظِيْمِ؛ فَإِنَّكَ تَقْدِرُ وَلاَ أَقْدِرُ، وَتَعْلَمُ وَلاَ أَعْلَمُ، وَأَنْتَ عَلاَّمُ الغُيُوبِ.
 اللَّهُمَّ إِنْ كُنْتَ تَعْلَمُ أَنَّ هٰذا الأَمْرَ وهو (يُسمِّي حاجتَهُ) خَيْرٌ لِي فِي دِيْنِي وَدُنْيايَ، وَعَاقِبَةِ أَمْرِيْ، عاجِلِهِ وَآجِلِهِ.. فَاقْدُرْهُ لِي وَيَسِّرْهُ لِيَ ثُمَّ بَارِكْ لِيْ فِيْهِ.
 وَإِنْ كُنْتَ تَعْلَمُ أَنَّ هَذا الأَمْرَ وهو (يُسمِّي حاجتَهُ) شَرٌّ لِي فِي دِيْنِي وَدُنْيايَ، وَعاقِبَةِ أَمْرِيْ عاجِلِهِ وآجِلِهِ، فَاصْرِفْهُ عَنِّي، وَاصْرِفْنِي عَنْهُ، وَاقْدُرْ لِيَ الخَيْرَ أَيْنَمَا كانَ؛ إِنَّكَ عَلَىٰ كُلِّ شَيْءٍ قَدِيْرٌ.
 اللَّهُمَّ إِنَّ العِلْمَ عِنْدَكَ، وَهُوَ مَحْجُوْبٌ عَنِّيْ، وَلاَ أَعْلَمُ مَا أَخْتارُهُ لِنَفْسِيْ؛ لٰكِنْ أَنْتَ المُخْتَارُ، فَإِنِّيْ فَوَّضْتُ إِلَيْكَ مَقَالِيْدَ أَمْرِيْ، وَرَجَوْتُكَ لِفَقْرِيْ وَفَاقَتِيْ، فَأَرْشِدْنِيْ إِلى أَحَبِّ الأُمُورِ إِلَيْكَ، وَأَرْضَاهَا عِنْدَكَ، وَأَحْمَدِهَا عِنْدَكَ؛ فَإِنَّكَ تَفْعَلُ مَا تَشاءُ، وَتَحْكُمُ مَا تُرِيْدُ»
 ''',
-      false,
-      incrementedContentId++, //15,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1Zan6MTw1pevPjGJWTGg1s_w_LiTzHRIa',
     ),
-    Content(
-      incrementedContentId,
-      //      43,
-      '''بَعْدَ مُضِيِّ رُبْعِ النَّهارِ صَلِّ الضُّحَى، وَمَنْ وَاظَبَ عَلَى صَلاةِ الضُّحَى حَفِظَهُ اللهُ، وَبَارَكَ فِي رِزْقِهِ. وَاقْرَأْ فِي الأُوْلَى: ﴿ والشَمْسِ و ضُحَاهَا﴾، وَفِي الثَّانِيَةِ: ﴿والضُحَى﴾، وَفِي الثَّالِثَةِ: ﴿ ألَمْ نَشْرَحْ﴾، وَفِي الرَّابِعَةِ: ﴿ إذَا جَاءَ نصْرُ الله والفَتْح ﴾، وَفِي الخامِسَةِ: ﴿ إذَا زُلْزِلَت﴾، وَفِي السَّادِسَةِ: ﴿ القَارِعَة﴾، وَفي السَّابِعَةِ: ﴿ الفَلَقْ﴾، وَفي الثَّامِنَةِ: ﴿ النَاسْ﴾ إِنْ تَيَسَّرَ لَكَ ذلِكَ كَما هُوَ عَمَلُ بَعْضِهِمْ، وَإِلاَّ فَما تَيَسَّرَ، ثُمَّ ادْعُ بَعْدَها بِهذَا الدُّعاءِ:
+    _HeaderContentPair(
+      headerName: 'صلاة الضحى',
+      contentText:
+          '''بَعْدَ مُضِيِّ رُبْعِ النَّهارِ صَلِّ الضُّحَى، وَمَنْ وَاظَبَ عَلَى صَلاةِ الضُّحَى حَفِظَهُ اللهُ، وَبَارَكَ فِي رِزْقِهِ. وَاقْرَأْ فِي الأُوْلَى: ﴿ والشَمْسِ و ضُحَاهَا﴾، وَفِي الثَّانِيَةِ: ﴿والضُحَى﴾، وَفِي الثَّالِثَةِ: ﴿ ألَمْ نَشْرَحْ﴾، وَفِي الرَّابِعَةِ: ﴿ إذَا جَاءَ نصْرُ الله والفَتْح ﴾، وَفِي الخامِسَةِ: ﴿ إذَا زُلْزِلَت﴾، وَفِي السَّادِسَةِ: ﴿ القَارِعَة﴾، وَفي السَّابِعَةِ: ﴿ الفَلَقْ﴾، وَفي الثَّامِنَةِ: ﴿ النَاسْ﴾ إِنْ تَيَسَّرَ لَكَ ذلِكَ كَما هُوَ عَمَلُ بَعْضِهِمْ، وَإِلاَّ فَما تَيَسَّرَ، ثُمَّ ادْعُ بَعْدَها بِهذَا الدُّعاءِ:
 «اللَّهُمَّ إِنَّ الضُّحَى ضُحَاؤُكَ، وَالبَهَاءَ بَهَاؤُكَ، والجَمَالَ جَمَالُكَ، وَالقُوَّةَ قُوَّتُكَ، وَالقُدْرَةَ قُدْرَتُكَ، وَالعِصْمَةَ عِصْمَتُكَ.
 اللَّهُمَّ إِنْ كانَ رِزْقِي فِي السَّمَاءِ.. فَأَنْزِلْهُ، وَإِنْ كَانَ فِي الأَرْضِ.. فَأَخْرِجْهُ، وَإِنْ كَانَ مُعَسَّراً.. فَيَسِّرْهُ، وَإِنْ كانَ حَراماً.. فَطَهِّرْهُ، وَإِنْ كَانَ بَعِيْداً.. فَقَرِّبْهُ، بِحَقِّ ضُحَائِكَ، وَبَهَائِكَ، وَجَمَالِكَ، وَقُوَّتِكَ، وَقُدْرَتِكَ، وَعِصْمَتِكَ، آتِنِيْ ما آتيْتَ عِبَادَكَ الصَّالِحِيْنَ».
 وَعَلَيْكَ بَعْدَ صَلاةِ الضُّحَى بِالاسْتَغْفَارِ، الَّذِي كَانُوا يَعُدُّوْنَ لِلنَّبِيِّ عَلَيْهِ الصَّلاةُ وَالسَّلامُ مِنْهُ فِي المَجْلِسِ الواحِدِ "سَبْعِيْنَ مَرَّةً"، وَفِي رِوايَةٍ "مِئَةَ مَرَّةٍ"، وَهُوَ: رَبِّ اغْفِرْ لِيْ، وَارْحَمْنِيْ، وَتُبْ عَلَيَّ، إِنَّكَ أَنْتَ التَّوَّابُ الرَّحِيْمُ. فَاجْعَلْ لَكَ وِرْداً مِنْهُ بَعْدَ صَلاةِ الضُّحَى "أَرْبَعِيْنَ مَرَّةً"، كَما هُوَ عَمَلُ القُطْبِ سَيِّدِنا الحَبِيْبِ عَبْدِ اللهِ الحَدَّادِ..
 ووَزِّعْ أَوْقَاتَكَ الفارِغَةَ عَمَّا تَقَدَّمَ مِنْ بَعْدِ الإِشْراقِ إِلَى الظُّهْرِ فِي طَلَبِ العِلْمِ، أَوْ فِي كِتابَةٍ، أَوْ تَحْصِيْلٍ، وَلا تُمْضِ أَوْقَاتَكَ سُدَى، فَكُلُّ نَفَسٍ مِنْ أَنْفَاسِكَ جَوْهَرَةٌ لا تُقدَّر بقيمة
 ''',
-      false,
-      incrementedContentId++, //16,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1Z7U-Jz4Onnx2kAWsvq1EzzVBs-oeyqdV',
     ),
-
-    ///  صلاة الظهر
-    Content(
-      incrementedContentId,
-      //      42,
-      '''ينبغي أَنْ تَرْكَعَ "أَرْبَعاً" قَبْلَ الظهر تَقْرَأُ ﴿يس﴾ فِيْها في كُلِّ رَكْعَةٍ مَقْرَأً مِنْهَا، وَ﴿ الإِخلاص﴾، وَ﴿ المُعَوِّذَتَيْنِ﴾، وآيةَ الكُرسِيِّ، كَما هُوَ عَمَلُ الحَبِيْبِ عَبْدِ اللهِ الحَدَّادِ، ثُمَّ بَعْدَ أَنْ تُسَلِّمَ مِنْهَا ادْعُ بِهٰذَا الدُّعاءِ وَهُوَ:
+    _HeaderContentPair(
+      headerName: 'قبلية الظهر',
+      contentText:
+          '''ينبغي أَنْ تَرْكَعَ "أَرْبَعاً" قَبْلَ الظهر تَقْرَأُ ﴿يس﴾ فِيْها في كُلِّ رَكْعَةٍ مَقْرَأً مِنْهَا، وَ﴿ الإِخلاص﴾، وَ﴿ المُعَوِّذَتَيْنِ﴾، وآيةَ الكُرسِيِّ، كَما هُوَ عَمَلُ الحَبِيْبِ عَبْدِ اللهِ الحَدَّادِ، ثُمَّ بَعْدَ أَنْ تُسَلِّمَ مِنْهَا ادْعُ بِهٰذَا الدُّعاءِ وَهُوَ:
 «اللَّهُمَّ إِنَّكَ تَعْلَمُ سِرِّيْ وَعَلانِيَتِيْ، فَاقْبَلْ مَعْذِرَتِي، وَتَعْلَمُ حَاجَتِيْ فَأَعْطِنِي سُؤْلِي، وَتَعْلَمُ مَا فِي نَفْسِيْ فَاغْفِرْ لِيْ ذُنُوبِيْ.
 اللَّهُمَّ إِنِّي أَسْأَلُكَ إِيْماناً يُباشِرُ قَلْبِيْ، وَيَقِيْناً صادِقاً حَتَّى أَعْلَمَ أَنَّهُ لَنْ يُصِيبَنِيْ إِلاَّ مَا كَتَبْتَهُ عَلَيَّ، وَالرِّضَا بِما قَسَمْتَهُ لِي، يَا ذا الجَلالِ وَالإِكْرامِ».
 ثُمَّ ادْعُ بِما شِئْتَ؛ فَإِنَّهُ وَقْتٌ شَرِيْفٌ تُفَتَّحُ فِيْهِ أَبْوابُ السَّماءِ.
 ''',
-      false,
-      incrementedContentId++, //17,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1W407B3pcCjZlafRDT7ovpZcy6MiNyUhL',
     ),
-    Content(
-      incrementedContentId,
-      //44,
-      '''ينبغي قراءة  ﴿أَلَم نَشرَح﴾ وَ ﴿الكافِرونَ﴾ أو ﴿إذَا جآءَ﴾ وَ﴿الإِخْلاصء﴾ .''',
-      false,
-      incrementedContentId++, //18
+    _HeaderContentPair(
+      headerName: 'سورتا صلاة الظهر',
+      contentText:
+          '''ينبغي قراءة  ﴿أَلَم نَشرَح﴾ وَ ﴿الكافِرونَ﴾ أو ﴿إذَا جآءَ﴾ وَ﴿الإِخْلاصء﴾ .''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      45,
-      '''«أَسْتَغْفِرُ الله العَظِيمَ، الَّذِي لا إلهَ إِلاَّ هُوَ الحَيَّ القَيُّومَ، وَأَتُوبُ إِلَيْهِ.
+    _HeaderContentPair(
+      headerName: 'أذكار ما بعد الصلاة',
+      contentText:
+          '''«أَسْتَغْفِرُ الله العَظِيمَ، الَّذِي لا إلهَ إِلاَّ هُوَ الحَيَّ القَيُّومَ، وَأَتُوبُ إِلَيْهِ.
 اللَّهُمَّ أَنْتَ السَّلامُ، وَمِنْكَ السَّلامُ، تَبَارَكْتَ يا ذَا الجَلالِ والإِكرامِ، سُبحانَ رَبِّيَ العَلِيِّ الأَعْلَى، لا إِلٰهَ إِلاَّ اللهُ وَحْدَهُ لا شَرِيْكَ لَهُ، لَهُ المُلْكُ، وَلَهُ الحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.
 اللَّهُمَّ لا مَانِعَ لِما أَعْطَيْتَ، ولا مُعْطِيَ لما مَنَعْتَ، وَلا رَادَّ لِما قَضَيْتَ، وَلاَ يَنْفَعُ ذَا الجَدِّ مِنْكَ الجَدُّ، لا إِلهَ إِلاَّ اللهُ، وَلاَ نَعْبُدُ إِلاَّ إِيَّاهُ أَهْلَ الفَضْلِ والنِّعَمِ، والثَّناءِ الحَسَنِ، لا إِلهَ إِلاَّ اللهُ، ولا نَعْبُدُ إِلاَّ إِيَّاهُ مُخْلِصِيْنَ لَهُ الدِّينَ وَلَوْ كَرِهَ الكَافِرونَ».
 ثُمَّ سَبِّحْ "ثلاثاً وثلاثين"، وَاحْمَدْ "ثلاثاً وثلاثين"، وَكَبِّر "ثلاثاً وثلاثين"، وتَمِّمِ المِئَةَ بـ«لا إِلهَ إِلاَّ اللهُ وَحْدَهُ لا شَرِيْكَ لَهُ، لَهُ المُلْكُ، وَلَهُ الحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ».
 «لا إِلهَ إِلاَّ اللهُ وَحْدَهُ لا شَرِيْكَ لَهُ، لَهُ المُلْكُ، وَلَهُ الحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ» "عَشْراً".
  «اللَّهُمَّ أَجِرْنِي مِنَ النَّارِ» "سَبْعاً".
 و "إِحْدَى وسَبْعيْنَ مَرَّةً": «يَا فَتَّاحُ»؛ مَعَ وَضْعِ يَدِكَ اليُمْنَى عَلَى صَدْرِكَ، فإِنَّها مُجَرَّبَةٌ لِلفُتُوحِ.
-وَاقْرأْ أيضاً:
+وأقرأ أيضاً ويدك على صدرك
 بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
 ﴿  أَلَمْ نَشْرَحْ لَكَ صَدْرَكَ ١ وَوَضَعْنَا عَنكَ وِزْرَكَ ٢ ٱلَّذِىٓ أَنقَضَ ظَهْرَكَ ٣ وَرَفَعْنَا لَكَ ذِكْرَكَ ٤ فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا ٥ إِنَّ مَعَ ٱلْعُسْرِ يُسْرًۭا ٦ فَإِذَا فَرَغْتَ فَٱنصَبْ ٧ وَإِلَىٰ رَبِّكَ فَٱرْغَب ٨ ﴾.
-وَيَدُكَ عَلَى صَدْرِكَ. 
 واقرأ آيَةَ الكُرْسِي.
 فَفِي ذلِكَ فَوائِدُ مَذْكُورَةٌ عَنِ الكُمَّلِ الرَّاسِخِيْنَ في قَدَمِ الاتِّباعِ لِسَيِّدِ المُرسَلِيْنَ وَغَيْرُ ذلِكَ كَثِيرٌ. 
 ثُمَّ ادْعُ اللهَ، وَلْيَكُنْ مِنْ دُعائِكَ: «اللَّهُمَّ ارْزُقْنِي فَهْمَ النَّبِيِّيْنَ، وَحِفْظَ المُرْسَلِيْنَ، وسُرْعَةَ إِلهامِ المَلائِكَةِ المُقَرِّبِيْنَ.
@@ -549,96 +628,92 @@ class IsarHelper {
 وَالأدْعِيَةُ كَثِيرةٌ، وَقَدْ ذَكَرَ الإمام الغَزَالِي ـ رحمه الله تعالى ـ في «البدايَةِ» مِنْهَا شَيْئاً كَثِيراً، فَادْعُ بِما شِئْتَ.
 ثُمَّ بَعْدَ ذلِكَ اشْتَغِلْ بمُصافَحَةِ إِخْوانِكَ ،وعِنْدَ كُلِّ لِقاءٍ؛ مَعَ مُراعاةِ الأَدَبِ في الظاهِرِ وَالباطِنِ، وَلاَ يَخْفَىٰ ذلِكَ عَلَى كُلِّ مَنْ لَهُ بَصِيْرَةٌ مُنِيْرَةٌ، وَسَرِيْرَةٌ مُسْتَنِيرَةٌ.
 ''',
-      false,
-      incrementedContentId++, //19,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1ji6boYMkUhPKvH8dmVtpHy5gDBLgN-EE',
     ),
-    Content(
-      incrementedContentId,
-      //      46,
-      '''يا اللهُ.. يا لَطِيْفُ.. يا رَزَّاقُ.. يا  قَوِيُّ.. يا عَزِيْزُ "ثلاثاً" أَسْأَلُكَ تَأَلُّهاً إِلَيْكَ، وَاسْتِغْراقاً فِيْكَ، وَفَناءً بِكَ عَمَّنْ سِواكَ، وَلُطْفاً مِنْ لَدُنْكَ شَامِلاً جَلِيّاً وَخَفِيّاً، وَرِزْقاً طَيِّباً وَاسِعاً هَنِيْئَاً مَرِيْئاً، وَقُوَّةً فِي الإِيْمانِ وَفِي اليَقِيْنِ، وَصَلابَةً فِي الحَقِّ وَالدِّيْنِ، وَعِزّاً بِكَ يَدُوْمُ وَيَتَخَلَّدُ، وَشَرَفاً يَبْقَى وَيَتأَبَّدُ، لاَ يَشُوْبُهُ تَكَبُّرٌ، وَلا عُتُوٌّ، وَلاَ إِرادَةُ فَسادٍ فِي الأَرْضِ وَلاَ عُلُوٌّ، إِنَّكَ سَمِيْعٌ قَرِيْبٌ مُجِيْبٌ».وهو لِلإِمَامِ الْحَبِيبِ عَبْدِ اللهِ الْحَدَّادِ رَضِيَ اللهُ عَنْهُ.''',
-      false,
-      incrementedContentId++, //20,
+    _HeaderContentPair(
+      headerName: 'دعاء اللّطف للامام الحداد رضي اللّه عنه',
+      contentText:
+          '''يا اللهُ.. يا لَطِيْفُ.. يا رَزَّاقُ.. يا  قَوِيُّ.. يا عَزِيْزُ "ثلاثاً" أَسْأَلُكَ تَأَلُّهاً إِلَيْكَ، وَاسْتِغْراقاً فِيْكَ، وَفَناءً بِكَ عَمَّنْ سِواكَ، وَلُطْفاً مِنْ لَدُنْكَ شَامِلاً جَلِيّاً وَخَفِيّاً، وَرِزْقاً طَيِّباً وَاسِعاً هَنِيْئَاً مَرِيْئاً، وَقُوَّةً فِي الإِيْمانِ وَفِي اليَقِيْنِ، وَصَلابَةً فِي الحَقِّ وَالدِّيْنِ، وَعِزّاً بِكَ يَدُوْمُ وَيَتَخَلَّدُ، وَشَرَفاً يَبْقَى وَيَتأَبَّدُ، لاَ يَشُوْبُهُ تَكَبُّرٌ، وَلا عُتُوٌّ، وَلاَ إِرادَةُ فَسادٍ فِي الأَرْضِ وَلاَ عُلُوٌّ، إِنَّكَ سَمِيْعٌ قَرِيْبٌ مُجِيْبٌ».''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      47,
-      '''تقرأ الفاتحة "اثْنَتَيْنِ وَعِشْرِيْنَ مَرَّةً".''',
-      false,
-      incrementedContentId++, //21,
+    _HeaderContentPair(
+      headerName: 'عمل الإمام الغزاليّ في قراءة سورة الفاتحة بعد الصّلوات',
+      contentText: '''تقرأ الفاتحة "اثْنَتَيْنِ وَعِشْرِيْنَ مَرَّةً".''',
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1r87532WIkBSmtvnbfnAf9DIy96GRLbe7',
     ),
-    Content(
-      incrementedContentId,
-      //      48,
-      '''الحَمْدُ للهِ رَبِّ العَالَمِيْنَ، حَمْداً يُوافِي نِعَمَهُ وَيُكَافِئُ مَزِيدَه، اللَّهُمَّ صَلِّ عَلَى سَيِّدِنا مُحَمَّدٍ وَعَلَى أَهْلِ بَيْتِهِ وَصَحْبِهِ وَسَلِّم، اللَّهُمَّ إِنِّي أَسْأَلُكَ بِحَقِّ الفَاتِحَةِ المُعَظَّمَةِ والسَّبْعِ المَثَانِي أَنْ تَفْتَحَ لَنا بِكُلِّ خَيْرٍ، وَأَنْ تَتَفَضَّلَ عَلَيْنَا بِكُلِّ خَيْرٍ، وَأَنْ تَجْعَلَنَا مِنْ أَهْلِ الخَيْرِ، وَأَنْ تُعَامِلَنَا مُعَامَلَتَكَ لأهْلِ الخَيْرِ، وَأَنْ تَحْفَظَنا فِي أَدْيانِنا وَأَنْفُسِنَا وَأَوْلاَدِنا وَأَهْلِينَا وَأَصْحَابِنَا وَأَحْبَابِنا مِنْ كُلِّ مِحْنَةٍ وَفِتْنَةٍ وَبُؤْسٍ وَضَيْرٍ، إِنَّكَ وَلِيُّ كُلِّ خَيْرٍ، وَمُتَفَضِّلٌ بِكُلِّ خَيْرٍ، وَمُعْطِي كُلَّ خَيْرٍ بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ، يَا أَرْحَمَ الرَّاحِمِيْنَ، يَا أَرْحَمَ الرَّاحِمِيْنَ''',
-      false,
-      incrementedContentId++, //22,
+    _HeaderContentPair(
+      headerName: 'دعاء الفاتحة للإمام الحبيب عبد الله الحدّاد رضي الله عنه',
+      contentText:
+          '''الحَمْدُ للهِ رَبِّ العَالَمِيْنَ، حَمْداً يُوافِي نِعَمَهُ وَيُكَافِئُ مَزِيدَه، اللَّهُمَّ صَلِّ عَلَى سَيِّدِنا مُحَمَّدٍ وَعَلَى أَهْلِ بَيْتِهِ وَصَحْبِهِ وَسَلِّم، اللَّهُمَّ إِنِّي أَسْأَلُكَ بِحَقِّ الفَاتِحَةِ المُعَظَّمَةِ والسَّبْعِ المَثَانِي أَنْ تَفْتَحَ لَنا بِكُلِّ خَيْرٍ، وَأَنْ تَتَفَضَّلَ عَلَيْنَا بِكُلِّ خَيْرٍ، وَأَنْ تَجْعَلَنَا مِنْ أَهْلِ الخَيْرِ، وَأَنْ تُعَامِلَنَا مُعَامَلَتَكَ لأهْلِ الخَيْرِ، وَأَنْ تَحْفَظَنا فِي أَدْيانِنا وَأَنْفُسِنَا وَأَوْلاَدِنا وَأَهْلِينَا وَأَصْحَابِنَا وَأَحْبَابِنا مِنْ كُلِّ مِحْنَةٍ وَفِتْنَةٍ وَبُؤْسٍ وَضَيْرٍ، إِنَّكَ وَلِيُّ كُلِّ خَيْرٍ، وَمُتَفَضِّلٌ بِكُلِّ خَيْرٍ، وَمُعْطِي كُلَّ خَيْرٍ بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ، يَا أَرْحَمَ الرَّاحِمِيْنَ، يَا أَرْحَمَ الرَّاحِمِيْنَ''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      49,
-      '''اقْرَأْ ( يس[36]) بَعْدَ كُلِّ فَرْضٍ، وَعِنْدَ كُلِّ مُهِمٍّ. فإن كانت لك حاجة أو أمر فَسَمِّهِ وَقُلْ بَعْدَ قِراءَتِها:
+    _HeaderContentPair(
+      headerName: 'سورة ﴿يس﴾ والدعاء بعدها',
+      contentText:
+          '''اقْرَأْ ( يس[36]) بَعْدَ كُلِّ فَرْضٍ، وَعِنْدَ كُلِّ مُهِمٍّ. فإن كانت لك حاجة أو أمر فَسَمِّهِ وَقُلْ بَعْدَ قِراءَتِها:
 «اللَّهُمَّ إنَّا نَسْتَحْفِظُكَ وَنَسْتَوْدِعُكَ أَدْيانَنا، وَأَنْفُسَنا، وَأَهْلَنا، وَأَوْلادَنا، وَأَمْوالَنا، وكُلَّ شَيء أَعْطَيْتَنا. اللَّهُمَّ اجْعَلْنا فِي كَنَفِكَ، وَأَمَانِكَ، وَجِوارِكَ، وَعِياذِكَ، مِنْ كُلِّ شَيْطانٍ مَرِيْدٍ، وَجَبَّارٍ عَنِيْدٍ، وَذِيْ عَيْنٍ، وَذِيْ بَغْيٍ، وَمِنْ شَرِّ كُلِّ ذِي شَرٍّ؛ إِنَّكَ عَلَى كُلِّ شَيْءٍ قَدِيْرٌ. اللَّهُمَّ جَمِّلْنا بِالعافِيَةِ وَالسَّلاَمَةِ، وَحَقِّقْنَا بِالتَّقْوَى والاسْتِقَامَةِ، وَأَعِذْنا مِنْ مُوجِباتِ النَّدامَةِ، إِنَّكَ سَمِيْعُ الدُّعاءِ. اللَّهُمَّ اغْفرْ لَنا، وَلوالِدِيْنَا، ولأَوْلاَدِنا، وَمَشايِخِنا، وَلإِخْوانِنا فِي الدِّيْنِ، وَلأَصْحابِنا، وَأَحْبابِنا، وَلِمَنْ أَحَبَّنَا فِيْكَ، ولِمَنْ أَحْسَنَ إلَيْنَا، وَللمُؤْمِنِيْنَ وَالمُؤْمِناتِ، وَالمُسْلِمِيْنَ وَالمُسْلِماتِ، يَا  رَبَّ العالَمِيْنَ، وَصَلَّىٰ اللهُ عَلَىٰ سَيِّدِنا مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ، وَارْزُقْنا كَمالَ المُتابَعَةِ لَهُ ظاهِراً وَباطِناً فِي عافِيَةٍ وَسَلامَةٍ، بِرَحْمَتِكَ يا أَرْحَمَ الرَّاحِمِيْنَ».
 ''',
-      false,
-      incrementedContentId++, //23,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      50,
-      '''صَلِّ البَعْدِيَّةَ ركْعَتَيْنِ، أَوْ "أَرْبَعاً" ثُمَّ اشْتَغِلْ بَعْدَ هٰذَا بِما شِئْتَ مِنْ أَنْواعِ الطَّاعاتِ.''',
-      false,
-      incrementedContentId++, //24,
+    _HeaderContentPair(
+      headerName: 'بعدية الظهر',
+      contentText:
+          '''صَلِّ البَعْدِيَّةَ ركْعَتَيْنِ، أَوْ "أَرْبَعاً" ثُمَّ اشْتَغِلْ بَعْدَ هٰذَا بِما شِئْتَ مِنْ أَنْواعِ الطَّاعاتِ.''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      51,
-      '''اجْعَلْ لَكَ وِرْداً مِنْ ذِكْرِ اللهِ تَعالىٰ، وَلاَ أَقَلَّ مِنْ "أَلْفِ مَرَّةٍ" مِنْ لا إِلهَ إِلاَّ اللهُ، وَفِي رَمَضانَ كُلَّ يَوْمٍ أَلْفَيْن، فَمَجْمُوعُها سِتُّونَ أَلْفاً، وَكَمّل السَّبْعِيْنَ أَلْفاً فِي سِتَّةِ شَوَّالٍ، كَما هُوَ عَمَلُ الحَبِيْبِ عَبْدِ اللهِ الحَدَّادِ فِي رَمَضانَ، وَأَلْفاً مِنَ الاسْتِغْفَارِ؛ وَكانَ بَعْضُهُمْ يُرَتِّبُهُ فِيْما بَيْنَ الظُّهْرِ وَالعَصْرِ، أَوْ بِاللَّيْلِ؛ لأَنَّهُما وَقْتُ الفَراغِ غالِباً.
+    _HeaderContentPair(
+      headerName: 'ورد الجلالة',
+      contentText:
+          '''اجْعَلْ لَكَ وِرْداً مِنْ ذِكْرِ اللهِ تَعالىٰ، وَلاَ أَقَلَّ مِنْ "أَلْفِ مَرَّةٍ" مِنْ لا إِلهَ إِلاَّ اللهُ، وَفِي رَمَضانَ كُلَّ يَوْمٍ أَلْفَيْن، فَمَجْمُوعُها سِتُّونَ أَلْفاً، وَكَمّل السَّبْعِيْنَ أَلْفاً فِي سِتَّةِ شَوَّالٍ، كَما هُوَ عَمَلُ الحَبِيْبِ عَبْدِ اللهِ الحَدَّادِ فِي رَمَضانَ، وَأَلْفاً مِنَ الاسْتِغْفَارِ؛ وَكانَ بَعْضُهُمْ يُرَتِّبُهُ فِيْما بَيْنَ الظُّهْرِ وَالعَصْرِ، أَوْ بِاللَّيْلِ؛ لأَنَّهُما وَقْتُ الفَراغِ غالِباً.
 وعليك بقراءة "لا إِلهَ إِلاَّ اللهُ، المَلِكُ الحَقُّ المُبِيْنُ" "مِئَةَ مَرَّةٍ" إن لم تقرأها فجرا.
 ''',
-      false,
-      incrementedContentId++, //25,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1rhbgYkmOLPG5veHf9eJWL1OuzAshWfG4',
     ),
-
-    ///   صلاة العصر
-    Content(
-      incrementedContentId,
-      //      52,
-      '''ارْكَعْ أَرْبعاً قَبْلَ العصر ، وَسَلِّمْ مِنْ كُلِّ رَكْعَتَيْنِ وَقُلْ بَيْنَهُما: «السَّلامُ عَلَيْنَا وَعَلَى مَلائِكَةِ اللهِ المُقَرَّبِيْنَ، السَّلامُ عَلَيْنا وَعَلَى عِبادِ اللهِ الصَّالِحِيْنَ»، وَاقْرَأْ فِي الأُولَى: (إذَا زُلْزِلَت[99])، وفي الثَّانِيَة: (والعَادِيَات[100])، وَفِي الثَّالِثَةُ: (القارِعَة[101])، وَفِي الرَّابِعَةِ: (ألْهَاكُمْ[102]).
+    _HeaderContentPair(
+      headerName: 'قبلية العصر',
+      contentText:
+          '''ارْكَعْ أَرْبعاً قَبْلَ العصر ، وَسَلِّمْ مِنْ كُلِّ رَكْعَتَيْنِ وَقُلْ بَيْنَهُما: «السَّلامُ عَلَيْنَا وَعَلَى مَلائِكَةِ اللهِ المُقَرَّبِيْنَ، السَّلامُ عَلَيْنا وَعَلَى عِبادِ اللهِ الصَّالِحِيْنَ»، وَاقْرَأْ فِي الأُولَى: (إذَا زُلْزِلَت[99])، وفي الثَّانِيَة: (والعَادِيَات[100])، وَفِي الثَّالِثَةُ: (القارِعَة[101])، وَفِي الرَّابِعَةِ: (ألْهَاكُمْ[102]).
 ثُمَّ بَعْدَ أَنْ تُسَلِّمَ مِنْهَا ادْعُ بِهٰذَا الدُّعاءِ وَهُوَ:
 «اللَّهُمَّ إِنَّكَ تَعْلَمُ سِرِّيْ وَعَلانِيَتِيْ، فَاقْبَلْ مَعْذِرَتِي، وَتَعْلَمُ حَاجَتِيْ فَأَعْطِنِي سُؤْلِي، وَتَعْلَمُ مَا فِي نَفْسِيْ فَاغْفِرْ لِيْ ذُنُوبِيْ.
 اللَّهُمَّ إِنِّي أَسْأَلُكَ إِيْماناً يُباشِرُ قَلْبِيْ، وَيَقِيْناً صادِقاً حَتَّى أَعْلَمَ أَنَّهُ لَنْ يُصِيبَنِيْ إِلاَّ مَا كَتَبْتَهُ عَلَيَّ، وَالرِّضَا بِما قَسَمْتَهُ لِي، يَا ذا الجَلالِ وَالإِكْرامِ».
 ''',
-      false,
-      incrementedContentId++, //26,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1A67iq2S1kingsLFAA2alpZKL8N-t40RZ',
     ),
-    Content(
-      incrementedContentId,
-      //      53,
-      '''مِمَّا كَانَ يُرَتِّبُهُ الإِمَامُ الحَدَّادُ بيْنَ سُنَّةِ العَصْرِ وَالفَرْضِ: الاسْتِغْفارَ "مِئةَ مَرَّةٍ".''',
-      false,
-      incrementedContentId++, //27,
+    _HeaderContentPair(
+      headerName: 'الاستغفار',
+      contentText:
+          '''مِمَّا كَانَ يُرَتِّبُهُ الإِمَامُ الحَدَّادُ بيْنَ سُنَّةِ العَصْرِ وَالفَرْضِ: الاسْتِغْفارَ "مِئةَ مَرَّةٍ".''',
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1P9pj7_XlVzUcpEEEjOhNgLw8bkO3JNKp',
     ),
-    Content(
-      incrementedContentId,
-      //54,
-      '''في الركعة الأولى ينبغي قراءة ﴿البُرُوجَ﴾ أوْ ﴿الضُّحَىٰ﴾, وفي الركعة الثانية ﴿الكَافِرُونْ﴾ وَ ﴿الإخْلَاصْ﴾.''',
-      false,
-      incrementedContentId++, //28
+    _HeaderContentPair(
+      headerName: 'سورتا صلاة العصر',
+      contentText:
+          '''في الركعة الأولى ينبغي قراءة ﴿البُرُوجَ﴾ أوْ ﴿الضُّحَىٰ﴾, وفي الركعة الثانية ﴿الكَافِرُونْ﴾ وَ ﴿الإخْلَاصْ﴾.''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      55,
-      '''«أَسْتَغْفِرُ الله العَظِيمَ، الَّذِي لا إلهَ إِلاَّ هُوَ الحَيَّ القَيُّومَ، وَأَتُوبُ إِلَيْهِ.
+    _HeaderContentPair(
+      headerName: 'أذكار ما بعد الصلاة',
+      contentText:
+          '''«أَسْتَغْفِرُ الله العَظِيمَ، الَّذِي لا إلهَ إِلاَّ هُوَ الحَيَّ القَيُّومَ، وَأَتُوبُ إِلَيْهِ.
 اللَّهُمَّ أَنْتَ السَّلامُ، وَمِنْكَ السَّلامُ، تَبَارَكْتَ يا ذَا الجَلالِ والإِكرامِ، سُبحانَ رَبِّيَ العَلِيِّ الأَعْلَى، لا إِلٰهَ إِلاَّ اللهُ وَحْدَهُ لا شَرِيْكَ لَهُ، لَهُ المُلْكُ، وَلَهُ الحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.
 اللَّهُمَّ لا مَانِعَ لِما أَعْطَيْتَ، ولا مُعْطِيَ لما مَنَعْتَ، وَلا رَادَّ لِما قَضَيْتَ، وَلاَ يَنْفَعُ ذَا الجَدِّ مِنْكَ الجَدُّ، لا إِلهَ إِلاَّ اللهُ، وَلاَ نَعْبُدُ إِلاَّ إِيَّاهُ أَهْلَ الفَضْلِ والنِّعَمِ، والثَّناءِ الحَسَنِ، لا إِلهَ إِلاَّ اللهُ، ولا نَعْبُدُ إِلاَّ إِيَّاهُ مُخْلِصِيْنَ لَهُ الدِّينَ وَلَوْ كَرِهَ الكَافِرونَ».
 ثُمَّ سَبِّحْ "ثلاثاً وثلاثين"، وَاحْمَدْ "ثلاثاً وثلاثين"، وَكَبِّر "ثلاثاً وثلاثين"، وتَمِّمِ المِئَةَ بـ«لا إِلهَ إِلاَّ اللهُ وَحْدَهُ لا شَرِيْكَ لَهُ، لَهُ المُلْكُ، وَلَهُ الحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ».
 «لا إِلهَ إِلاَّ اللهُ وَحْدَهُ لا شَرِيْكَ لَهُ، لَهُ المُلْكُ، وَلَهُ الحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ» "عَشْراً".
  «اللَّهُمَّ أَجِرْنِي مِنَ النَّارِ» "سَبْعاً".
 و "إِحْدَى وسَبْعيْنَ مَرَّةً": «يَا فَتَّاحُ»؛ مَعَ وَضْعِ يَدِكَ اليُمْنَى عَلَى صَدْرِكَ، فإِنَّها مُجَرَّبَةٌ لِلفُتُوحِ.
-وَاقْرأْ أيضاً:
+وأقرأ أيضاً ويدك على صدرك
 بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
 ﴿  أَلَمْ نَشْرَحْ لَكَ صَدْرَكَ ١ وَوَضَعْنَا عَنكَ وِزْرَكَ ٢ ٱلَّذِىٓ أَنقَضَ ظَهْرَكَ ٣ وَرَفَعْنَا لَكَ ذِكْرَكَ ٤ فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا ٥ إِنَّ مَعَ ٱلْعُسْرِ يُسْرًۭا ٦ فَإِذَا فَرَغْتَ فَٱنصَبْ ٧ وَإِلَىٰ رَبِّكَ فَٱرْغَب ٨ ﴾.
-وَيَدُكَ عَلَى صَدْرِكَ. 
 واقرأ آيَةَ الكُرْسِي.
 فَفِي ذلِكَ فَوائِدُ مَذْكُورَةٌ عَنِ الكُمَّلِ الرَّاسِخِيْنَ في قَدَمِ الاتِّباعِ لِسَيِّدِ المُرسَلِيْنَ وَغَيْرُ ذلِكَ كَثِيرٌ. 
 ثُمَّ ادْعُ اللهَ، وَلْيَكُنْ مِنْ دُعائِكَ: «اللَّهُمَّ ارْزُقْنِي فَهْمَ النَّبِيِّيْنَ، وَحِفْظَ المُرْسَلِيْنَ، وسُرْعَةَ إِلهامِ المَلائِكَةِ المُقَرِّبِيْنَ.
@@ -649,43 +724,41 @@ class IsarHelper {
 وَالأدْعِيَةُ كَثِيرةٌ، وَقَدْ ذَكَرَ الإمام الغَزَالِي ـ رحمه الله تعالى ـ في «البدايَةِ» مِنْهَا شَيْئاً كَثِيراً، فَادْعُ بِما شِئْتَ.
 ثُمَّ بَعْدَ ذلِكَ اشْتَغِلْ بمُصافَحَةِ إِخْوانِكَ، لا سيَّما بَعْدَ هذا الفرض، وعِنْدَ كُلِّ لِقاءٍ؛ مَعَ مُراعاةِ الأَدَبِ في الظاهِرِ وَالباطِنِ، وَلاَ يَخْفَىٰ ذلِكَ عَلَى كُلِّ مَنْ لَهُ بَصِيْرَةٌ مُنِيْرَةٌ، وَسَرِيْرَةٌ مُسْتَنِيرَةٌ.
 ''',
-      false,
-      incrementedContentId++, //29,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1sECNACM469PwfIeiVnoEqcO6rDC_QVjT',
     ),
-    Content(
-      incrementedContentId,
-      //      56,
-      '''«يا اللهُ.. يا لَطِيْفُ.. يا رَزَّاقُ.. يا  قَوِيُّ.. يا عَزِيْزُ "ثلاثاً" أَسْأَلُكَ تَأَلُّهاً إِلَيْكَ، وَاسْتِغْراقاً فِيْكَ، وَفَناءً بِكَ عَمَّنْ سِواكَ، وَلُطْفاً مِنْ لَدُنْكَ شَامِلاً جَلِيّاً وَخَفِيّاً، وَرِزْقاً طَيِّباً وَاسِعاً هَنِيْئَاً مَرِيْئاً، وَقُوَّةً فِي الإِيْمانِ وَفِي اليَقِيْنِ، وَصَلابَةً فِي الحَقِّ وَالدِّيْنِ، وَعِزّاً بِكَ يَدُوْمُ وَيَتَخَلَّدُ، وَشَرَفاً يَبْقَى وَيَتأَبَّدُ، لاَ يَشُوْبُهُ تَكَبُّرٌ، وَلا عُتُوٌّ، وَلاَ إِرادَةُ فَسادٍ فِي الأَرْضِ وَلاَ عُلُوٌّ، إِنَّكَ سَمِيْعٌ قَرِيْبٌ مُجِيْبٌ».وهو لِلإِمَامِ الْحَبِيبِ عَبْدِ اللهِ الْحَدَّادِ رَضِيَ اللهُ عَنْهُ.''',
-      false,
-      incrementedContentId++, //30,
+    _HeaderContentPair(
+      headerName: 'دعاء اللّطف للامام الحداد رضي اللّه عنه',
+      contentText:
+          '''«يا اللهُ.. يا لَطِيْفُ.. يا رَزَّاقُ.. يا  قَوِيُّ.. يا عَزِيْزُ "ثلاثاً" أَسْأَلُكَ تَأَلُّهاً إِلَيْكَ، وَاسْتِغْراقاً فِيْكَ، وَفَناءً بِكَ عَمَّنْ سِواكَ، وَلُطْفاً مِنْ لَدُنْكَ شَامِلاً جَلِيّاً وَخَفِيّاً، وَرِزْقاً طَيِّباً وَاسِعاً هَنِيْئَاً مَرِيْئاً، وَقُوَّةً فِي الإِيْمانِ وَفِي اليَقِيْنِ، وَصَلابَةً فِي الحَقِّ وَالدِّيْنِ، وَعِزّاً بِكَ يَدُوْمُ وَيَتَخَلَّدُ، وَشَرَفاً يَبْقَى وَيَتأَبَّدُ، لاَ يَشُوْبُهُ تَكَبُّرٌ، وَلا عُتُوٌّ، وَلاَ إِرادَةُ فَسادٍ فِي الأَرْضِ وَلاَ عُلُوٌّ، إِنَّكَ سَمِيْعٌ قَرِيْبٌ مُجِيْبٌ».''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //57,
-      '''تقرأ الفاتحة "ثَلاثاً وَعِشرِيْنَ مَرَّةً". ''',
-      false,
-      incrementedContentId++, //31
+    _HeaderContentPair(
+      headerName: 'عمل الإمام الغزاليّ في قراءة سورة الفاتحة بعد الصّلوات',
+      contentText: '''تقرأ الفاتحة "ثَلاثاً وَعِشرِيْنَ مَرَّةً". ''',
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1AM0X79rgJUKHhLE1CNx7IS-r4lYk_Ho3',
     ),
-    Content(
-      incrementedContentId,
-      //      58,
-      '''«الحَمْدُ للهِ رَبِّ العَالَمِيْنَ، حَمْداً يُوافِي نِعَمَهُ وَيُكَافِئُ مَزِيدَه، اللَّهُمَّ صَلِّ عَلَى سَيِّدِنا مُحَمَّدٍ وَعَلَى أَهْلِ بَيْتِهِ وَصَحْبِهِ وَسَلِّم، اللَّهُمَّ إِنِّي أَسْأَلُكَ بِحَقِّ الفَاتِحَةِ المُعَظَّمَةِ والسَّبْعِ المَثَانِي أَنْ تَفْتَحَ لَنا بِكُلِّ خَيْرٍ، وَأَنْ تَتَفَضَّلَ عَلَيْنَا بِكُلِّ خَيْرٍ، وَأَنْ تَجْعَلَنَا مِنْ أَهْلِ الخَيْرِ، وَأَنْ تُعَامِلَنَا مُعَامَلَتَكَ لأهْلِ الخَيْرِ، وَأَنْ تَحْفَظَنا فِي أَدْيانِنا وَأَنْفُسِنَا وَأَوْلاَدِنا وَأَهْلِينَا وَأَصْحَابِنَا وَأَحْبَابِنا مِنْ كُلِّ مِحْنَةٍ وَفِتْنَةٍ وَبُؤْسٍ وَضَيْرٍ، إِنَّكَ وَلِيُّ كُلِّ خَيْرٍ، وَمُتَفَضِّلٌ بِكُلِّ خَيْرٍ، وَمُعْطِي كُلَّ خَيْرٍ بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ، يَا أَرْحَمَ الرَّاحِمِيْنَ، يَا أَرْحَمَ الرَّاحِمِيْنَ».''',
-      false,
-      incrementedContentId++, //32,
+    _HeaderContentPair(
+      headerName: 'دعاء الفاتحة للإمام الحبيب عبد الله الحدّاد رضي الله عنه',
+      contentText:
+          '''«الحَمْدُ للهِ رَبِّ العَالَمِيْنَ، حَمْداً يُوافِي نِعَمَهُ وَيُكَافِئُ مَزِيدَه، اللَّهُمَّ صَلِّ عَلَى سَيِّدِنا مُحَمَّدٍ وَعَلَى أَهْلِ بَيْتِهِ وَصَحْبِهِ وَسَلِّم، اللَّهُمَّ إِنِّي أَسْأَلُكَ بِحَقِّ الفَاتِحَةِ المُعَظَّمَةِ والسَّبْعِ المَثَانِي أَنْ تَفْتَحَ لَنا بِكُلِّ خَيْرٍ، وَأَنْ تَتَفَضَّلَ عَلَيْنَا بِكُلِّ خَيْرٍ، وَأَنْ تَجْعَلَنَا مِنْ أَهْلِ الخَيْرِ، وَأَنْ تُعَامِلَنَا مُعَامَلَتَكَ لأهْلِ الخَيْرِ، وَأَنْ تَحْفَظَنا فِي أَدْيانِنا وَأَنْفُسِنَا وَأَوْلاَدِنا وَأَهْلِينَا وَأَصْحَابِنَا وَأَحْبَابِنا مِنْ كُلِّ مِحْنَةٍ وَفِتْنَةٍ وَبُؤْسٍ وَضَيْرٍ، إِنَّكَ وَلِيُّ كُلِّ خَيْرٍ، وَمُتَفَضِّلٌ بِكُلِّ خَيْرٍ، وَمُعْطِي كُلَّ خَيْرٍ بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ، يَا أَرْحَمَ الرَّاحِمِيْنَ، يَا أَرْحَمَ الرَّاحِمِيْنَ».''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      59,
-      '''اقْرَأْ ( يس[36]) بَعْدَ كُلِّ فَرْضٍ، وَعِنْدَ كُلِّ مُهِمٍّ. فإن كانت لك حاجة أو أمر فَسَمِّهِ وَقُلْ بَعْدَ قِراءَتِها:
+    _HeaderContentPair(
+      headerName: 'سورة ﴿يس﴾ والدعاء بعدها',
+      contentText:
+          '''اقْرَأْ ( يس[36]) بَعْدَ كُلِّ فَرْضٍ، وَعِنْدَ كُلِّ مُهِمٍّ. فإن كانت لك حاجة أو أمر فَسَمِّهِ وَقُلْ بَعْدَ قِراءَتِها:
 «اللَّهُمَّ إنَّا نَسْتَحْفِظُكَ وَنَسْتَوْدِعُكَ أَدْيانَنا، وَأَنْفُسَنا، وَأَهْلَنا، وَأَوْلادَنا، وَأَمْوالَنا، وكُلَّ شَيء أَعْطَيْتَنا. اللَّهُمَّ اجْعَلْنا فِي كَنَفِكَ، وَأَمَانِكَ، وَجِوارِكَ، وَعِياذِكَ، مِنْ كُلِّ شَيْطانٍ مَرِيْدٍ، وَجَبَّارٍ عَنِيْدٍ، وَذِيْ عَيْنٍ، وَذِيْ بَغْيٍ، وَمِنْ شَرِّ كُلِّ ذِي شَرٍّ؛ إِنَّكَ عَلَى كُلِّ شَيْءٍ قَدِيْرٌ. اللَّهُمَّ جَمِّلْنا بِالعافِيَةِ وَالسَّلاَمَةِ، وَحَقِّقْنَا بِالتَّقْوَى والاسْتِقَامَةِ، وَأَعِذْنا مِنْ مُوجِباتِ النَّدامَةِ، إِنَّكَ سَمِيْعُ الدُّعاءِ. اللَّهُمَّ اغْفرْ لَنا، وَلوالِدِيْنَا، ولأَوْلاَدِنا، وَمَشايِخِنا، وَلإِخْوانِنا فِي الدِّيْنِ، وَلأَصْحابِنا، وَأَحْبابِنا، وَلِمَنْ أَحَبَّنَا فِيْكَ، ولِمَنْ أَحْسَنَ إلَيْنَا، وَللمُؤْمِنِيْنَ وَالمُؤْمِناتِ، وَالمُسْلِمِيْنَ وَالمُسْلِماتِ، يَا  رَبَّ العالَمِيْنَ، وَصَلَّىٰ اللهُ عَلَىٰ سَيِّدِنا مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ، وَارْزُقْنا كَمالَ المُتابَعَةِ لَهُ ظاهِراً وَباطِناً فِي عافِيَةٍ وَسَلامَةٍ، بِرَحْمَتِكَ يا أَرْحَمَ الرَّاحِمِيْنَ».
 ''',
-      false,
-      incrementedContentId++, //33,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      60,
-      '''اللَّهُمَّ يَا اللهُ، يَا عَلِيُّ، يَا عَظِيْمُ، يَا حَلِيْمُ، يَا عَلِيْمُ، أَنْتَ رَبِّيْ، وَعِلْمُكَ حَسْبِيْ، فَنِعْمَ الرَّبُّ رَبِّيْ، وَنِعْمَ الْحَسْبُ حَسْبِيْ، تَنْصُرُ مَنْ تَشَاءُ، وَأَنْتَ الْعَزِيْزُ الرَّحِيْمُ.
+    _HeaderContentPair(
+      headerName: 'حزب البحر للإمام الشاذلي',
+      contentText:
+          '''اللَّهُمَّ يَا اللهُ، يَا عَلِيُّ، يَا عَظِيْمُ، يَا حَلِيْمُ، يَا عَلِيْمُ، أَنْتَ رَبِّيْ، وَعِلْمُكَ حَسْبِيْ، فَنِعْمَ الرَّبُّ رَبِّيْ، وَنِعْمَ الْحَسْبُ حَسْبِيْ، تَنْصُرُ مَنْ تَشَاءُ، وَأَنْتَ الْعَزِيْزُ الرَّحِيْمُ.
 نَسْأَلُكَ الْعِصْمَةَ فِيْ الْحَرَكَاتِ وَالسَّكَنَاتِ، وَالْكَلِمَاتِ وَالإِرَادَاتِ وَالْخَطَرَاتِ.. مِنَ الشُّكُوْكِ وَالظُّنُوْنِ، وَالأَوْهَامِ السَّاتِرَةِ لِلْقُلُوْبِ، عَنْ مُطَالَعَةِ الْغُيُوْبِ، فَقَدِ ابْتُلِيَ الْمُؤْمِنُوْنَ وَزُلْزِلُوْا زِلْزَالاً شَدِيْداً.
 ﴿ وَإِذْ يَقُولُ ٱلْمُنَـٰفِقُونَ وَٱلَّذِينَ فِى قُلُوبِهِم مَّرَضٌۭ مَّا وَعَدَنَا ٱللَّهُ وَرَسُولُهُۥٓ إِلَّا غُرُورًۭا ١٢﴾.
 فَثَبِّتْنَا وَانْصُرْنَا، وَسَخِّرْ لَنَا هَذَا الْبَحْرَ، كَمَا سَخَّرْتَ الْبَحْرَ لِمُوْسَى، وَسَخَّرْتَ النَّارَ لإِبْرَاهِيْمَ، وَسَخَّرْتَ الْجِبَالَ وَالْحَدِيْدَ لِدَاوُوْدَ، وَسَخَّرْتَ الرِّيْحَ وَالشَّيَاطِيْنَ وَالْجِنَّ لِسُلَيْمَانَ، وَسَخِّرْ لَنَا كُلَّ بَحْرٍ هُوَ لَكَ فِيْ الأَرْضِ وَالسَّمَاءِ، وَالْمُلْكِ وَالْمَلَكُوْتِ، وَبَحْرِ الدُّنْيَا، وبَحْرِ الآخِرَةِ، وَسَخِّرْ لَنَا كُلَّ شَيْءٍ، يَا مَنْ بِيَدِهِ مَلَكُوْتُ كُلِّ شَيْءٍ.
@@ -709,33 +782,30 @@ class IsarHelper {
 اللَّهُمَّ أَنْتَ تَعْلَمُ ما نَحْنُ فِيْهِ، وَما نَطْلُبُهُ وَنُرَجِّيْهِ، مِنْ رَحْمَتِكَ فِي أَمْرِنا كُلِّهِ، فَيَسِّرْ لَنا ما نَحْنُ فِيْهِ مِنْ سَفَرِنا، وَما نَطْلُبُهُ مِنْ حَوائِجِنَا، وَقَرِّبْ عَلَيْنا المَسافاتِ، وَسَلِّمْنا مِنَ العِلَلِ وَالآفاتِ، وَلا تَجْعَلِ الدُّنْيا أَكْبَرَ همِّنا، ولا مَبْلَغَ عِلْمِنا، وَلا تُسَلِّطْ عَلَيْنا مَنْ لا يَرْحَمُنا بِرَحْمَتِكَ يا أَرْحَمَ الرَّاحِمِيْنَ..
 وصَلَّىٰ اللهُ عَلَى سَيِّدِنا مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ. سُبْحانَ اللهِ وَبِحَمْدِهِ، سُبْحانَ اللهِ العَظِيْمِ، لا إِلٰهَ إِلاَّ اللهُ، اللَّهُمَّ ثَبِّتْ عِلْمَها فِي قَلْبِيْ، وَاغْفِرْ لِي ذَنْبِيْ، وَلِلمُؤْمِنِيْنَ وَالمُؤْمِناتِ.. وَقُلِ الحَمْدُ للهِ، وَسَلامٌ عَلَى عِبادِهِ الَّذِيْنَ اصْطَفَى "ثَلاَثاً".. ثُمَّ آيَةَ الكُرسِيِّ..
 ''',
-      false,
-      incrementedContentId++, //34,
+      isLiked: false,
       hasVoice: true,
-      voiceFile: "1w1AOARSdMJhQJV2HS4zSLxD_WVHremHT",
+      voiceFile: '1w1AOARSdMJhQJV2HS4zSLxD_WVHremHT',
     ),
-    Content(
-      incrementedContentId,
-      //      61,
-      '''لا إِلهَ إِلاَّ اللهُ العَظِيْمُ الحَلِيْمُ، لا إِلهَ إِلاَّ اللهُ رَبُّ العَرْشِ العَظِيْمُ، لا إِلٰهَ إِلاَّ اللهُ رَبُّ السَّمواتِ وَرَبُّ الأَرْضِ، وَرَبُّ العَرْشِ الكَرِيْمُ، لا إِلهَ إِلاَّ أَنْتَ سُبْحانَكَ، إِنِّي كُنْتُ مِنَ الظَّالمِيْنَ "ثَلاَثاً".''',
-      false,
-      incrementedContentId++, //35,
+    _HeaderContentPair(
+      headerName: 'دعاء الكرب',
+      contentText:
+          '''لا إِلهَ إِلاَّ اللهُ العَظِيْمُ الحَلِيْمُ، لا إِلهَ إِلاَّ اللهُ رَبُّ العَرْشِ العَظِيْمُ، لا إِلٰهَ إِلاَّ اللهُ رَبُّ السَّمواتِ وَرَبُّ الأَرْضِ، وَرَبُّ العَرْشِ الكَرِيْمُ، لا إِلهَ إِلاَّ أَنْتَ سُبْحانَكَ، إِنِّي كُنْتُ مِنَ الظَّالمِيْنَ "ثَلاَثاً".''',
+      isLiked: false,
       hasVoice: true,
-      voiceFile: "1UYE3rxVKUx2bUHlTq5L4jGKoCWawHJlQ",
+      voiceFile: '1UYE3rxVKUx2bUHlTq5L4jGKoCWawHJlQ',
     ),
-    Content(
-      incrementedContentId,
-      //      62,
-      '''يا اللهُ، يا رَبُّ، يا قَدِيْرُ، يا قَوِيُّ، يا مَتِيْنُ "ثَلاَثاً" أَسْأَلُكَ بِقُدْرَتِكَ وَبِقُوَّتِكَ أَنْ تَمُدَّنِي فِي جَمِيْعِ قُوايَ وَجَوارِحِيْ، الظَّاهِرَةِ وَالباطِنَةِ، بِقُوَّةٍ مِنْ قُوَّتِكَ وَبِقُدْرَةٍ مِنْ قُدْرَتِكَ أَقْدِرُ بِها، وَأَقْوَى عَلَىٰ القِيامِ بِما كَلَّفْتَنِي بِهِ مِنْ حُقوقِ رُبُوْبِيَّتِكَ، وَنَدَبْتَنِيْ إِلَيْهِ مِنْها فِيْما بَيْنِيْ وَبَيْنَكَ، وَفِيْما بَيْنِيْ وَبَيْنَ خَلْقِكَ، وَعَلَىٰ التَّمَتُّعِ بِكُلِّ ما خَوَّلْتَنِيْ مِنْ نِعَمِكَ الَّتِي أَبَحْتَها لِي فِي دِيْنِكَ، وَيَكُوْنُ كُلُّ ذلِكَ عَلَى أَصْلَحِ الوُجُوهِ، وَأَعْدَلِها وَأَحْسَنِها وَأَفْضَلِها، مَصْحُوباً بالعافِيَةِ وَالقَبُولِ وَالرِّضاءِ عِنْدَكَ يا أَرْحَمَ الراحِمِيْنَ..''',
-      false,
-      incrementedContentId++, //36,
+    _HeaderContentPair(
+      headerName: 'دعاء الإمداد بالقوّة',
+      contentText:
+          '''يا اللهُ، يا رَبُّ، يا قَدِيْرُ، يا قَوِيُّ، يا مَتِيْنُ "ثَلاَثاً" أَسْأَلُكَ بِقُدْرَتِكَ وَبِقُوَّتِكَ أَنْ تَمُدَّنِي فِي جَمِيْعِ قُوايَ وَجَوارِحِيْ، الظَّاهِرَةِ وَالباطِنَةِ، بِقُوَّةٍ مِنْ قُوَّتِكَ وَبِقُدْرَةٍ مِنْ قُدْرَتِكَ أَقْدِرُ بِها، وَأَقْوَى عَلَىٰ القِيامِ بِما كَلَّفْتَنِي بِهِ مِنْ حُقوقِ رُبُوْبِيَّتِكَ، وَنَدَبْتَنِيْ إِلَيْهِ مِنْها فِيْما بَيْنِيْ وَبَيْنَكَ، وَفِيْما بَيْنِيْ وَبَيْنَ خَلْقِكَ، وَعَلَىٰ التَّمَتُّعِ بِكُلِّ ما خَوَّلْتَنِيْ مِنْ نِعَمِكَ الَّتِي أَبَحْتَها لِي فِي دِيْنِكَ، وَيَكُوْنُ كُلُّ ذلِكَ عَلَى أَصْلَحِ الوُجُوهِ، وَأَعْدَلِها وَأَحْسَنِها وَأَفْضَلِها، مَصْحُوباً بالعافِيَةِ وَالقَبُولِ وَالرِّضاءِ عِنْدَكَ يا أَرْحَمَ الراحِمِيْنَ..''',
+      isLiked: false,
       hasVoice: true,
-      voiceFile: "1mXtyEkGckwTRHpE4Il0wOhZxlNoBCB4D",
+      voiceFile: '1mXtyEkGckwTRHpE4Il0wOhZxlNoBCB4D',
     ),
-    Content(
-      incrementedContentId,
-      //      63,
-      '''عَلَيْكَ بِالإِكْثَارِ مِنْ قراءَةِ سُوْرَةِ (الواقعة[56])؛ فَإِنَّها مُيَسِّرَةٌ لِلرِّزْقِ، لا سِيَّما بَعْدَ العَصْرِ وَقُلْ بَعْدَها: «اللَّهُمَّ صُنْ وُجُوْهَنَا باليَسارِ، وَلا تُوهِنَّا بِالإِقْتارِ، فَنَسْتَرْزِقَ طالِبِيْ رِزْقِكَ، وَنَسْتَعْطِفَ شِرارَ خَلْقِكَ، وَنَشْتَغِلَ بِحَمْدِ مَنْ أَعْطَانَا، وَنُبْتَلَى بِذَمِّ مَنْ مَنَعَنَا، وَأنْتَ مِنْ وَراءِ ذٰلِكَ كُلِّهِ أَهْلُ العَطاءِ وَالمَنْعِ.
+    _HeaderContentPair(
+      headerName: 'سورة الواقعة والدعاء بعدها',
+      contentText:
+          '''عَلَيْكَ بِالإِكْثَارِ مِنْ قراءَةِ سُوْرَةِ (الواقعة[56])؛ فَإِنَّها مُيَسِّرَةٌ لِلرِّزْقِ، لا سِيَّما بَعْدَ العَصْرِ وَقُلْ بَعْدَها: «اللَّهُمَّ صُنْ وُجُوْهَنَا باليَسارِ، وَلا تُوهِنَّا بِالإِقْتارِ، فَنَسْتَرْزِقَ طالِبِيْ رِزْقِكَ، وَنَسْتَعْطِفَ شِرارَ خَلْقِكَ، وَنَشْتَغِلَ بِحَمْدِ مَنْ أَعْطَانَا، وَنُبْتَلَى بِذَمِّ مَنْ مَنَعَنَا، وَأنْتَ مِنْ وَراءِ ذٰلِكَ كُلِّهِ أَهْلُ العَطاءِ وَالمَنْعِ.
 اللَّهُمَّ كَما صُنْتَ وُجُوهَنا عَنِ السُّجُودِ إِلاَّ لَكَ، فَصُنَّا عَنِ الحاجَةِ إِلاَّ إِلَيْكَ بِجُوْدِكَ، وَكَرَمِكَ، وَفَضْلِكَ، يَا أَرْحَمَ الرَّاحِمِيْنَ، يَا أَرْحَمَ الرَّاحِمِيْنَ، يَا أَرْحَمَ الرَّاحِمِيْنَ، أَغْنِنَا بِفَضْلِكَ عَمَّنْ سِواكَ، وَصَلَّىٰ اللهُ عَلَىٰ سَيِّدِنا مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ.
 وَهٰذَا الدُّعاءُ بَعْدَ (الواقعة[56]) أَيْضاً يُناسبُ أن يُقْرَأَ بعدَ دعاءِ الواقعةِ وَهُوَ: «اللَّهُمَّ صَلِّ وَسَلِّم عَلَى سَيِّدِنا مُحَمَّدٍ، وَعَلَى آلِ سَيِّدِنا مُحَمَّدٍ، وَهَبْ لَنا بِهِ صَلَّىٰ اللهُ عَلَيْهِ وَسَلَّمَ مِنْ رِزْقِكَ الحَلالِ الطَّيِّبِ المُبارَكِ، ما تَصُونُ بِهِ وُجوهَنا عَنِ التَّعَرُّضِ إِلَى أَحَدٍ مِنْ خَلْقِكَ، وَاجْعَلِ اللَّهُمَّ لَنا إِلَيْهِ طَرِيْقاً سَهْلَةً مِنْ غَيْرِ نَصَبٍ، وَلاَ مِحْنَةٍ، وَلا مِنَّةٍ، وَلا تَبِعَةٍ لأَحَدٍ.
 وَجَنِّبْنَا اللَّهُمَّ الحَرامَ حَيْثُ كانَ، وَأَيْنَ كانَ، وَعِنْدَ مَنْ كانَ، وَحُلْ بَيْنَنَا وَبَيْنَ أَهْلِهِ، وَاقْبِضْ عَنَّا أَيْدِيَهُمْ، وَاصْرِفْ عَنَّا وُجُوهَهُمْ وَقُلوبَهُمْ حَتَّى لا نَتَقَلَّبَ إِلاَّ فِيمَا يُرْضِيْكَ، وَلاَ نَسْتَعِيْنَ بِنعمَتِكَ إِلاَّ فِيما تُحِبُّهُ وَتَرْضاهُ، بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِيْنَ.
@@ -744,30 +814,38 @@ class IsarHelper {
 ثُمَّ تَقُوْلُ ـ وخُصُوصاً في الأشْهُرِ الحُرُمِ ـ:
 أَسْتَغْفِرُ اللهَ العَظِيْمَ الَّذِي لا إِلٰهَ إِلاَّ هُوَ الحَيَّ القَيُّومَ وَأَتُوْبُ إِلَيْهِ، تَوْبَةَ عَبْدٍ ظَالِمٍ لا يَمْلِكُ لِنَفْسِهِ نَفْعاً وَلاَ ضَرّاً، وَلاَ مَوْتاً وَلاَ حَياةً، وَلاَ نُشُوراً "سَبْعاً". وَوَاظِبْ عَلَيْهِ كُلَّ يَوْمٍ؛ فَكَثيْرٌ مِنَ السَّلَفِ كانُوا لا يَتْرُكُوْنَهُ فِي هذا الوَقْتِ.
  ''',
-      false,
-      incrementedContentId++, //37,
+      isLiked: false,
       hasVoice: true,
-      voiceFile: "1nFP2Im9h5w1YSGCn6pmbvdtETZ2hnWTl",
+      voiceFile: '1nFP2Im9h5w1YSGCn6pmbvdtETZ2hnWTl',
     ),
-    Content(
-      incrementedContentId,
-      '''سورة ﴿ والشمس﴾ وَ﴿ والليل ﴾ وَ﴿ قُل أَعوذُ بِرَبِّ الفَلَقِ﴾ وَ﴿ قُل أَعوذُ بِرَبِّ النّاسِ ﴾..والمسبعات ، وهي: ﴿الفاتحة﴾ "سَبْعاً"، و﴿الناس﴾ "سَبْعاً"، وَ﴿الفَلَقُ﴾ "سَبْعاً"، وَ﴿ الإِخْلاصُ﴾ "سَبْعاً"، و﴿الكَافِرُونَ﴾ "سَبْعاً"، وآيةُ الكرسيِّ "سَبْعاً"، سُبْحانَ اللهِ وَالحَمْدُ للهِ وَلا إِلهَ إِلاَّ اللهُ وَاللهُ أَكْبَرُ "سَبْعاً"، اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلِّمْ "سَبْعاً"، أَسْتَغْفِرُ اللهَ العَظِيْمَ لِيْ وَلِوَالِدَيَّ وَلْلمُؤْمِنِيْنَ وَالمُؤْمِناتِ، وَالمُسْلِمِيْنَ وَالمُسْلِماتِ، الأَحْياءِ مِنْهُمْ وَالأَمْواتِ، إِنَّكَ قَرِيْبٌ مُجِيْبُ الدَّعَواتِ "سَبْعاً"، اللَّهُمَّ افْعَلْ بِيْ وَبِهِمْ عاجِلاً وَآجِلاً فِي الدُّنْيا وَالآخِرَةِ مَا أَنْتَ لَهُ أَهْلٌ، وَلاَ تَفْعَلْ بِنَا يا مَوْلانا ما نَحْنُ لَهُ أَهْلٌ إِنَّكَ غَفُوْرٌ حَلِيْمٌ، جَوَادٌ كَرِيْمٌ، رَؤُوفٌ رَحِيْمٌ "سَبْعاً".''',
-      false,
-      incrementedContentId++, //38,
+    _HeaderContentPair(
+      headerName: 'ما يقال قبيل الغروب',
+      contentText: '''﴿الفاتحة﴾ "سَبْعاً"،
+وَ﴿الناس﴾ "سَبْعاً"،
+وَ﴿الفَلَقُ﴾ "سَبْعاً"، 
+وَ﴿ الإِخْلاصُ﴾ "سَبْعاً"،
+و﴿الكَافِرُونَ﴾ "سَبْعاً"،
+آيةُ الكرسيِّ "سَبْعاً"،
+سُبْحانَ اللهِ وَالحَمْدُ للهِ وَلا إِلهَ إِلاَّ اللهُ وَاللهُ أَكْبَرُ "سَبْعاً"،
+اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلِّمْ "سَبْعاً"،
+أَسْتَغْفِرُ اللهَ العَظِيْمَ لِيْ وَلِوَالِدَيَّ وَلْلمُؤْمِنِيْنَ وَالمُؤْمِناتِ، وَالمُسْلِمِيْنَ وَالمُسْلِماتِ، الأَحْياءِ مِنْهُمْ وَالأَمْواتِ، إِنَّكَ قَرِيْبٌ مُجِيْبُ الدَّعَواتِ "سَبْعاً"، 
+اللَّهُمَّ افْعَلْ بِيْ وَبِهِمْ عاجِلاً وَآجِلاً فِي الدُّنْيا وَالآخِرَةِ مَا أَنْتَ لَهُ أَهْلٌ، وَلاَ تَفْعَلْ بِنَا يا مَوْلانا ما نَحْنُ لَهُ أَهْلٌ إِنَّكَ غَفُوْرٌ حَلِيْمٌ، جَوَادٌ كَرِيْمٌ، رَؤُوفٌ رَحِيْمٌ "سَبْعاً".''',
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1N4fYSP89lrY32ORPSkGygbVVw6yzIpH3',
     ),
-
-    ///  صلاة المغرب
-    Content(
-      incrementedContentId,
-      //      65,
-      '''اللَّهُمَّ هذا إِقْبالُ لَيْلِكَ، وَإِدْبَارُ نَهَارِكَ، وَأَصْواتُ دُعاتِكَ، فَاغْفِرْ لِيْ، مَرْحَباً مَرْحَباً بِالصَّلاةِ أَهْلاً، مَرْحَباً مَرْحَباً بِالقائِلِ عَدْلاً، وَأَجِبِ الأَذانَ.''',
-      false,
-      incrementedContentId++, //39,
+    _HeaderContentPair(
+      headerName: 'ما يقال بعد سماع الأذان',
+      contentText:
+          '''اللَّهُمَّ هذا إِقْبالُ لَيْلِكَ، وَإِدْبَارُ نَهَارِكَ، وَأَصْواتُ دُعاتِكَ، فَاغْفِرْ لِيْ، مَرْحَباً مَرْحَباً بِالصَّلاةِ أَهْلاً، مَرْحَباً مَرْحَباً بِالقائِلِ عَدْلاً، وَأَجِبِ الأَذانَ.''',
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1SQ5YW9FnxJWDcJUhONHThybHHVGlW5We',
     ),
-    Content(
-      incrementedContentId,
-      //66,
-      '''"ليلة الجمعة" : الكافرون والإِخلاص
+    _HeaderContentPair(
+      headerName:
+          'عمل الإمام عبد الله الحدّاد  والحبيب عبد الرحمن المشهور في سورتي صلاة المغرب',
+      contentText: '''"ليلة الجمعة" : الكافرون والإِخلاص
 "ليلة السبت" : الفلق والناس
 "ليلة الأحد" | الإمام الحداد : الفيل ولإِيلاف | الحَبيبِ عَبْدِ الرَحمنِ المشهُور : النصر وتبَّت
 "ليلة الأثنين" | الإمام الحداد : الماعون والكوثر | الحَبيبِ عَبْدِ الرَحمنِ المشهُور : القدر والعصر
@@ -775,23 +853,21 @@ class IsarHelper {
 "ليلة الأربعاء" : الفلق والناس
 "ليلة الخميس" : الماعون والكوثر
 ''',
-      false,
-      incrementedContentId++, //40
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      73,
-      '''«أَسْتَغْفِرُ الله العَظِيمَ، الَّذِي لا إلهَ إِلاَّ هُوَ الحَيَّ القَيُّومَ، وَأَتُوبُ إِلَيْهِ.
+    _HeaderContentPair(
+      headerName: 'أذكار ما بعد الصلاة',
+      contentText:
+          '''«أَسْتَغْفِرُ الله العَظِيمَ، الَّذِي لا إلهَ إِلاَّ هُوَ الحَيَّ القَيُّومَ، وَأَتُوبُ إِلَيْهِ.
 اللَّهُمَّ أَنْتَ السَّلامُ، وَمِنْكَ السَّلامُ، تَبَارَكْتَ يا ذَا الجَلالِ والإِكرامِ، سُبحانَ رَبِّيَ العَلِيِّ الأَعْلَى، لا إِلٰهَ إِلاَّ اللهُ وَحْدَهُ لا شَرِيْكَ لَهُ، لَهُ المُلْكُ، وَلَهُ الحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.
 اللَّهُمَّ لا مَانِعَ لِما أَعْطَيْتَ، ولا مُعْطِيَ لما مَنَعْتَ، وَلا رَادَّ لِما قَضَيْتَ، وَلاَ يَنْفَعُ ذَا الجَدِّ مِنْكَ الجَدُّ، لا إِلهَ إِلاَّ اللهُ، وَلاَ نَعْبُدُ إِلاَّ إِيَّاهُ أَهْلَ الفَضْلِ والنِّعَمِ، والثَّناءِ الحَسَنِ، لا إِلهَ إِلاَّ اللهُ، ولا نَعْبُدُ إِلاَّ إِيَّاهُ مُخْلِصِيْنَ لَهُ الدِّينَ وَلَوْ كَرِهَ الكَافِرونَ».
 ثُمَّ سَبِّحْ "ثلاثاً وثلاثين"، وَاحْمَدْ "ثلاثاً وثلاثين"، وَكَبِّر "ثلاثاً وثلاثين"، وتَمِّمِ المِئَةَ بـ«لا إِلهَ إِلاَّ اللهُ وَحْدَهُ لا شَرِيْكَ لَهُ، لَهُ المُلْكُ، وَلَهُ الحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ».
 «لا إِلهَ إِلاَّ اللهُ وَحْدَهُ لا شَرِيْكَ لَهُ، لَهُ المُلْكُ، وَلَهُ الحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ» "عَشْراً".
  «اللَّهُمَّ أَجِرْنِي مِنَ النَّارِ» "سَبْعاً".
 و "إِحْدَى وسَبْعيْنَ مَرَّةً": «يَا فَتَّاحُ»؛ مَعَ وَضْعِ يَدِكَ اليُمْنَى عَلَى صَدْرِكَ، فإِنَّها مُجَرَّبَةٌ لِلفُتُوحِ.
-وَاقْرأْ أيضاً:
+وأقرأ أيضاً ويدك على صدرك
 بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
 ﴿  أَلَمْ نَشْرَحْ لَكَ صَدْرَكَ ١ وَوَضَعْنَا عَنكَ وِزْرَكَ ٢ ٱلَّذِىٓ أَنقَضَ ظَهْرَكَ ٣ وَرَفَعْنَا لَكَ ذِكْرَكَ ٤ فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا ٥ إِنَّ مَعَ ٱلْعُسْرِ يُسْرًۭا ٦ فَإِذَا فَرَغْتَ فَٱنصَبْ ٧ وَإِلَىٰ رَبِّكَ فَٱرْغَب ٨ ﴾.
-وَيَدُكَ عَلَى صَدْرِكَ. 
 واقرأ آيَةَ الكُرْسِي.
 فَفِي ذلِكَ فَوائِدُ مَذْكُورَةٌ عَنِ الكُمَّلِ الرَّاسِخِيْنَ في قَدَمِ الاتِّباعِ لِسَيِّدِ المُرسَلِيْنَ وَغَيْرُ ذلِكَ كَثِيرٌ. 
 ثُمَّ ادْعُ اللهَ، وَلْيَكُنْ مِنْ دُعائِكَ: «اللَّهُمَّ ارْزُقْنِي فَهْمَ النَّبِيِّيْنَ، وَحِفْظَ المُرْسَلِيْنَ، وسُرْعَةَ إِلهامِ المَلائِكَةِ المُقَرِّبِيْنَ.
@@ -802,76 +878,72 @@ class IsarHelper {
 وَالأدْعِيَةُ كَثِيرةٌ، وَقَدْ ذَكَرَ الإمام الغَزَالِي ـ رحمه الله تعالى ـ في «البدايَةِ» مِنْهَا شَيْئاً كَثِيراً، فَادْعُ بِما شِئْتَ.
 ثُمَّ بَعْدَ ذلِكَ اشْتَغِلْ بمُصافَحَةِ إِخْوانِكَ، لا سيَّما بَعْدَ هَذَا الفَرضْ، وعِنْدَ كُلِّ لِقاءٍ؛ مَعَ مُراعاةِ الأَدَبِ في الظاهِرِ وَالباطِنِ، وَلاَ يَخْفَىٰ ذلِكَ عَلَى كُلِّ مَنْ لَهُ بَصِيْرَةٌ مُنِيْرَةٌ، وَسَرِيْرَةٌ مُسْتَنِيرَةٌ.
 ''',
-      false,
-      incrementedContentId++, //41,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1NIDxZMw4i29AWjk6YgkFQ3g13xATiT8N',
     ),
-    Content(
-      incrementedContentId,
-      //      74,
-      '''«يا اللهُ.. يا لَطِيْفُ.. يا رَزَّاقُ.. يا  قَوِيُّ.. يا عَزِيْزُ "ثلاثاً" أَسْأَلُكَ تَأَلُّهاً إِلَيْكَ، وَاسْتِغْراقاً فِيْكَ، وَفَناءً بِكَ عَمَّنْ سِواكَ، وَلُطْفاً مِنْ لَدُنْكَ شَامِلاً جَلِيّاً وَخَفِيّاً، وَرِزْقاً طَيِّباً وَاسِعاً هَنِيْئَاً مَرِيْئاً، وَقُوَّةً فِي الإِيْمانِ وَفِي اليَقِيْنِ، وَصَلابَةً فِي الحَقِّ وَالدِّيْنِ، وَعِزّاً بِكَ يَدُوْمُ وَيَتَخَلَّدُ، وَشَرَفاً يَبْقَى وَيَتأَبَّدُ، لاَ يَشُوْبُهُ تَكَبُّرٌ، وَلا عُتُوٌّ، وَلاَ إِرادَةُ فَسادٍ فِي الأَرْضِ وَلاَ عُلُوٌّ، إِنَّكَ سَمِيْعٌ قَرِيْبٌ مُجِيْبٌ».وهو لِلإِمَامِ الْحَبِيبِ عَبْدِ اللهِ الْحَدَّادِ رَضِيَ اللهُ عَنْهُ.''',
-      false,
-      incrementedContentId++, //42,
+    _HeaderContentPair(
+      headerName: 'دعاء اللّطف للامام الحداد رضي اللّه عنه',
+      contentText:
+          '''«يا اللهُ.. يا لَطِيْفُ.. يا رَزَّاقُ.. يا  قَوِيُّ.. يا عَزِيْزُ "ثلاثاً" أَسْأَلُكَ تَأَلُّهاً إِلَيْكَ، وَاسْتِغْراقاً فِيْكَ، وَفَناءً بِكَ عَمَّنْ سِواكَ، وَلُطْفاً مِنْ لَدُنْكَ شَامِلاً جَلِيّاً وَخَفِيّاً، وَرِزْقاً طَيِّباً وَاسِعاً هَنِيْئَاً مَرِيْئاً، وَقُوَّةً فِي الإِيْمانِ وَفِي اليَقِيْنِ، وَصَلابَةً فِي الحَقِّ وَالدِّيْنِ، وَعِزّاً بِكَ يَدُوْمُ وَيَتَخَلَّدُ، وَشَرَفاً يَبْقَى وَيَتأَبَّدُ، لاَ يَشُوْبُهُ تَكَبُّرٌ، وَلا عُتُوٌّ، وَلاَ إِرادَةُ فَسادٍ فِي الأَرْضِ وَلاَ عُلُوٌّ، إِنَّكَ سَمِيْعٌ قَرِيْبٌ مُجِيْبٌ».''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //75,
-      '''تقرأ الفاتحة "أَرْبَعاً وَعِشْرِيْنَ مَرَّةً". ''',
-      false,
-      incrementedContentId++, //43
+    _HeaderContentPair(
+      headerName: 'عمل الإمام الغزاليّ في قراءة سورة الفاتحة بعد الصّلوات',
+      contentText: '''تقرأ الفاتحة "أَرْبَعاً وَعِشْرِيْنَ مَرَّةً". ''',
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1qcYp1JlL5_uIOfQFxk-mQibTifg0tKwb',
     ),
-    Content(
-      incrementedContentId,
-      //      76,
-      '''«الحَمْدُ للهِ رَبِّ العَالَمِيْنَ، حَمْداً يُوافِي نِعَمَهُ وَيُكَافِئُ مَزِيدَه، اللَّهُمَّ صَلِّ عَلَى سَيِّدِنا مُحَمَّدٍ وَعَلَى أَهْلِ بَيْتِهِ وَصَحْبِهِ وَسَلِّم، اللَّهُمَّ إِنِّي أَسْأَلُكَ بِحَقِّ الفَاتِحَةِ المُعَظَّمَةِ والسَّبْعِ المَثَانِي أَنْ تَفْتَحَ لَنا بِكُلِّ خَيْرٍ، وَأَنْ تَتَفَضَّلَ عَلَيْنَا بِكُلِّ خَيْرٍ، وَأَنْ تَجْعَلَنَا مِنْ أَهْلِ الخَيْرِ، وَأَنْ تُعَامِلَنَا مُعَامَلَتَكَ لأهْلِ الخَيْرِ، وَأَنْ تَحْفَظَنا فِي أَدْيانِنا وَأَنْفُسِنَا وَأَوْلاَدِنا وَأَهْلِينَا وَأَصْحَابِنَا وَأَحْبَابِنا مِنْ كُلِّ مِحْنَةٍ وَفِتْنَةٍ وَبُؤْسٍ وَضَيْرٍ، إِنَّكَ وَلِيُّ كُلِّ خَيْرٍ، وَمُتَفَضِّلٌ بِكُلِّ خَيْرٍ، وَمُعْطِي كُلَّ خَيْرٍ بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ، يَا أَرْحَمَ الرَّاحِمِيْنَ، يَا أَرْحَمَ الرَّاحِمِيْنَ».''',
-      false,
-      incrementedContentId++, //44,
+    _HeaderContentPair(
+      headerName: 'دعاء الفاتحة للإمام الحبيب عبد الله الحدّاد رضي الله عنه',
+      contentText:
+          '''«الحَمْدُ للهِ رَبِّ العَالَمِيْنَ، حَمْداً يُوافِي نِعَمَهُ وَيُكَافِئُ مَزِيدَه، اللَّهُمَّ صَلِّ عَلَى سَيِّدِنا مُحَمَّدٍ وَعَلَى أَهْلِ بَيْتِهِ وَصَحْبِهِ وَسَلِّم، اللَّهُمَّ إِنِّي أَسْأَلُكَ بِحَقِّ الفَاتِحَةِ المُعَظَّمَةِ والسَّبْعِ المَثَانِي أَنْ تَفْتَحَ لَنا بِكُلِّ خَيْرٍ، وَأَنْ تَتَفَضَّلَ عَلَيْنَا بِكُلِّ خَيْرٍ، وَأَنْ تَجْعَلَنَا مِنْ أَهْلِ الخَيْرِ، وَأَنْ تُعَامِلَنَا مُعَامَلَتَكَ لأهْلِ الخَيْرِ، وَأَنْ تَحْفَظَنا فِي أَدْيانِنا وَأَنْفُسِنَا وَأَوْلاَدِنا وَأَهْلِينَا وَأَصْحَابِنَا وَأَحْبَابِنا مِنْ كُلِّ مِحْنَةٍ وَفِتْنَةٍ وَبُؤْسٍ وَضَيْرٍ، إِنَّكَ وَلِيُّ كُلِّ خَيْرٍ، وَمُتَفَضِّلٌ بِكُلِّ خَيْرٍ، وَمُعْطِي كُلَّ خَيْرٍ بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ، يَا أَرْحَمَ الرَّاحِمِيْنَ، يَا أَرْحَمَ الرَّاحِمِيْنَ».''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      77,
-      '''اقْرَأْ ( يس[36]) بَعْدَ كُلِّ فَرْضٍ، وَعِنْدَ كُلِّ مُهِمٍّ. فإن كانت لك حاجة أو أمر فَسَمِّهِ وَقُلْ بَعْدَ قِراءَتِها:
+    _HeaderContentPair(
+      headerName: 'سورة ﴿يس﴾ والدعاء بعدها',
+      contentText:
+          '''اقْرَأْ ( يس[36]) بَعْدَ كُلِّ فَرْضٍ، وَعِنْدَ كُلِّ مُهِمٍّ. فإن كانت لك حاجة أو أمر فَسَمِّهِ وَقُلْ بَعْدَ قِراءَتِها:
 «اللَّهُمَّ إنَّا نَسْتَحْفِظُكَ وَنَسْتَوْدِعُكَ أَدْيانَنا، وَأَنْفُسَنا، وَأَهْلَنا، وَأَوْلادَنا، وَأَمْوالَنا، وكُلَّ شَيء أَعْطَيْتَنا. اللَّهُمَّ اجْعَلْنا فِي كَنَفِكَ، وَأَمَانِكَ، وَجِوارِكَ، وَعِياذِكَ، مِنْ كُلِّ شَيْطانٍ مَرِيْدٍ، وَجَبَّارٍ عَنِيْدٍ، وَذِيْ عَيْنٍ، وَذِيْ بَغْيٍ، وَمِنْ شَرِّ كُلِّ ذِي شَرٍّ؛ إِنَّكَ عَلَى كُلِّ شَيْءٍ قَدِيْرٌ. اللَّهُمَّ جَمِّلْنا بِالعافِيَةِ وَالسَّلاَمَةِ، وَحَقِّقْنَا بِالتَّقْوَى والاسْتِقَامَةِ، وَأَعِذْنا مِنْ مُوجِباتِ النَّدامَةِ، إِنَّكَ سَمِيْعُ الدُّعاءِ. اللَّهُمَّ اغْفرْ لَنا، وَلوالِدِيْنَا، ولأَوْلاَدِنا، وَمَشايِخِنا، وَلإِخْوانِنا فِي الدِّيْنِ، وَلأَصْحابِنا، وَأَحْبابِنا، وَلِمَنْ أَحَبَّنَا فِيْكَ، ولِمَنْ أَحْسَنَ إلَيْنَا، وَللمُؤْمِنِيْنَ وَالمُؤْمِناتِ، وَالمُسْلِمِيْنَ وَالمُسْلِماتِ، يَا  رَبَّ العالَمِيْنَ، وَصَلَّىٰ اللهُ عَلَىٰ سَيِّدِنا مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ، وَارْزُقْنا كَمالَ المُتابَعَةِ لَهُ ظاهِراً وَباطِناً فِي عافِيَةٍ وَسَلامَةٍ، بِرَحْمَتِكَ يا أَرْحَمَ الرَّاحِمِيْنَ».
 وَإِنْ اسْتَطَعْتَ أَنْ لا  تَتَكَلَّمَ ما بَيْنَ صَلاةِ المَغْرِبِ وَسُنَّتِها فَافْعَلْ، فَفِيْ ذلِكَ ثَوابٌ جَزِيْلٌ
 ''',
-      false,
-      incrementedContentId++, //45,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      78,
-      '''صَلِّ بَعْدِيَّةَ المَغْرِبِ، وَهِيَ رَكْعَتانِ، وَانْوِ بِهِما الأَوَّابِيْنَ إِنْ شِئْتَ، وَاقْرَأْ فِيهِما ﴿الكافِرُون﴾ وَ﴿ الإخْلاصَ﴾.
+    _HeaderContentPair(
+      headerName: 'بعدية المغرب',
+      contentText:
+          '''صَلِّ بَعْدِيَّةَ المَغْرِبِ، وَهِيَ رَكْعَتانِ، وَانْوِ بِهِما الأَوَّابِيْنَ إِنْ شِئْتَ، وَاقْرَأْ فِيهِما ﴿الكافِرُون﴾ وَ﴿ الإخْلاصَ﴾.
 وَبَعْدَ أَنْ تُسَلِّمَ قُلْ: «يا مُقَلِّبَ القُلوْبِ وَالأبْصارِ، ثَبِّتْ قَلْبِي عَلَى دِيْنِكَ، مَرْحَباً بِمَلائِكَة اللَّيْلِ، مَرْحَباً بِالمَلَكَيْنِ الكَرِيْمَيْنِ الكاتِبَيْنِ، اكْتُبا فِي صَحِيْفَتِيْ: أَنِّي أَشْهَدُ أَنْ لا إِلٰهَ إِلاَّ اللهُ، وَأَشْهَدُ أَنَّ مُحَمَّداً رَسُوْلُ اللهِ، وَأَشْهَدُ أَنَّ الجَنَّةَ حَقٌّ، وَالنَّارَ حَقٌّ، وَالحَوْضَ وَالشَّفاعَةَ حَقٌّ، وَالصِّراطَ وَالمِيْزانَ حَقٌّ، وَأَشْهَدُ أَنَّ السَّاعَةَ آتِيَةٌ لا  رَيْبَ فِيْها، وَأَنَّ الله يَبْعَثُ مَنْ فِي القُبُورِ».
 اللَّهُمَّ إِنِّي أُوْدِعُكَ هذِهِ الشَّهادَةَ لِيَوْمِ حاجَتِيْ إِلَيْها.
 اللَّهُمَّ احْطُطْ بِها وِزْرِيْ، وَاغْفِرْ بِها ذَنْبِيْ، وَثَقِّلْ بِها مِيْزانِي، وَأَجِبْ لِيْ بِها أَمانِيَّ، وَتَجَاوَزْ عَنِّيْ يا أَرْحَمَ الرَّاحِمِيْنَ.
 ثُمَّ قُلْ: «اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى سَيِّدِنا مُحَمَّدٍ وَعَلَى آلِ سَيِّدِنا مُحَمَّدٍ عَدَدَ كُلِّ حَرْفٍ جَرَى بِهِ القَلَمُ "عَشْراً"».
 وَقُلْ بَعْدَ السَّلامِ أَوْ فِي السُّجودِ: «اللَّهُمَّ إِنِّي أَسْتَوْدِعُكَ إِيْمانِيَ فِي حَياتِي، وَعِنْدَ مَوْتِيْ، وَبَعْدَ مَمَاتِي، فَاحْفَظْهُ عَلَيَّ، إِنَّكَ عَلَى كُلِّ شَيء قَدِيْرٌ».
 ''',
-      false,
-      incrementedContentId++, //46,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1Yv75UDr2BYdz3pZfQu7hqJSgwZipylJE',
     ),
-    Content(
-      incrementedContentId,
-      //      79,
-      '''صل رَكْعَتَيْنِ تَنْوِيْ بِهِمَا سُنَّةَ الْمَغْرِبِ الْقَبْلِيةَ، وَنِيَّةَ حِفْظِ الإِيْمانِ.''',
-      false,
-      incrementedContentId++, //47,
+    _HeaderContentPair(
+      headerName: 'قبلية المغرب',
+      contentText:
+          '''صل رَكْعَتَيْنِ تَنْوِيْ بِهِمَا سُنَّةَ الْمَغْرِبِ الْقَبْلِيةَ، وَنِيَّةَ حِفْظِ الإِيْمانِ.''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      80,
-      '''هن أَرْبَعَ رَكْعاتٍ تَنْوِيْ بِها الأَوَّابِيْنَ تَقْرَأُ فِي الأُوْلَىٰ: ﴿  أَفَحَسِبْتُمْ أَنَّمَا خَلَقْنَـٰكُمْ عَبَثًۭا وَأَنَّكُمْ إِلَيْنَا لَا تُرْجَعُونَ ١١٥ فَتَعَـٰلَى ٱللَّهُ ٱلْمَلِكُ ٱلْحَقُّ ۖ لَآ إِلَـٰهَ إِلَّا هُوَ رَبُّ ٱلْعَرْشِ ٱلْكَرِيمِ ١١٦ وَمَن يَدْعُ مَعَ ٱللَّهِ إِلَـٰهًا ءَاخَرَ لَا بُرْهَـٰنَ لَهُۥ بِهِۦ فَإِنَّمَا حِسَابُهُۥ عِندَ رَبِّهِۦٓ ۚ إِنَّهُۥ لَا يُفْلِحُ ٱلْكَـٰفِرُونَ ١١٧ وَقُل رَّبِّ ٱغْفِرْ وَٱرْحَمْ وَأَنتَ خَيْرُ ٱلرَّٰحِمِينَ ١١٨﴾. فَسُبْحَـٰنَ ٱللَّهِ حِينَ تُمْسُونَ وَحِينَ تُصْبِحُونَ ١٧ وَلَهُ ٱلْحَمْدُ فِى ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضِ وَعَشِيًّۭا وَحِينَ تُظْهِرُونَ ١٨ يُخْرِجُ ٱلْحَىَّ مِنَ ٱلْمَيِّتِ وَيُخْرِجُ ٱلْمَيِّتَ مِنَ ٱلْحَىِّ وَيُحْىِ ٱلْأَرْضَ بَعْدَ مَوْتِهَا ۚ وَكَذَٰلِكَ تُخْرَجُونَ ١٩﴾.
+    _HeaderContentPair(
+      headerName: 'صلاة الأوابين',
+      contentText:
+          '''هن أَرْبَعَ رَكْعاتٍ تَنْوِيْ بِها الأَوَّابِيْنَ تَقْرَأُ فِي الأُوْلَىٰ: ﴿  أَفَحَسِبْتُمْ أَنَّمَا خَلَقْنَـٰكُمْ عَبَثًۭا وَأَنَّكُمْ إِلَيْنَا لَا تُرْجَعُونَ ١١٥ فَتَعَـٰلَى ٱللَّهُ ٱلْمَلِكُ ٱلْحَقُّ ۖ لَآ إِلَـٰهَ إِلَّا هُوَ رَبُّ ٱلْعَرْشِ ٱلْكَرِيمِ ١١٦ وَمَن يَدْعُ مَعَ ٱللَّهِ إِلَـٰهًا ءَاخَرَ لَا بُرْهَـٰنَ لَهُۥ بِهِۦ فَإِنَّمَا حِسَابُهُۥ عِندَ رَبِّهِۦٓ ۚ إِنَّهُۥ لَا يُفْلِحُ ٱلْكَـٰفِرُونَ ١١٧ وَقُل رَّبِّ ٱغْفِرْ وَٱرْحَمْ وَأَنتَ خَيْرُ ٱلرَّٰحِمِينَ ١١٨﴾. فَسُبْحَـٰنَ ٱللَّهِ حِينَ تُمْسُونَ وَحِينَ تُصْبِحُونَ ١٧ وَلَهُ ٱلْحَمْدُ فِى ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضِ وَعَشِيًّۭا وَحِينَ تُظْهِرُونَ ١٨ يُخْرِجُ ٱلْحَىَّ مِنَ ٱلْمَيِّتِ وَيُخْرِجُ ٱلْمَيِّتَ مِنَ ٱلْحَىِّ وَيُحْىِ ٱلْأَرْضَ بَعْدَ مَوْتِهَا ۚ وَكَذَٰلِكَ تُخْرَجُونَ ١٩﴾.
 وَفِي الثَّانِيَةِ: ﴿  وَٱلصَّـٰٓفَّـٰتِ صَفًّۭا ١ فَٱلزَّٰجِرَٰتِ زَجْرًۭا ٢ فَٱلتَّـٰلِيَـٰتِ ذِكْرًا ٣ إِنَّ إِلَـٰهَكُمْ لَوَٰحِدٌۭ ٤ رَّبُّ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضِ وَمَا بَيْنَهُمَا وَرَبُّ ٱلْمَشَـٰرِقِ ٥ إِنَّا زَيَّنَّا ٱلسَّمَآءَ ٱلدُّنْيَا بِزِينَةٍ ٱلْكَوَاكِبِ ٦ وَحِفْظًۭا مِّن كُلِّ شَيْطَـٰنٍۢ مَّارِدٍۢ ٧ لَّا يَسَّمَّعُونَ إِلَى ٱلْمَلَإِ ٱلْأَعْلَىٰ وَيُقْذَفُونَ مِن كُلِّ جَانِبٍۢ ٨ دُحُورًۭا ۖ وَلَهُمْ عَذَابٌۭ وَاصِبٌ ٩ إِلَّا مَنْ خَطِفَ ٱلْخَطْفَةَ فَأَتْبَعَهُۥ شِهَابٌۭ ثَاقِبٌۭ ١٠ فَٱسْتَفْتِهِمْ أَهُمْ أَشَدُّ خَلْقًا أَم مَّنْ خَلَقْنَآ ۚ إِنَّا خَلَقْنَـٰهُم مِّن طِينٍۢ لَّازِبٍۭ ١١﴾.
 وَفِي الثَّالِثَةِ: ﴿  حمٓ ١ تَنزِيلُ ٱلْكِتَـٰبِ مِنَ ٱللَّهِ ٱلْعَزِيزِ ٱلْعَلِيمِ ٢ غَافِرِ ٱلذَّنۢبِ وَقَابِلِ ٱلتَّوْبِ شَدِيدِ ٱلْعِقَابِ ذِى ٱلطَّوْلِ ۖ لَآ إِلَـٰهَ إِلَّا هُوَ ۖ إِلَيْهِ ٱلْمَصِيرُ ٣﴾. وَآيَةَ (الكُرْسِيْ).
 وَفِي الرَّابِعَةِ: ﴿  لَقَدْ جَآءَكُمْ رَسُولٌۭ مِّنْ أَنفُسِكُمْ عَزِيزٌ عَلَيْهِ مَا عَنِتُّمْ حَرِيصٌ عَلَيْكُم بِٱلْمُؤْمِنِينَ رَءُوفٌۭ رَّحِيمٌۭ ١٢٨ فَإِن تَوَلَّوْا۟ فَقُلْ حَسْبِىَ ٱللَّهُ لَآ إِلَـٰهَ إِلَّا هُوَ ۖ عَلَيْهِ تَوَكَّلْتُ ۖ وَهُوَ رَبُّ ٱلْعَرْشِ ٱلْعَظِيمِ ١٢٩ ﴾.
 ثُمَّ اشْتَغِلْ إِمَّا بِمُطَالَعَةٍ إِنْ كانَتْ، أَوْ حِزْبٍ فِي أَحَدِ المَساجِدِ .
 ''',
-      false,
-      incrementedContentId++, //48,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      81,
-      '''يَبْدَأُ بِقِرَاءَةِ الْفَاتِحَةِ:
+    _HeaderContentPair(
+      headerName: 'راتب الامام الحداد',
+      contentText: '''يَبْدَأُ بِقِرَاءَةِ الْفَاتِحَةِ:
 بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ ١ ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ ٢ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ ٣ مَـٰلِكِ يَوْمِ ٱلدِّينِ ٤ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ٥ ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ ٦ صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ ٧﴾.
 وَآيَةِ الْكُرْسِيْ:
 ٱللَّهُ لَآ إِلَـٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌۭ وَلَا نَوْمٌۭ ۚ لَّهُۥ مَا فِى ٱلسَّمَـٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۗ مَن ذَا ٱلَّذِى يَشْفَعُ عِندَهُۥٓ إِلَّا بِإِذْنِهِۦ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَىْءٍۢ مِّنْ عِلْمِهِۦٓ إِلَّا بِمَا شَآءَ ۚ وَسِعَ كُرْسِيُّهُ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضَ ۖ وَلَا يَـُٔودُهُۥ حِفْظُهُمَا ۚ وَهُوَ ٱلْعَلِىُّ ٱلْعَظِيمُ ٢٥٥﴾.
@@ -907,26 +979,26 @@ class IsarHelper {
 انتهى الرَّاتِبُ الشَّهِيرُ.
 واحْذَرْ أَنْ تَتْرُكَ الرَّاتِبَ لِلحَبِيْبِ عَبْدِ الله الحدَّادِ، فَإِنَّهُ مُهِمٌّ. فَإِنْ كُنْتَ مِمَّنْ يُحَزِّبُ فَاقْرَأْهُ قَبْلَ العِشاءِ فِي المَسْجِدِ كَما هِيَ عَادَتُهُمْ، وَإِلاَّ فَلا تَغْفُلْ عَنْ قِراءَتِهِ إِذَا عُدْتَ إِلَى مَنْزِلِكَ، وَلا تَتْرُكْهُ؛ فَإِنَّ لَهُ فَوائِدَ عَظِيْمَةً، لا نُطِيْلُ بِذِكْرِها، وَيَكْفِيْكَ مِنْهَا أَنَّ مَنْ وَاظَبَ عَلَى قِراءَتِهِ يَمُوْتُ عَلَى حُسْنِ الخِتام، وَلَوْ لَمْ تَكُنْ إِلاَّ هذِهِ لَكَفَتْ في التَّحْرِيْضِ عَلَى قِراءَتِهِ.
 ''',
-      false,
-      incrementedContentId++, //49,
+      isLiked: false,
       hasVoice: true,
-      voiceFile: "1ZiEN8-3aJGcZHIxrDb9UE9PDDPgSEcZJ",
+      voiceFile: '1ZiEN8-3aJGcZHIxrDb9UE9PDDPgSEcZJ',
     ),
-    Content(
-      incrementedContentId,
-      //      82,
-      '''أَشْهَدُ أَنْ لاَ إِلٰهَ إِلاَّ اللهُ وَحْدَهُ لاَ  شَرِيْكَ لَهُ، وَأَشْهَدُ أَنَّ سَيِّدَنَا مُحَمَّداً عَبْدُهُ وَرَسُوْلُهُ، آمَنْتُ بِاللهِ، وَمَلائِكَتِهِ، وَكُتُبِهِ، وَرُسُلِه، وَاليَوْمِ الآخِرِ، وَبِالْقَدَرِ خَيْرِهِ وَشَرِّهِ، صَدَقَ اللهُ، وَصَدَقَ رَسُوْلُهُ، صَدَقَ اللهُ، وَصَدَقَ رُسُلُهُ، آمَنْتُ بِالشَّرِيْعَةِ، وَصَدَّقْتُ بِالشَّرِيْعَةِ، وَإِنْ كُنْتُ قُلْتُ شَيْئاً خِلافَ الإِجْمَاعِ رَجَعْتُ عَنْهُ، وَتَبَرَّأْتُ مِنْ كُلِّ دِيْنٍ يُخَالِفُ دِيْنَ الإِسْلاَمِ.
+    _HeaderContentPair(
+      headerName: 'عقيدة سيّدنا الشّيخ عليّ بن أبي بكرٍ السّكران رضي الله عنه',
+      contentText:
+          '''أَشْهَدُ أَنْ لاَ إِلٰهَ إِلاَّ اللهُ وَحْدَهُ لاَ  شَرِيْكَ لَهُ، وَأَشْهَدُ أَنَّ سَيِّدَنَا مُحَمَّداً عَبْدُهُ وَرَسُوْلُهُ، آمَنْتُ بِاللهِ، وَمَلائِكَتِهِ، وَكُتُبِهِ، وَرُسُلِه، وَاليَوْمِ الآخِرِ، وَبِالْقَدَرِ خَيْرِهِ وَشَرِّهِ، صَدَقَ اللهُ، وَصَدَقَ رَسُوْلُهُ، صَدَقَ اللهُ، وَصَدَقَ رُسُلُهُ، آمَنْتُ بِالشَّرِيْعَةِ، وَصَدَّقْتُ بِالشَّرِيْعَةِ، وَإِنْ كُنْتُ قُلْتُ شَيْئاً خِلافَ الإِجْمَاعِ رَجَعْتُ عَنْهُ، وَتَبَرَّأْتُ مِنْ كُلِّ دِيْنٍ يُخَالِفُ دِيْنَ الإِسْلاَمِ.
 اللَّهُمَّ إِنِّي أُؤْمِنُ بِمَا تَعْلَمُ أَنَّهُ الْحَقُّ عِنْدَكَ، وَأَبْرَأُ إِلَيْكَ مِمَّا تَعْلَمُ أَنَّهُ البَاطِلُ عِنْدَكَ، فَخُذْ مِنِّي جُمَلاً، وَلاَ تُطَالِبْنِيْ بِالتَّفْصِيْلِ.
 أَسْتَغْفِرُ اللهَ العَظِيْمَ وَأَتُوْبُ إِلَيْهِ، نَدِمْتُ مِنْ كُلِّ شَرٍّ. أَشْهَدُ أَنْ لاَ إِلَهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيْكَ لَهُ، وَأَشْهَدُ أَنَّ سَيِّدَنَا مُحَمَّداً عَبْدُهُ ورَسُوْلُهُ، وَأَنَّ عِيْسىٰ عَبْدُ اللهِ وَرَسُوْلُهُ، وَابْنُ أَمَتِهِ، وَكَلِمَتُهُ أَلْقَاهَا إِلَى مَرْيَمَ وَرُوْحٌ مِنْهُ، وأَنَّ الجَنَّةَ حَقٌّ، وَالنَّارَ حَقٌّ، وأَنَّ كُلَّ مَا أَخْبَرَ بِهِ رَسُوْلُ الله صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ حَقٌّ، وَأَنَّ السَّاعَةَ آتِيَةٌ لاَ رَيْبَ فِيْهَا، وأَنَّ اللهَ يَبْعَثُ مَنْ فِيْ القُبُوْرِ.
 أَشْهَدُ أَنْ لاَ إِلٰهَ إِلاَّ اللهُ وَحْدَهُ لاَ  شَرِيْكَ لَهُ، وَأَشْهَدُ أَنَّ سَيِّدَنَا مُحَمَّداً عَبْدُهُ ورَسُوْلُهُ، لاَ إِلٰهَ إِلاَّ اللهُ، أُفْنِي بِهَا عُمْرِيْ، لاَ إِلٰهَ إِلاَّ اللهُ، أَدْخُلُ بِهَا قَبْرِيْ، لاَ إِلٰهَ إِلاَّ اللهُ، أَخْلُوْ بِهَا وَحْدِيْ، لاَ إِلٰهَ إِلاَّ الله، أَلْقَى بِهَا رَبِّي، لاَ إِلٰهَ إِلاَّ اللهُ قَبْلَ كُلِّ شَيْءٍ، لاَ  إِلٰهَ إِلاَّ اللهُ بَعْدَ كُلِّ شَيْءٍ، لاَ إِلٰهَ إِلاَّ اللهُ يَبْقَى رَبُّنَا، وَيَفْنَى كُلُّ شَيْءٍ، لاَ إِلٰهَ إِلاَّ اللهُ، نَسْتَغْفِرُ اللهَ "ثلاثاً"، لاَ إِلٰهَ إِلاَّ اللهُ وَنَتُوْبُ إِلَىٰ اللهِ، لاَ إِلٰهَ إِلاَّ اللهُ، مُحَمَّدٌ رَسُوْلُ اللهِ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ. اهـ..
 ''',
-      false,
-      incrementedContentId++, //50,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '199wkhcX8BWEV_QWEq3Skx7-uANJTXZFb',
     ),
-    Content(
-      incrementedContentId,
-      //      83,
-      '''عَلَيْكَ بِالإِتْيَانِ بِهٰذَا الرَّاتِبِ وَالْمُسَمَّى (عَزِيْزُ الْمَنَالِ وَفَتْحُ بَابِ الْوِصَالِ)، يُقْرَأُ صَبَاحاً وَمَسَاءً، وَهُوَ:
+    _HeaderContentPair(
+      headerName: 'راتب العطّاس',
+      contentText:
+          '''عَلَيْكَ بِالإِتْيَانِ بِهٰذَا الرَّاتِبِ وَالْمُسَمَّى (عَزِيْزُ الْمَنَالِ وَفَتْحُ بَابِ الْوِصَالِ)، يُقْرَأُ صَبَاحاً وَمَسَاءً، وَهُوَ:
 اَلْفَاتِحَةَ: إِلَى حَضْرَةِ سَيِّدِنَا وَحَبِيْبِنَا مُحَمَّدٍ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ.
 وَإِلَى رُوْحِ سَيِّدِنَا الْحَبِيْبِ عُمَرَ بْنِ عَبْدِ الرَّحْمٰنِ الْعَطَّاسِ، صَاحِبِ الرَّاتِبِ.
 وَالشَّيْخِ عَلِيِّ بْنِ عَبْدِ اللهِ بارَاسٍ.
@@ -960,16 +1032,8 @@ class IsarHelper {
 ثُمَّ الْفَاتِحَةَ: إِلَى رُوْحِ سَيِّدِنَا وَحَبِيْبِنَا وَبَرَكَتِنَا صَاحِبِ الرَّاتِبِ، قُطْبِ الأَنْفَاسِ، الْحَبِيْبِ عُمَرَ بنِ عَبْدِ الرَّحْمٰنِ الْعَطَّاسِ، ثُمَّ إِلَى رُوْحِ الشَّيْخِ عَلِيِّ بنِ عَبْدِ اللهِ بَارَاسٍ، ثُمَّ إِلَى رُوْحِ سَيِّدِنَا وَحَبِيْبِنَا وَبَرَكَتِنَا وَقُدْوَتِنَا وَمُرْشِدِنَا الإِمَامِ الْحَبِيْبِ أَحْمَدَ بنِ حَسَنِ بنِ عَبْدِ الله الْعَطَّاسِ، وَأُصُوْلِهِمْ وَفُرُوْعِهِمْ وَذَوِيْ الْحُقُوْقِ عَلَيْهِمْ أَجْمَعِيْنَ.. أَنَّ الله يَغْفِرُ لَهُمْ، وَيَرْحَمُهُمْ، وَيُعْلِيْ دَرَجَاتِهِمْ فِيْ الْجَنَّةِ، وَيَنْفَعُنَا بِأَسْرَارِهِمْ وَأَنْوَارِهِمْ وَعُلُوْمِهِمْ وَنَفَحَاتِهِمْ فِيْ الدِّيْنِ وَالدُّنْيَا وَالآخِرَةِ.. اَلْفَاتِحَةَ أَثَابَكُمُ اللهُ.
 ثُمَّ الْفَاتِحَةَ: إِلَى رُوْحِ الأَوْلِيَاءِ وَالشُّهَدَاءِ وَالصَّالِحِيْنَ، وَالأَئِمَّةِ الرَّاشِدِيْنَ، ثُمَّ أَرْوَاحِ وَالِدِيْنَا وَمَشَايِخِنَا وَمُعَلِّمِيْنَا، وَذَوِيْ الْحُقُوْقِ عَلَيْنَا أَجْمَعِيْنَ، ثُمَّ إِلَىٰ أَرْوَاحِ أَمْوَاتِ الْمُؤْمِنِيْنَ وَالْمُؤْمِنَاتِ وَالْمُسْلِمِيْنَ وَالْمُسْلِمَاتِ.. أَنَّ اللهَ يَغْفِرُ لَهُمْ، وَيَرْحَمُهُمْ، وَيُعْلِيْ دَرَجَاتِهِمْ فِيْ الْجَنَّةِ، وَيَنْفَعُنَا بِأَسْرَارِهِمْ وَأَنْوَارِهِمْ وَعُلُوْمِهِمْ فِيْ الدِّيْنِ وَالدُّنْيَا وَالآخِرَةِ.. اَلْفَاتِحَةَ أَثَابَكُمُ اللهُ.
 ثُمَّ الْفَاتِحَةَ: بِالْقَبُوْلِ وَتَمَامِ كُلِّ سُوْلٍ وَمَأْمُوْلٍ، وَصَلاَحِ الشَّأْنِ ظَاهِراً وَبَاطناً، فِيْ الدِّيْنِ وَالدُّنْيَا وَالآخِرَةِ، دَافِعَةً لِكُلِّ شَرٍّ، جَالِبَةً لِكُلِّ خَيْرٍ، لَنَا وَلأَحْبَابِنَا وَلِوَالِدِيْنَا وَمَشَايِخِنَا فِيْ الدِّيْنِ، مَعَ اللُّطْفِ وَالْعَافِيَةِ، وَعَلَىٰ نِيَّةِ أَنَّ اللهَ يُنَوِّرُ قُلُوْبَنَا وَقَوَالِبَنَا، مَعَ التُّقَىٰ والْهُدَىٰ وَالْعَفَافِ وَالْمَوْتِ عَلَى دِيْنِ الإِسْلاَمِ وَالإِيْمَانِ، بِلاَ مِحْنَةٍ وَلاَ امْتِحَانٍ، بِحَقِّ سَيِّدِ وَلَدِ عَدْنَانَ، وَلِكُلِّ نِيَّةٍ صَالِحَةٍ، وَإِلَىٰ حَضْرَةِ الْحَبِيْبِ مُحَمَّدٍ صَلَّىٰ اللهُ عَلَيْهِ وَسَلَّمَ وَمَنْ وَالاَهُ.. اَلْفَاتِحَةَ أَثَابَكُمُ اللهُ.
-''',
-      false,
-      incrementedContentId++, //51,
-      hasVoice: true,
-      voiceFile: "1EUMC-ZRCeQkl-cXtS8FuwrX-FHmOzrYu",
-    ),
-    Content(
-      incrementedContentId,
-      //      84,
-      '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
+
+بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
 الْحَمْدُ للهِ رَبِّ الْعَالَمِيْنَ، حَمداً يُوَافِيْ نِعَمَهُ، وَيُكَافِئُ مَزِيْدَهُ، يَا رَبَّنَا لَكَ الْحَمْدُ كَمَا يَنْبَغِيْ لِجَلاَلِ وَجْهِكَ، وَعَظِيْمِ سُلْطَانِكَ، سُبْحَانَكَ لاَ نُحْصِيْ ثَنَاءً عَلَيْكَ أَنْتَ كَمَا أَثْنَيْتَ عَلَىٰ نَفْسِكَ، فَلَكَ الْحَمْدُ حَتَّى تَرْضَىٰ، وَلَكَ الْحَمْدُ إِذَا رَضِيْتَ، وَلَكَ الْحَمْدُ بَعْدَ الرِّضَا.
 اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَىٰ سَيِّدِنَا مُحَمَّدٍ فِيْ الأَوَّلِيْنَ، وَصلِّ وَسَلِّمْ عَلَىٰ سَيِّدِنَا مُحَمَّدٍ فِيْ الآخِرِيْنَ، وَصَلِّ وَسَلِّمْ عَلَىٰ سَيِّدِنَا مُحَمَّدٍ فِيْ الْمَلأ الأَعْلَىٰ إِلَىٰ يَوْمِ الدِّيْنِ، وَصَلِّ وَسَلِّمْ عَلَىٰ سَيِّدِنَا مُحَمَّدٍ حَتَّىٰ تَرِثَ الأَرْضَ وَمَنْ عَلَيْهَا، وَأَنْتَ خَيْرُ الْوَارِثِيْنَ.
 اللَّهُمَّ إِنَّا نَسْتَحْفِظُكَ وَنَسْتَوْدِعُكَ أَدْيَانَنَا، وَأَنْفُسَنَا، وَأَمْوَالَنَا، وَأَهْلَنَا، وَكُلَّ شَيْءٍ أَعْطَيْتَنَا.
@@ -977,13 +1041,18 @@ class IsarHelper {
 اللَّهُمَّ جَمِّلْنَا بِالْعَافِيَةِ وَالسَّلاَمَةِ، وَحَقِّقْنَا بِالتَّقْوَى وَالاِسْتِقَامَةِ، وَأَعِذْنَا مِنْ مُوْجِبَاتِ النَّدَامَةِ فِيْ الْحَالِ وَالْمَالِ وَالْمَآلِ، إِنَّكَ سَمِيْعُ الدُّعَاءِ.
 وَصَلِّ اللَّهُمَّ بِجَلاَلِكَ وَجَمَالِكَ عَلَى سَيِّدِنَا مُحَمَّدٍ، وَعَلَىٰ آلِهِ وَصَحْبِهِ أَجْمَعِيْنَ وَارْزُقْنَا كَمَالَ الْمُتَابَعَةِ لَهُ ظَاهِراً وَبَاطِناً، يَا  أَرْحَمَ الرَّاحِمِيْنَ، بِفَضْلِ: ﴿سُبحانَ رَبِّكَ رَبِّ العِزَّةِ عَمّا يَصِفونَ۝وَسَلامٌ عَلَى المُرسَلينَ۝وَالحَمدُ لِلَّهِ رَبِّ العالَمينَ﴾.
 قَالَ سَيِّدِنَا الإِمَامُ الْحَبِيْبُ عَلِيُّ بْنُ حَسَنٍ العطَّاسُ في كتابه «القرطاس» في أَثناءِ شرحهِ لهذا الرَّاتبِ ما نصُّهُ: والأَحسنُ لمن كانت له همَّةٌ عاليةٌ في طلب الخيرِ وحرصاً عَلَيْهِ أَن يقرأ هذا الراتبَ صباحاً ومَسَاءً؛ لأَنَّ جملةَ ما جاءَ بِهِ منَ الأَذكارِ وردتِ السنَّةُ بالإِتْيَانِ بها صباحاً ومساءً. كما يَعْلَمُ ذلِكَ مَنْ لهُ أَدنى إِشرافٍ عَلَى كتبِ الحديثِ. انتهى.''',
-      false,
-      incrementedContentId++, //52,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1EUMC-ZRCeQkl-cXtS8FuwrX-FHmOzrYu',
     ),
-    Content(
-      incrementedContentId,
-      //      85,
-      ''' بِسْمِ الله الرَّحْمنِ الرَّحِيْمِ "مِئَةَ مَرَّةٍ".
+    _HeaderContentPair(
+      headerName: 'سورة عمّ',
+      contentText: '''قراءة سورة (عمّ[78]).''',
+      isLiked: false,
+    ),
+    _HeaderContentPair(
+      headerName: 'الأذكار العشرة للحبيب عليّ بن حسنٍ العطّاس رضي الله عنه',
+      contentText: ''' بِسْمِ الله الرَّحْمنِ الرَّحِيْمِ "مِئَةَ مَرَّةٍ".
 ٭ الحَمْدُ للهِ رَبِّ العَالَمِيْنَ "مِئَةَ مَرَّةٍ".
 ٭ اللَّهُمَّ صَلِّ عَلَىٰ سَيِّدِنا مُحَمَّدٍ وَعَلَىٰ آلِ سَيِّدِنا مُحَمَّدٍ وَسَلِّمْ "مِئَةَ مَرَّةٍ".
 ٭ لا إِلهَ إِلاَّ الله مُحَمَّدٌ رَسُولُ الله "مِئَةَ مَرَّةٍ".
@@ -993,27 +1062,27 @@ class IsarHelper {
 ٭ سُوْرَةُ (الإِخْلاصِ) "مِئَةَ مَرَّةٍ".
 ٭ حَسْبُنَا اللهُ وَنِعْمَ الوَكِيْلُ ـ "مِئَةَ مَرَّةٍ".
 ٭ اللَّهُمَّ صَلِّ عَلَىٰ سَيِّدِنا مُحَمَّدٍ النَّبيِّ الأُمِّيِّ، وَعَلَى آلِ سَيِّدِنا مُحَمَّدٍ وَسَلِّمْ "ثَلاثَ مَرَّاتٍ".
-وَلا تَسْتَعْظِمْ ذلِكَ وَتَقُولُ: إِنَّ عَدَدَ مِئَةٍ لِكُلِّ ذِكْرٍ كَثِيْرٌ، فَإِذَا وَاظَبْتَ عَلَيْها فَإِنَّها تَسْهُلُ عَلَى اللِّسانِ، وَتَقْطَعُها فِي أَسْرَعِ وَقْتٍ، وَلاَ بَأْسَ بِحَمْلِ المَسْبَحَةِ فِي بَعْضِ الأَحْيانِ، لِضَبْطِ العَدَدِ لا لِلْفَخْرِ وَالتَّصَنُّعِ وَالتَّزْيِيْفِ عَلَىٰ النَّاسِ! ـ وَيُعْتَبَرُ ذلِكَ تَدْلِيْساً، وَيَكُوْنُ ذٰلِكَ كَمَنْ يَشْهَدُ زُوْراً، وَيَرْتَكِبُ فُجُوراً !
-وقد رَتَّبَها الحَبِيْبُ عَلِيُّ بْنُ حَسَنٍ العَطَّاسُ، وَأَمَرَ بَقِراءَتِها مَعَ الحَثِّ مِنْهُ عَلَى ذٰلِكَ، وَالبِشارَةِ لِمَنْ واظَبَ عَلَيْها بِبُلُوغِ المَرامِ بَعْدَ الصُّبْحِ، وَبَعْدَ المَغْرِبِ؛ وفِيْها الخَيْرَ وَالبَرَكَةَ.
+((وَلا تَسْتَعْظِمْ ذلِكَ وَتَقُولُ: إِنَّ عَدَدَ مِئَةٍ لِكُلِّ ذِكْرٍ كَثِيْرٌ، فَإِذَا وَاظَبْتَ عَلَيْها فَإِنَّها تَسْهُلُ عَلَى اللِّسانِ، وَتَقْطَعُها فِي أَسْرَعِ وَقْتٍ، وَلاَ بَأْسَ بِحَمْلِ المَسْبَحَةِ فِي بَعْضِ الأَحْيانِ، لِضَبْطِ العَدَدِ لا لِلْفَخْرِ وَالتَّصَنُّعِ وَالتَّزْيِيْفِ عَلَىٰ النَّاسِ! ـ وَيُعْتَبَرُ ذلِكَ تَدْلِيْساً، وَيَكُوْنُ ذٰلِكَ كَمَنْ يَشْهَدُ زُوْراً، وَيَرْتَكِبُ فُجُوراً !
+وقد رَتَّبَها الحَبِيْبُ عَلِيُّ بْنُ حَسَنٍ العَطَّاسُ، وَأَمَرَ بَقِراءَتِها مَعَ الحَثِّ مِنْهُ عَلَى ذٰلِكَ، وَالبِشارَةِ لِمَنْ واظَبَ عَلَيْها بِبُلُوغِ المَرامِ بَعْدَ الصُّبْحِ، وَبَعْدَ المَغْرِبِ؛ وفِيْها الخَيْرَ وَالبَرَكَةَ.))
 ''',
-      false,
-      incrementedContentId++, //53,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1TAsQEHEa4SvuWgVkx_4fnqWfJoIXfOwo',
     ),
-
-    ///   صلاة العشاء
-    Content(
-      incrementedContentId,
-      //      86,
-      '''صلِّ رَكعَتَينِ تَنْوِي بِهِمَا سنَّةَ العِشَاءِ القَبلِيَّةِ وَسُنَّةَ الرِّضَا ، وَتَقَرأُ فِي كُلٍّ مِنهُمَا (الإِخلاَصَ) "ثَلاَثاً"، وَآيةَ الكُرسِيِّ، وَبَعْدَ أَنْ تُسلِّمَ قُلْ: (اللَّهُمَّ إِنِّي أَسأَلُكَ رِضَاكَ وَالجَنَّةَ، وَأَعوذُ بِكَ مِنْ سَخَطِكَ وَالنَّارِ). "ثَلاَثاً".
+    _HeaderContentPair(
+      headerName: 'قبلية العشاء',
+      contentText:
+          '''صلِّ رَكعَتَينِ تَنْوِي بِهِمَا سنَّةَ العِشَاءِ القَبلِيَّةِ وَسُنَّةَ الرِّضَا ، وَتَقَرأُ فِي كُلٍّ مِنهُمَا (الإِخلاَصَ) "ثَلاَثاً"، وَآيةَ الكُرسِيِّ، وَبَعْدَ أَنْ تُسلِّمَ قُلْ: (اللَّهُمَّ إِنِّي أَسأَلُكَ رِضَاكَ وَالجَنَّةَ، وَأَعوذُ بِكَ مِنْ سَخَطِكَ وَالنَّارِ). "ثَلاَثاً".
 اللَّهُمَّ إِنِّي أَعوذُ بِرضَاكَ مِنْ سَخَطِكَ وَبِمُعافَاتِكَ مِنْ عُقُوبتِكَ وَأَعوذُ بِكَ مِنْكَ، سُبَحانَكَ لاَ أُحصِي ثَنَاءً علَيكَ أَنتَ كَمَا أَثنَيتَ عَلَى نَفسِكَ..
 ''',
-      false,
-      incrementedContentId++, //54,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1siLadeKSKMb1KcgFejXx637Y7ABrjnSz',
     ),
-    Content(
-      incrementedContentId,
-      //      87,
-      '''
+    _HeaderContentPair(
+      headerName:
+          'عمل الإمام عبد الله الحدّاد  والحبيب عبد الرحمن المشهور في سورتي صلاة العشاء',
+      contentText: '''
 "ليلة الجمعة": الجمعة والمنافقون
 "ليلة السبت" | الإمام الحداد : الضحى وألم نشرح | الحَبيبِ عَبْدِ الرَحمنِ المشهُور : الطارق والهُمَزة
 "ليلة الأحد" | الإمام الحداد : إذا زلزلت وألهاكم | الحَبيبِ عَبْدِ الرَحمنِ المشهُور : الشمس والقارعة
@@ -1022,23 +1091,21 @@ class IsarHelper {
 "ليلة الأربعاء" | الإمام الحداد : الهُمَزة والفيل | الحَبيبِ عَبْدِ الرَحمنِ المشهُور : اقرأ والقدر
 "ليلة الخميس" | الإمام الحداد : التين والقدر | الحَبيبِ عَبْدِ الرَحمنِ المشهُور : البينة والزلزلة
 ''',
-      false,
-      incrementedContentId++, //55,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      94,
-      '''«أَسْتَغْفِرُ الله العَظِيمَ، الَّذِي لا إلهَ إِلاَّ هُوَ الحَيَّ القَيُّومَ، وَأَتُوبُ إِلَيْهِ.
+    _HeaderContentPair(
+      headerName: 'أذكار ما بعد الصلاة',
+      contentText:
+          '''«أَسْتَغْفِرُ الله العَظِيمَ، الَّذِي لا إلهَ إِلاَّ هُوَ الحَيَّ القَيُّومَ، وَأَتُوبُ إِلَيْهِ.
 اللَّهُمَّ أَنْتَ السَّلامُ، وَمِنْكَ السَّلامُ، تَبَارَكْتَ يا ذَا الجَلالِ والإِكرامِ، سُبحانَ رَبِّيَ العَلِيِّ الأَعْلَى، لا إِلٰهَ إِلاَّ اللهُ وَحْدَهُ لا شَرِيْكَ لَهُ، لَهُ المُلْكُ، وَلَهُ الحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ.
 اللَّهُمَّ لا مَانِعَ لِما أَعْطَيْتَ، ولا مُعْطِيَ لما مَنَعْتَ، وَلا رَادَّ لِما قَضَيْتَ، وَلاَ يَنْفَعُ ذَا الجَدِّ مِنْكَ الجَدُّ، لا إِلهَ إِلاَّ اللهُ، وَلاَ نَعْبُدُ إِلاَّ إِيَّاهُ أَهْلَ الفَضْلِ والنِّعَمِ، والثَّناءِ الحَسَنِ، لا إِلهَ إِلاَّ اللهُ، ولا نَعْبُدُ إِلاَّ إِيَّاهُ مُخْلِصِيْنَ لَهُ الدِّينَ وَلَوْ كَرِهَ الكَافِرونَ».
 ثُمَّ سَبِّحْ "ثلاثاً وثلاثين"، وَاحْمَدْ "ثلاثاً وثلاثين"، وَكَبِّر "ثلاثاً وثلاثين"، وتَمِّمِ المِئَةَ بـ«لا إِلهَ إِلاَّ اللهُ وَحْدَهُ لا شَرِيْكَ لَهُ، لَهُ المُلْكُ، وَلَهُ الحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ».
 «لا إِلهَ إِلاَّ اللهُ وَحْدَهُ لا شَرِيْكَ لَهُ، لَهُ المُلْكُ، وَلَهُ الحَمْدُ، وَهُوَ عَلَى كُلِّ شَيْءٍ قَدِيرٌ» "عَشْراً".
  «اللَّهُمَّ أَجِرْنِي مِنَ النَّارِ» "سَبْعاً".
 و "إِحْدَى وسَبْعيْنَ مَرَّةً": «يَا فَتَّاحُ»؛ مَعَ وَضْعِ يَدِكَ اليُمْنَى عَلَى صَدْرِكَ، فإِنَّها مُجَرَّبَةٌ لِلفُتُوحِ.
-وَاقْرأْ أيضاً:
+وأقرأ أيضاً ويدك على صدرك
 بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
 ﴿  أَلَمْ نَشْرَحْ لَكَ صَدْرَكَ ١ وَوَضَعْنَا عَنكَ وِزْرَكَ ٢ ٱلَّذِىٓ أَنقَضَ ظَهْرَكَ ٣ وَرَفَعْنَا لَكَ ذِكْرَكَ ٤ فَإِنَّ مَعَ ٱلْعُسْرِ يُسْرًا ٥ إِنَّ مَعَ ٱلْعُسْرِ يُسْرًۭا ٦ فَإِذَا فَرَغْتَ فَٱنصَبْ ٧ وَإِلَىٰ رَبِّكَ فَٱرْغَب ٨ ﴾.
-وَيَدُكَ عَلَى صَدْرِكَ. 
 واقرأ آيَةَ الكُرْسِي.
 فَفِي ذلِكَ فَوائِدُ مَذْكُورَةٌ عَنِ الكُمَّلِ الرَّاسِخِيْنَ في قَدَمِ الاتِّباعِ لِسَيِّدِ المُرسَلِيْنَ وَغَيْرُ ذلِكَ كَثِيرٌ. 
 ثُمَّ ادْعُ اللهَ، وَلْيَكُنْ مِنْ دُعائِكَ: «اللَّهُمَّ ارْزُقْنِي فَهْمَ النَّبِيِّيْنَ، وَحِفْظَ المُرْسَلِيْنَ، وسُرْعَةَ إِلهامِ المَلائِكَةِ المُقَرِّبِيْنَ.
@@ -1049,69 +1116,63 @@ class IsarHelper {
 وَالأدْعِيَةُ كَثِيرةٌ، وَقَدْ ذَكَرَ الإمام الغَزَالِي ـ رحمه الله تعالى ـ في «البدايَةِ» مِنْهَا شَيْئاً كَثِيراً، فَادْعُ بِما شِئْتَ.
 ثُمَّ بَعْدَ ذلِكَ اشْتَغِلْ بمُصافَحَةِ إِخْوانِكَ، لا سيَّما بَعْدَ هذا الفرض، وعِنْدَ كُلِّ لِقاءٍ؛ مَعَ مُراعاةِ الأَدَبِ في الظاهِرِ وَالباطِنِ، وَلاَ يَخْفَىٰ ذلِكَ عَلَى كُلِّ مَنْ لَهُ بَصِيْرَةٌ مُنِيْرَةٌ، وَسَرِيْرَةٌ مُسْتَنِيرَةٌ.
 ''',
-      false,
-      incrementedContentId++, //56,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1nRVAR-voH6g6IF7tr1n6Pir6vHEDLXnC',
     ),
-    Content(
-      incrementedContentId,
-      //      95,
-      '''«يا اللهُ.. يا لَطِيْفُ.. يا رَزَّاقُ.. يا  قَوِيُّ.. يا عَزِيْزُ "ثلاثاً" أَسْأَلُكَ تَأَلُّهاً إِلَيْكَ، وَاسْتِغْراقاً فِيْكَ، وَفَناءً بِكَ عَمَّنْ سِواكَ، وَلُطْفاً مِنْ لَدُنْكَ شَامِلاً جَلِيّاً وَخَفِيّاً، وَرِزْقاً طَيِّباً وَاسِعاً هَنِيْئَاً مَرِيْئاً، وَقُوَّةً فِي الإِيْمانِ وَفِي اليَقِيْنِ، وَصَلابَةً فِي الحَقِّ وَالدِّيْنِ، وَعِزّاً بِكَ يَدُوْمُ وَيَتَخَلَّدُ، وَشَرَفاً يَبْقَى وَيَتأَبَّدُ، لاَ يَشُوْبُهُ تَكَبُّرٌ، وَلا عُتُوٌّ، وَلاَ إِرادَةُ فَسادٍ فِي الأَرْضِ وَلاَ عُلُوٌّ، إِنَّكَ سَمِيْعٌ قَرِيْبٌ مُجِيْبٌ».وهو لِلإِمَامِ الْحَبِيبِ عَبْدِ اللهِ الْحَدَّادِ رَضِيَ اللهُ عَنْهُ.''',
-      false,
-      incrementedContentId++, //57,
+    _HeaderContentPair(
+      headerName: 'دعاء اللّطف للامام الحداد رضي اللّه عنه',
+      contentText:
+          '''«يا اللهُ.. يا لَطِيْفُ.. يا رَزَّاقُ.. يا  قَوِيُّ.. يا عَزِيْزُ "ثلاثاً" أَسْأَلُكَ تَأَلُّهاً إِلَيْكَ، وَاسْتِغْراقاً فِيْكَ، وَفَناءً بِكَ عَمَّنْ سِواكَ، وَلُطْفاً مِنْ لَدُنْكَ شَامِلاً جَلِيّاً وَخَفِيّاً، وَرِزْقاً طَيِّباً وَاسِعاً هَنِيْئَاً مَرِيْئاً، وَقُوَّةً فِي الإِيْمانِ وَفِي اليَقِيْنِ، وَصَلابَةً فِي الحَقِّ وَالدِّيْنِ، وَعِزّاً بِكَ يَدُوْمُ وَيَتَخَلَّدُ، وَشَرَفاً يَبْقَى وَيَتأَبَّدُ، لاَ يَشُوْبُهُ تَكَبُّرٌ، وَلا عُتُوٌّ، وَلاَ إِرادَةُ فَسادٍ فِي الأَرْضِ وَلاَ عُلُوٌّ، إِنَّكَ سَمِيْعٌ قَرِيْبٌ مُجِيْبٌ».''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //96,
-      '''تقرأ الفاتحة "عَشْراً". ''',
-      false,
-      incrementedContentId++, //58
+    _HeaderContentPair(
+      headerName: 'عمل الإمام الغزاليّ في قراءة سورة الفاتحة بعد الصّلوات',
+      contentText: '''تقرأ الفاتحة "عَشْراً". ''',
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '11V7fUXhdOuRfVYeVElaFoBLB3Jd7iYGb',
     ),
-    Content(
-      incrementedContentId,
-      //      97,
-      '''«الحَمْدُ للهِ رَبِّ العَالَمِيْنَ، حَمْداً يُوافِي نِعَمَهُ وَيُكَافِئُ مَزِيدَه، اللَّهُمَّ صَلِّ عَلَى سَيِّدِنا مُحَمَّدٍ وَعَلَى أَهْلِ بَيْتِهِ وَصَحْبِهِ وَسَلِّم، اللَّهُمَّ إِنِّي أَسْأَلُكَ بِحَقِّ الفَاتِحَةِ المُعَظَّمَةِ والسَّبْعِ المَثَانِي أَنْ تَفْتَحَ لَنا بِكُلِّ خَيْرٍ، وَأَنْ تَتَفَضَّلَ عَلَيْنَا بِكُلِّ خَيْرٍ، وَأَنْ تَجْعَلَنَا مِنْ أَهْلِ الخَيْرِ، وَأَنْ تُعَامِلَنَا مُعَامَلَتَكَ لأهْلِ الخَيْرِ، وَأَنْ تَحْفَظَنا فِي أَدْيانِنا وَأَنْفُسِنَا وَأَوْلاَدِنا وَأَهْلِينَا وَأَصْحَابِنَا وَأَحْبَابِنا مِنْ كُلِّ مِحْنَةٍ وَفِتْنَةٍ وَبُؤْسٍ وَضَيْرٍ، إِنَّكَ وَلِيُّ كُلِّ خَيْرٍ، وَمُتَفَضِّلٌ بِكُلِّ خَيْرٍ، وَمُعْطِي كُلَّ خَيْرٍ بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ، يَا أَرْحَمَ الرَّاحِمِيْنَ، يَا أَرْحَمَ الرَّاحِمِيْنَ».''',
-      false,
-      incrementedContentId++, //59,
+    _HeaderContentPair(
+      headerName: 'دعاء الفاتحة للإمام الحبيب عبد الله الحدّاد رضي الله عنه',
+      contentText:
+          '''«الحَمْدُ للهِ رَبِّ العَالَمِيْنَ، حَمْداً يُوافِي نِعَمَهُ وَيُكَافِئُ مَزِيدَه، اللَّهُمَّ صَلِّ عَلَى سَيِّدِنا مُحَمَّدٍ وَعَلَى أَهْلِ بَيْتِهِ وَصَحْبِهِ وَسَلِّم، اللَّهُمَّ إِنِّي أَسْأَلُكَ بِحَقِّ الفَاتِحَةِ المُعَظَّمَةِ والسَّبْعِ المَثَانِي أَنْ تَفْتَحَ لَنا بِكُلِّ خَيْرٍ، وَأَنْ تَتَفَضَّلَ عَلَيْنَا بِكُلِّ خَيْرٍ، وَأَنْ تَجْعَلَنَا مِنْ أَهْلِ الخَيْرِ، وَأَنْ تُعَامِلَنَا مُعَامَلَتَكَ لأهْلِ الخَيْرِ، وَأَنْ تَحْفَظَنا فِي أَدْيانِنا وَأَنْفُسِنَا وَأَوْلاَدِنا وَأَهْلِينَا وَأَصْحَابِنَا وَأَحْبَابِنا مِنْ كُلِّ مِحْنَةٍ وَفِتْنَةٍ وَبُؤْسٍ وَضَيْرٍ، إِنَّكَ وَلِيُّ كُلِّ خَيْرٍ، وَمُتَفَضِّلٌ بِكُلِّ خَيْرٍ، وَمُعْطِي كُلَّ خَيْرٍ بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمِينَ، يَا أَرْحَمَ الرَّاحِمِيْنَ، يَا أَرْحَمَ الرَّاحِمِيْنَ».''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      98,
-      '''اقْرَأْ ( يس[36]) بَعْدَ كُلِّ فَرْضٍ، وَعِنْدَ كُلِّ مُهِمٍّ. فإن كانت لك حاجة أو أمر فَسَمِّهِ وَقُلْ بَعْدَ قِراءَتِها:
+    _HeaderContentPair(
+      headerName: 'سورة ﴿يس﴾ والدعاء بعدها',
+      contentText:
+          '''اقْرَأْ ( يس[36]) بَعْدَ كُلِّ فَرْضٍ، وَعِنْدَ كُلِّ مُهِمٍّ. فإن كانت لك حاجة أو أمر فَسَمِّهِ وَقُلْ بَعْدَ قِراءَتِها:
 «اللَّهُمَّ إنَّا نَسْتَحْفِظُكَ وَنَسْتَوْدِعُكَ أَدْيانَنا، وَأَنْفُسَنا، وَأَهْلَنا، وَأَوْلادَنا، وَأَمْوالَنا، وكُلَّ شَيء أَعْطَيْتَنا. اللَّهُمَّ اجْعَلْنا فِي كَنَفِكَ، وَأَمَانِكَ، وَجِوارِكَ، وَعِياذِكَ، مِنْ كُلِّ شَيْطانٍ مَرِيْدٍ، وَجَبَّارٍ عَنِيْدٍ، وَذِيْ عَيْنٍ، وَذِيْ بَغْيٍ، وَمِنْ شَرِّ كُلِّ ذِي شَرٍّ؛ إِنَّكَ عَلَى كُلِّ شَيْءٍ قَدِيْرٌ. اللَّهُمَّ جَمِّلْنا بِالعافِيَةِ وَالسَّلاَمَةِ، وَحَقِّقْنَا بِالتَّقْوَى والاسْتِقَامَةِ، وَأَعِذْنا مِنْ مُوجِباتِ النَّدامَةِ، إِنَّكَ سَمِيْعُ الدُّعاءِ. اللَّهُمَّ اغْفرْ لَنا، وَلوالِدِيْنَا، ولأَوْلاَدِنا، وَمَشايِخِنا، وَلإِخْوانِنا فِي الدِّيْنِ، وَلأَصْحابِنا، وَأَحْبابِنا، وَلِمَنْ أَحَبَّنَا فِيْكَ، ولِمَنْ أَحْسَنَ إلَيْنَا، وَللمُؤْمِنِيْنَ وَالمُؤْمِناتِ، وَالمُسْلِمِيْنَ وَالمُسْلِماتِ، يَا رَبَّ العالَمِيْنَ، وَصَلَّىٰ اللهُ عَلَىٰ سَيِّدِنا مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ، وَارْزُقْنا كَمالَ المُتابَعَةِ لَهُ ظاهِراً وَباطِناً فِي عافِيَةٍ وَسَلامَةٍ، بِرَحْمَتِكَ يا أَرْحَمَ الرَّاحِمِيْنَ».''',
-      false,
-      incrementedContentId++, //60,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      99,
-      '''صلِّ البعدية، فإِنْ كنْتَ مِنْ أَهلِ الهِمَمِ العَالِيَةِ والعزَائِمِ القَويَّةِ.. فَاقَرأْ فِيهَا (السَّجدَةَ[32]) فِي الأُولَى، وَفِي الثَّانِيَةِ (تبارَك[67])، وَإِلاَّ.. فَاقرَأ (الفَلقَ) وَ(النَّاسَ) أَو مَا تَيَسَّرَ مِنْ غَيرِهَا مِنَ السُّورِ.
+    _HeaderContentPair(
+      headerName: 'بعدية العشاء',
+      contentText:
+          '''صلِّ البعدية، فإِنْ كنْتَ مِنْ أَهلِ الهِمَمِ العَالِيَةِ والعزَائِمِ القَويَّةِ.. فَاقَرأْ فِيهَا (السَّجدَةَ[32]) فِي الأُولَى، وَفِي الثَّانِيَةِ (تبارَك[67])، وَإِلاَّ.. فَاقرَأ (الفَلقَ) وَ(النَّاسَ) أَو مَا تَيَسَّرَ مِنْ غَيرِهَا مِنَ السُّورِ.
 وعَنْ عِمْرانَ بْنِ خالِدٍ الخُزاعِيِّ قالَ: كُنْتُ عِنْدَ عَطاءٍ جالِساً، فَجاءَهُ رَجُلٌ فَقالَ: يا  أَبا مُحَمَّدٍ: إِنَّ طاوُوساً يَزْعُمُ أَنَّ مَنْ صَلَّىٰ العِشاءَ، ثُمَّ صَلَّىٰ بَعْدَها رَكْعَتَيْنِ، يَقْرَأُ فِي الأُوْلَىٰ: ﴿تَنْزِيْلَ﴾ السَّجْدَةَ، وَفِي الثَّانِيَةِ: ﴿تبارك﴾ كُتِبَ لَهُ مِثْلُ وُقُوفِ لَيْلَةِ القَدْرِ، فَقالَ عَطاءٌ: صَدَقَ طاووسٌ، ما تَرَكْتُها. اهـ.
 وَدَخَلَ رَجُلٌ وَسَيِّدُنا ثابِتٌ البُنانِيُّ عَلَى مُطَرِّفِ بْنِ عَبْدِ اللهِ الشِّخِّيْرِ ـ رَضِيَ اللهُ عَنْهُ ـ وَهُوَ مُغْمَىً عَلَيْهِ. قالا: فَسَطَعَتْ مِنْهُ أَنْوارٌ ثَلاثَةٌ: نُوْرٌ مِنْ رَأْسِهِ، وَنُوْرٌ مِنْ وَسَطِهِ، وَنُوْرٌ مِنْ رِجْلَيْهِ وَقَدَمَيْهِ، قالا: فَهالَنا ذلِكَ، فَأفاقَ، فقالا لَهُ: كَيْفَ أَنْتَ يا أَبا عَبْدِ اللهِ؟ فَقالَ: صالِحٌ. فَقِيْلَ: لَقَدْ رَأَيْنَا شَيْئاً هالَنا، قالَ: وَمَا هُوَ؟ قُلْنا: أَنْوارٌ سَطَعَتْ مِنْكَ، قالَ: وَقَدْ رَأَيْتُمْ ذٰلِكَ؟ قالُوا: نَعَمْ، قالَ: تِلْكَ (تَنْزِيلُ.. السَّجْدَةُ) وَهِيَ ثَلاثُونَ آيَةً، سَطَعَ أَوَّلُها مِنْ رَأْسِيْ، وَوَسَطُها مِنْ وَسَطِيْ، وآخِرُهَا مِنْ قَدَمَيَّ! وَقَدْ صُوِّرَتْ تَشْفَعُ لِيْ، فَهٰذَا ثَوابُها يَحْرُسُنِيْ. اهـ. وَكِلْتا الفائِدَتَيْنِ مِنْ «حِلْيَةِ أَبِيْ نُعَيْمٍ».
 وَمِمَّا كانَ يُرتِّبُهُ الإِمَامُ الحدَّادُ رَحِمَهُ اللهُ وَنفعَنَا بهِ بعدَ سنَّةِ العِشَاءِ البَعِديَّةِ: جَزَى اللهُ عَنَّا سَيِّدَنا مُحَمَّداً مَا هُوَ أَهلُهُ (عَشْرَ مرَّاتٍ). وَقَدْ وَرَدَ أنَّ مَنْ قَرأَهَا أَتعَبَ سَبعِينَ كَاتِباً ألفَ صَبَاحٍ.
 ''',
-      false,
-      incrementedContentId++, //61,
+      isLiked: false,
     ),
-
-    /// صلاة الوتر
-    Content(
-      incrementedContentId,
-      //      100,
-      '''صلِّ الوترَ إِحدَى عَشرَةَ رَكَعةً، وَلاَ أَقلَّ مِنْ أَن تُصلِّيَ ثَلاَثاً. تُحرِمُ بِرَكعتَينِ مَعاً، تَقرَأُ فِي الأُولَى: سُورَةَ (الأَعلَى[87])، وَفِي الثَّانِيَةِ: (الكَافِرُونَ)، ثمَّ تُحرِمُ بِرَكعَةٍ تَقرَأُ: (الإخلاَصَ) و(المُعَوذَتَينِ)، وتَقُولُ بَعدَهَا: سُبحَانَ المَلِكِ القُدُّوسِ، ثمَّ تَقُولُ: سُبُّوحٌ قُدُّوسٌ ربُّ المَلائِكَةِ وَالرُّوحِ، وَتَجهَرُ فِي الثَّالثَةِ أَكثَرَ مِنَ الأُولَيَيْنِ، ثمَّ اللَّهُمَّ إِنِّي أَسأَلُكَ رِضَاكَ والجَنَّةَ، وَأَعُوذُ بِكَ مِنْ سَخَطِكَ وَالنَّار.''',
-      false,
-      incrementedContentId++, //62,
+    _HeaderContentPair(
+      headerName: 'صلاة الوتر',
+      contentText:
+          '''صلِّ الوترَ إِحدَى عَشرَةَ رَكَعةً، وَلاَ أَقلَّ مِنْ أَن تُصلِّيَ ثَلاَثاً. تُحرِمُ بِرَكعتَينِ مَعاً، تَقرَأُ فِي الأُولَى: سُورَةَ (الأَعلَى[87])، وَفِي الثَّانِيَةِ: (الكَافِرُونَ)، ثمَّ تُحرِمُ بِرَكعَةٍ تَقرَأُ: (الإخلاَصَ) و(المُعَوذَتَينِ)، وتَقُولُ بَعدَهَا: سُبحَانَ المَلِكِ القُدُّوسِ، ثمَّ تَقُولُ: سُبُّوحٌ قُدُّوسٌ ربُّ المَلائِكَةِ وَالرُّوحِ، وَتَجهَرُ فِي الثَّالثَةِ أَكثَرَ مِنَ الأُولَيَيْنِ، ثمَّ اللَّهُمَّ إِنِّي أَسأَلُكَ رِضَاكَ والجَنَّةَ، وَأَعُوذُ بِكَ مِنْ سَخَطِكَ وَالنَّار.''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      101,
-      '''عَلَيكَ بَعدَ الوِتْرِ بأَربعِينَ مرَّةً مِنْ دُعَاءِ ذِي النُّونِ: (لاَ إِلٰهَ إِلاَّ أَنتَ سُبحَانَكَ إِنِّي كُنْتُ مِنَ الظالِمِينَ) كَمَا هُو عَمَلُ الحَبِيبِ عَبدِ اللهِ الحدَّادِ.''',
-      false,
-      incrementedContentId++, //63,
+    _HeaderContentPair(
+      headerName: 'دعاء بعد الوتر',
+      contentText:
+          '''عَلَيكَ بَعدَ الوِتْرِ بأَربعِينَ مرَّةً مِنْ دُعَاءِ ذِي النُّونِ: (لاَ إِلٰهَ إِلاَّ أَنتَ سُبحَانَكَ إِنِّي كُنْتُ مِنَ الظالِمِينَ) كَمَا هُو عَمَلُ الحَبِيبِ عَبدِ اللهِ الحدَّادِ.''',
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1JIk9GsIC5wjKLVob5F147hvORiZatIQN',
     ),
-    Content(
-      incrementedContentId,
-      //      102,
-      '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
+    _HeaderContentPair(
+      headerName: 'حزب النّصر',
+      contentText: '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
 ﴿ وَقَالَ مُوسَىٰٓ إِنِّى عُذْتُ بِرَبِّى وَرَبِّكُم مِّن كُلِّ مُتَكَبِّرٍۢ لَّا يُؤْمِنُ بِيَوْمِ ٱلْحِسَابِ ٢٧﴾. "ثَلاَثاً".
 اللَّهُمَّ بِسَطْوَةِ جَبَرُوْتِ قَهْرِكَ، وَبِسُرْعَةِ إِغَاثَةِ نَصْرِكَ، وَبِغَيْرَتِكَ لاِنْتِهَاكِ حُرُمَاتِكَ، وَبِحِمَايَتِكَ لِمَنِ احْتَمَى بِبَابِكَ.. نَسْأَلُكَ يَا  اللهُ يَا اللهُ يَا اللهُ، يَا سَمِيْعُ يَا مُجِيْبُ، يَا  قَرِيْبُ يَا سَرِيْعُ، يَا مُنْتَقِمُ يَا قَهَّارُ، يَا شَدِيْدَ الْبَطْشِ، يَا مَنْ لاَ يُعْجِزُهُ قَهْرُ الْجَبَابِرَةِ، وَلاَ يَعْظُمُ عَلَيْهِ هَلاَكُ الْمُتَمَرِّدِيْنَ مِنَ الْمُلُوْكِ وَالأَكَاسِرَةِ.. أَنْ تَجْعَلَ كَيْدَ مَنْ كَادَنَا فِيْ نَحْرِهِ، وَمَكْرَ مَنْ مَكَرَ بِنَا عَائِداً عَلَيْهِ، وَحُفْرَةَ مَنْ حَفَرَ لَنَا حُفْرَةً وَاقِعاً هُوَ فِيْهَا، وَمَنْ نَصَبَ لَنَا شَبَكَةَ الْخِدَاعِ.. اجْعَلْهُ يَا سَيِّدِيْ مَسُوْقاً إِلَيْهَا، وَمُصَاداً فِيْهَا، وَأَسِيْراً لَدَيْهَا.
 اللَّهُمَّ بِحَقِّ ﴿كهيعص﴾.. اكْفِنَا الْعِدَا، وَلَقِّهِمُ الرَّدَى، وَاجْعَلْهُمْ لِكُل حَبِيْبٍ فِدَا، وَسَلِّطِ اللَّهُمَّ عَلَيْهِمْ عَاجِلَ النِّقَمِ فِيْ الْيَوْمِ وَالْغَدَا.
@@ -1141,17 +1202,14 @@ class IsarHelper {
 فَقُطِعَ دَابِرُ الْقَوْمِ الَّذِيْنَ ظَلَمُوْا، فَأَصْبَحُوْا لاَ يُرَى إِلاَّ مَسَاكِنُهُمْ، وَالحَمْدُ للهِ رَبِّ العالَمِيْنَ.
 وصلَّىٰ الله على سيدنا مُحمَّد النَّبيِّ الأُمِّيِّ، وعلى آله وصحبه وسَلَّم تسليماً..
 ''',
-      false,
-      incrementedContentId++, //64,
+      isLiked: false,
       hasVoice: true,
-      voiceFile: "1dUG88heXJ_bNFGUJFVDso1L0eU-m6c07",
+      voiceFile: '1jkB3-UIw6qYt5KAFXoQz_gM4LSiA_W8o',
     ),
-
-    /// الآداب يومية
-    Content(
-      incrementedContentId,
-      //      103,
-      '''يَنْبَغِيْ لَكَ إِذَا اسْتَيْقَظْتَ. أَنْ تَمْسَحَ النَّوْمَ عَنْ وَجْهِكَ، وَتَسْتَاكَ، وَتَقُوْلَ:
+    _HeaderContentPair(
+      headerName: 'آداب الاستيقاظ',
+      contentText:
+          '''يَنْبَغِيْ لَكَ إِذَا اسْتَيْقَظْتَ. أَنْ تَمْسَحَ النَّوْمَ عَنْ وَجْهِكَ، وَتَسْتَاكَ، وَتَقُوْلَ:
 (لا إلهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيْكَ لَهُ، لَهُ الْمُلْكُ، وَلَهُ الْحَمْدُ، وَهُوَ عَلَى كُلِّ شَيءٍ قَدِيْرٌ.
 اللَّهُمَّ اغْفِرْ ليْ وَارْحَمْنِيْ، وَتُبْ عَلَيَّ إِنَّكَ أَنْتَ التَّوَّابُ الرَّحِيْمُ. رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً، وَفِيْ الآخِرَةِ حَسَنَةً، وَقِنَا عَذَابَ النَّارِ.
 الْحَمْدُ للهِ الَّذِيْ أَحْيَانَا بَعْدَمَا أَمَاتَنَا وَإِلَيْهِ النُّشُوْرُ، أَصْبَحْنَا عَلَى فِطْرَةِ الإِسْلاَمِ، وَعَلَى كَلِمَةِ الإِخْلاَصِ، وَعَلَى دِيْنِ نَبِيِّنَا مُحَمَّدٍ صَلَّى الله عَلَيْهِ وَآلِهِ وَسَلَّمَ، وَعَلَى مِلَّةِ أَبِيْنَا إِبْرَاهِيْمَ حَنِيْفاً مُسْلِمَاً وَمَا كَانَ مِنَ الْمُشْرِكِيْنَ.
@@ -1159,45 +1217,40 @@ class IsarHelper {
 فَلاَ أَقَلَّ مِنْ ذَلِكَ، وَإِلاَّ.. فَإِنَّهُمْ قَدْ ذَكَرُوْا لِلاسْتِيْقَاظِ أَدْعِيَةً أَكْثَرَ مِنْ هذَا.
 فَإِنْ كُنْتَ ذَا هِمَّةٍ عَالِيَةٍ.. فَزِدْ عَلَى هذَا مَا شِئْتَ..
 ''',
-      false,
-      incrementedContentId++, //65,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1TD7B7vXeUkM-8RBQdlr_WXLrCZ3x-SLs',
     ),
-    Content(
-      incrementedContentId,
-      //      104,
-      '''إِذَا أَرَدْتَ أنْ تَلْبَسَ ثَوبَكَ.. فانْفُضْهُ قَبْلَ اللُّبْسِ، وَابْدَأْ باليُمْنَى وَقُلْ:
+    _HeaderContentPair(
+      headerName: 'آداب لبس الثّوب',
+      contentText:
+          '''إِذَا أَرَدْتَ أنْ تَلْبَسَ ثَوبَكَ.. فانْفُضْهُ قَبْلَ اللُّبْسِ، وَابْدَأْ باليُمْنَى وَقُلْ:
 «بِسْمِ اللهِ الرَّحْمنِ الرَّحِيمِ، الحَمْدُ للهِ الَّذي أَلْبَسَنِي هذَا اللِّبَاسَ، وَرَزَقَنِيْهِ مِنْ غَيْرِ حَوْلٍ مِنِّي ولا قُوَّةٍ».
 وتقولُ: «اللَّهُمَّ لَكَ الحَمْدُ، أَنتَ كَسَوْتَنِيْهِ، أَسْأَلُكَ خَيْرَهُ وَخَيْرَ ما صُنِعَ لَهُ، وَأَعُوذُ بِكَ مِنْ شَرِّهِ وَشَرِّ ما صُنِعَ لَهُ».
 أَوْ تَقولُ: «الحمدُ للهِ الَّذِي كَساني ما أُوارِيْ بهِ عَورَتي، وَأَتَجَمَّلُ بِهِ في حَياتي».
 وانْوِ بِلُبْسِكَ الثَّوْبَ: الاتِّباعَ لِلنَّبيِّ صَلَّى الله عَلَيْهِ وَآلِهِ وَسَلَّمَ، واعمَلْ بِما تَقَدَّمَ عِنْدَ كُلِّ لُبْسٍ في أَيِّ وَقْتٍ كانَ.
 ''',
-      false,
-      incrementedContentId++, //66,
+      isLiked: false,
     ),
-
-    /// آداب الطهارة
-    Content(
-      incrementedContentId,
-      //      105,
-      '''إِذا أَرَدْتَ دُخولَ الخَلاءِ.. فقَدِّمْ رِجْلَكَ اليُسْرَى وقُلْ:
+    _HeaderContentPair(
+      headerName: 'آداب الدّخول إلى الخلاء',
+      contentText:
+          '''إِذا أَرَدْتَ دُخولَ الخَلاءِ.. فقَدِّمْ رِجْلَكَ اليُسْرَى وقُلْ:
 «بِسْمِ اللهِ، اللَّهُمَّ إِني أعوذُ بكَ مِنَ الخُبُثِ والخَبائِثِ».
 وَلا تَدْخُلْ وأَنتَ مَكْشوفُ الرأسِ، وَلاَ تَبُلْ قائِماً، ولا تَسْتَنْجِ في مَحَلِّ البَوْلِ؛ لِئلَّا يَعُودَ الرَّشَاشُ إِليكَ، ولاَ تَأكُلْ حالَ خُروج الخَارِجِ، وَلا تَتَكلَّمْ وَأنتَ في مَحَلِّ قَضاءِ الحاجَةِ.
 وَقَدْ ذَكَرَ العُلَماءُ آداباً غيرَ هٰذِهِ فَرَاجِعْهَا إِنْ شِئْتَ..
 ''',
-      false,
-      incrementedContentId++, //67,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      106,
-      '''إِذَا أَرَدْتَ الخُروجَ مِنَ الخَلاءِ. فقَدِّمْ رِجْلَكَ اليُمْنى وقُلْ: «غُفْرانَكَ» ثَلاثاً، «الحمدُ للهِ الذي أَذْهَبَ عَنِّي الأَذَى، وعافاني».''',
-      false,
-      incrementedContentId++, //68,
+    _HeaderContentPair(
+      headerName: 'آداب الخروج من الخلاء',
+      contentText:
+          '''إِذَا أَرَدْتَ الخُروجَ مِنَ الخَلاءِ. فقَدِّمْ رِجْلَكَ اليُمْنى وقُلْ: «غُفْرانَكَ» ثَلاثاً، «الحمدُ للهِ الذي أَذْهَبَ عَنِّي الأَذَى، وعافاني».''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      107,
-      '''إِذَا أَرَدْتَ الوُضُوءَ.. فَلَهُ آدابٌ كَثيرةٌ مِنْهَا:
+    _HeaderContentPair(
+      headerName: 'آداب الوضوء',
+      contentText: '''إِذَا أَرَدْتَ الوُضُوءَ.. فَلَهُ آدابٌ كَثيرةٌ مِنْهَا:
 ـ أَنْ تَسْتَاكَ، ثُمَّ تَغْسِلَ يَدَيْكَ قَبْلَ الاسْتِنجَاءِ.
 ـ ثُمَّ تَسْتَنْجِيَ، وقُلْ: «اللَّهُمَّ طَهِّرْ قَلبِي مِنَ النِّفَاقِ، وَحَصِّنْ فَرْجِي مِنَ الفَواحِشِ».
 ـ ثُمَّ تَغْسِلَ يَدَيْكَ وتَقُولَ: نَوَيْتُ سُنَنَ الوُضُوءِ، وقُلْ: «اللَّهُمَّ إِنِّي أَسْأَلُكَ اليُمْنَ والبَرَكَةَ، وأَعُوْذُ بِكَ مِنَ الشُّؤْمِ والهَلَكَةِ».
@@ -1224,46 +1277,39 @@ class IsarHelper {
 ـ ثُمَّ ارْفَعْ يَدَيْكَ بَعْدَ الوُضُوءِ حَتَّى يَظْهَرَ بَيَاضُ إبْطَيْكَ وَقُلْ: «أَشْهَدُ أَنْ لا إِلهَ إِلاَّ اللهُ، وَحْدَهُ لاَ شَرِيْكَ لَهُ، وَأَشْهَدُ أَنَّ مُحَمَّداً عَبْدُهُ وَرَسُولُهُ. اللَّهُمَّ اجْعَلْنِي مِنَ التَّوابِيْنَ، وَاجْعَلْنِي مِنَ المُتَطَهِّرِيْنَ. سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ. أَشْهَدُ أَنْ لا إِلهَ إِلاَّ أَنْتَ، أَسْتَغْفِرُكَ وأَتُوبُ إَلَيْكَ».
 واقرأ: (سورة إنّا أنزلناه في ليلة القدر) 3 مرات..
 ''',
-      false,
-      incrementedContentId++, //69,
+      isLiked: false,
     ),
-
-    /// آداب الخروج للمسجد
-    Content(
-      incrementedContentId,
-      //      108,
-      '''«اللَّهُمَّ إِنِّي أَسْأَلُكَ بِحَقِّ السائِلينَ عَلَيْكَ، وبحقِّ الراغِبينَ إِلَيْكَ، وبحَقِّ مَمْشايَ هذَا إِلَيْكَ، فإِنِّي لَمْ أَخْرُجْ أَشَرَاً وَلا بَطَراً، وَلا رِياءً ولاَ سُمْعَةً، بَلْ خَرَجْتُ اتِّقَاءَ سَخَطِكَ، وابْتِغَاءَ مَرْضَاتِك.. فأَسْأَلُكَ أَنْ تُنْقِذَنِي مِنَ النَّارِ، وأَنْ تَغْفِرَ لي ذُنوبِي، فإِنَّهُ لاَ يَغْفِرُ الذُّنوبَ إِلاَّ أَنْتَ».''',
-      false,
-      incrementedContentId++, //70,
+    _HeaderContentPair(
+      headerName: 'دعاء الخروج إلى المسجد',
+      contentText:
+          '''«اللَّهُمَّ إِنِّي أَسْأَلُكَ بِحَقِّ السائِلينَ عَلَيْكَ، وبحقِّ الراغِبينَ إِلَيْكَ، وبحَقِّ مَمْشايَ هذَا إِلَيْكَ، فإِنِّي لَمْ أَخْرُجْ أَشَرَاً وَلا بَطَراً، وَلا رِياءً ولاَ سُمْعَةً، بَلْ خَرَجْتُ اتِّقَاءَ سَخَطِكَ، وابْتِغَاءَ مَرْضَاتِك.. فأَسْأَلُكَ أَنْ تُنْقِذَنِي مِنَ النَّارِ، وأَنْ تَغْفِرَ لي ذُنوبِي، فإِنَّهُ لاَ يَغْفِرُ الذُّنوبَ إِلاَّ أَنْتَ».''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      109,
-      '''قُلْ عِنْدَ الدُّخُولِ إِلى المَسْجِدِ، حَالَ كَوْنِكَ مُقَدِّماً لليُمْنى:«أعُوذُ باللهِ العَظيمِ، وَبِوَجْهِهِ الكَرِيمِ، وسُلْطَانِهِ القَدِيمِ مِنَ الشَّيْطَانِ الرَّجِيمِ، والحَمْدُ للهِ رَبِّ العَالَمِينَ، اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ، وَصَحْبِهِ وَسَلِّم، اللَّهُمَّ اغْفِرْ لِي ذُنوبي، وافْتَحْ لي أبوابَ رَحْمَتِكَ».''',
-      false,
-      incrementedContentId++, //71,
+    _HeaderContentPair(
+      headerName: 'دعاء الدّخول إلى المسجد',
+      contentText:
+          '''قُلْ عِنْدَ الدُّخُولِ إِلى المَسْجِدِ، حَالَ كَوْنِكَ مُقَدِّماً لليُمْنى:«أعُوذُ باللهِ العَظيمِ، وَبِوَجْهِهِ الكَرِيمِ، وسُلْطَانِهِ القَدِيمِ مِنَ الشَّيْطَانِ الرَّجِيمِ، والحَمْدُ للهِ رَبِّ العَالَمِينَ، اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ وَعَلَىٰ آلِ مُحَمَّدٍ، وَصَحْبِهِ وَسَلِّم، اللَّهُمَّ اغْفِرْ لِي ذُنوبي، وافْتَحْ لي أبوابَ رَحْمَتِكَ».''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      110,
-      '''ارْكَعْ رَكْعَتَيْنِ وَانْوِ بِهِمَا تَحِيَّةَ المسْجِدِ، وسُنَّةَ الوُضُوءِ.مَعَ مُراعاةِ آدابِ المَساجِدِ مِنْ: نِيَّةِ الاعْتِكافِ، وَعَدَمِ الكَلامِ، وَعَدَمِ تَوْسِيْخِ المَسْجِدِ ببُصاقٍ أَوْ نَحْوِهِ.''',
-      false,
-      incrementedContentId++, //72,
+    _HeaderContentPair(
+      headerName: 'سنة تحية المسجد وآداب المكث به',
+      contentText:
+          '''ارْكَعْ رَكْعَتَيْنِ وَانْوِ بِهِمَا تَحِيَّةَ المسْجِدِ، وسُنَّةَ الوُضُوءِ.مَعَ مُراعاةِ آدابِ المَساجِدِ مِنْ: نِيَّةِ الاعْتِكافِ، وَعَدَمِ الكَلامِ، وَعَدَمِ تَوْسِيْخِ المَسْجِدِ ببُصاقٍ أَوْ نَحْوِهِ.''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      111,
-      '''قُلْ عِنْدَ الخُرُوجِ مِنَ المَسْجِدِ مُقَدِّماً اليُسْرَى:
+    _HeaderContentPair(
+      headerName: 'آداب الخروج من المسجد',
+      contentText:
+          '''قُلْ عِنْدَ الخُرُوجِ مِنَ المَسْجِدِ مُقَدِّماً اليُسْرَى:
 «الحَمْدُ للهِ رَبِّ العَالَمِيْنَ، اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وسَلِّم. اللَّهُمَّ اغْفِرْ لِيْ ذُنُوبِي، وَافْتَحْ لِيْ أَبوابَ فَضْلِكَ».
 وارْجِعْ إِلى مَنْزِلِكَ، وَلاَ تَشْتَغِلْ بِسُوءٍ فِي طَرِيْقِكَ، وَامْشِ بِالسَّكِيْنَةِ وَالوَقارِ، وَإِنْ مَرَرْتَ بِبابِ مَسْجِدٍ مَفْتُوْحٍ.. فَأَغْلِقْهُ، أَوْ بِأَعْمَى.. فَقُدْهُ، أَوْ بِحَجَرٍ فِي طَرِيْقِ المُسْلِمِيْنَ.. فَأَزِلْهُ. وَأَخْلِصْ فِي هٰذِهِ الأَعْمَالِ؛ لِئَلاَّ يَكُوْنَ حَظُّكَ التَّعَبَ دُوْنَ الثَّوَابِ.
 ''',
-      false,
-      incrementedContentId++, //73,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      112,
-      '''قُلْ عِنْدَ الخُروجِ مِنَ المَنْزِلِ، أو البَيْتِ، وأنت مُقَدِّمٌ الرِّجْلَ اليُسْرى:
+    _HeaderContentPair(
+      headerName: ' دعاء الخروج من المنزل',
+      contentText:
+          '''قُلْ عِنْدَ الخُروجِ مِنَ المَنْزِلِ، أو البَيْتِ، وأنت مُقَدِّمٌ الرِّجْلَ اليُسْرى:
 «بِسْمِ اللهِ، آمنتُ باللهِ، توكَّلتُ عَلَى اللهِ، ولا حَولَ ولا قُوَّةَ إِلاَّ باللهِ.
 باسْمِكَ اللَّهُمَّ إِني أعوذ بك أن أَزِلَّ أَوْ أُزَلَّ، أو أَضِلَّ أَوْ أُضَلَّ، أو أَظْلِمَ أو أُظْلَمَ، أو أَجْهَلَ أَوْ يُجْهَلَ عَلَيَّ.
 اللَّهُمَّ سَلِّمْني وسَلِّمْ مِنِّي، ورُدَّني سالِماً.
@@ -1275,27 +1321,23 @@ class IsarHelper {
 ﴿  لِإِيلَـٰفِ قُرَيْشٍ ١ إِۦلَـٰفِهِمْ رِحْلَةَ ٱلشِّتَآءِ وَٱلصَّيْفِ ٢ فَلْيَعْبُدُوا۟ رَبَّ هَـٰذَا ٱلْبَيْتِ ٣ ٱلَّذِىٓ أَطْعَمَهُم مِّن جُوعٍۢ وَءَامَنَهُم مِّنْ خَوْفٍۭ ٤﴾ ثلاثاً.
 وتَفْعَلُ ذلِكَ عِندَ كُلِّ خُروجٍ مِنَ البَيْتِ.
 ''',
-      false,
-      incrementedContentId++, //74,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      113,
-      '''قَدِّمْ رِجْلَكَ اليُمْنَى عِنْدَ الدُّخُوْلِ إِلىٰ البَيْتِ، وَقُلْ:«بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ خَيْرِ هٰذَا البَيْتِ، وَخَيْرِ أَهْلِهِ، وَخَيْرِ مَا فِيْهِ، وَأَعُوْذُ بِكَ مِنْ شَرِّ هذَا البَيْتِ، وَشَرِّ ما هُوَ فِيْهِ». وَاقْرَأْ آيَةَ الكُرْسِيِّ.''',
-      false,
-      incrementedContentId++, //75,
+    _HeaderContentPair(
+      headerName: 'دعاء دخول المنزل',
+      contentText:
+          '''قَدِّمْ رِجْلَكَ اليُمْنَى عِنْدَ الدُّخُوْلِ إِلىٰ البَيْتِ، وَقُلْ:«بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ، اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ خَيْرِ هٰذَا البَيْتِ، وَخَيْرِ أَهْلِهِ، وَخَيْرِ مَا فِيْهِ، وَأَعُوْذُ بِكَ مِنْ شَرِّ هذَا البَيْتِ، وَشَرِّ ما هُوَ فِيْهِ». وَاقْرَأْ آيَةَ الكُرْسِيِّ.''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      114,
-      '''إِذَا خَلَعَتَ ثِيابَكَ.. فَابْدَأْ بِاليُسْرَى عِنْدَ الخَلْعِ، كَما أَنَّكَ عِندَ اللُّبْسِ تَبْدَأُ بِاليُمْنَى، وَبَسْمِلْ عِنْدَهُما، وَبَسْمِلْ عِنْدَ وَضْعِ الثَّوْبِ، وعِنْدَ رَفْعِهِ كَذٰلِكَ، وَانْوِ المُتابَعَةَ لِلنَّبِيِّ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ بِلُبْسِكَ الثَّوْبَ، وَعِنْدَ لُبْسِ النَّعْلِ قَدِّمِ اليُمْنَى، وَعِنْدَ الخَلْعِ اليُسْرَى.''',
-      false,
-      incrementedContentId++, //76,
+    _HeaderContentPair(
+      headerName: 'آداب خلع الثوب ولبسه',
+      contentText:
+          '''إِذَا خَلَعَتَ ثِيابَكَ.. فَابْدَأْ بِاليُسْرَى عِنْدَ الخَلْعِ، كَما أَنَّكَ عِندَ اللُّبْسِ تَبْدَأُ بِاليُمْنَى، وَبَسْمِلْ عِنْدَهُما، وَبَسْمِلْ عِنْدَ وَضْعِ الثَّوْبِ، وعِنْدَ رَفْعِهِ كَذٰلِكَ، وَانْوِ المُتابَعَةَ لِلنَّبِيِّ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ بِلُبْسِكَ الثَّوْبَ، وَعِنْدَ لُبْسِ النَّعْلِ قَدِّمِ اليُمْنَى، وَعِنْدَ الخَلْعِ اليُسْرَى.''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      115,
-      '''يُسَنُّ أَنْ تَقُوْلَ إِذَا وُضِعَتِ المائِدَةُ:
+    _HeaderContentPair(
+      headerName: 'آداب الأكل',
+      contentText: '''يُسَنُّ أَنْ تَقُوْلَ إِذَا وُضِعَتِ المائِدَةُ:
 «اللَّهُمَّ اجْعَلْها نِعْمَةً مَمْدُوْدَةً، تَصِلُ بِها نِعْمَةَ الجَنَّةِ».
 وَ كُلْ قَواماً، وَلا تُوالِ اللُّقَمَ، وَامْضَغِ اللُّقْمَةَ، وَصَغِّرْها، وَكُلْ عَلَى الشِّقِّ الأَيْمَنِ، وَانْوِ التَّقَوِّيَ عَلَى طَاعَةِ اللهِ تعالىٰ، وَ كُلْ مِمَّا يَلِيْكَ.
 وَلِلأَكْلِ آدابٌ كَثِيرَةٌ، فَلا تَغْفُلْ عَنْهَا، ثُمَّ قُلْ بَعْدَ الأَكْلِ:
@@ -1303,33 +1345,30 @@ class IsarHelper {
 وَلا تَشْرَبْ قائِماً؛ فَإِنَّهُ مَنْهِيٌّ عَنْهُ، فَإِذَا كانَ وَلا بُدَّ فحَرِّكْ إِبْهامَيْ رِجْلَيْكَ!  وَقُلْ: «اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَى سَيِّدِنا مُحَمَّدٍ، الَّذِي شرِبَ الماءَ قائِماً وَقاعِداً»، فَإِنَّهُ لا  يَضُرُّكَ وَقُلْ بَعْدَ الشُّرْبِ: «الحَمْدُ للهِ الَّذِي جَعَلَهُ عَذْباً فُراتاً بِرَحْمَتِهِ، وَلَمْ يَجْعَلْهُ مِلْحاً أُجَاجاً بِذُنُوبِنا».
 وَلاَ تَنمْ وَرِيْحُ الغَمَرِ  فِي يَدَيْكَ؛ فإِنْ أصابَكَ شَيْءٌ فَلا تَلُومنَّ إِلاَّ نَفْسَكَ؛ فَإِنَّهُ مَنْهِيٌّ عَنْهُ.
 ''',
-      false,
-      incrementedContentId++, //77,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      116,
-      '''قُلْ عِنْدَ قِيامِكَ؛ دُعَاءَ مُغَادَرَةِ الْمَجْلِس كَمَا وَرَدَ عَنِ النَّبِيِّ صَلَّىٰ اللهُ عَلَّيهِ وَآلِهِ وَسَلَّمَ وَهُوَ: «سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، أَشْهَدُ أَنْ لا إِلهَ إِلاَّ أَنْتَ، أَسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ»، وَزِدْ: وَصَلَّى اللهُ عَلَى سَيِّدِنا مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ. وَقُلْ ذلِكَ عِنْدَ كُلِّ قِيامٍ..''',
-      false,
-      incrementedContentId++, //78,
+    _HeaderContentPair(
+      headerName: 'دعاء مغادرة المجلس',
+      contentText:
+          '''قُلْ عِنْدَ قِيامِكَ؛ دُعَاءَ مُغَادَرَةِ الْمَجْلِس كَمَا وَرَدَ عَنِ النَّبِيِّ صَلَّىٰ اللهُ عَلَّيهِ وَآلِهِ وَسَلَّمَ وَهُوَ: «سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، أَشْهَدُ أَنْ لا إِلهَ إِلاَّ أَنْتَ، أَسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ»، وَزِدْ: وَصَلَّى اللهُ عَلَى سَيِّدِنا مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ. وَقُلْ ذلِكَ عِنْدَ كُلِّ قِيامٍ..''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      117,
-      '''إِذَا أَردْتَ النَّومَ.. فَتَوضَّأْ وَاقرَأ (الفَاتِحَةَ) وَآيةَ الكُرسِيِّ، وَآيةَ لِلَّهِ ما فِي السَّماواتِ وَما فِي الأَرضِ وَإِن تُبدوا ما في أَنفُسِكُم أَو تُخفوهُ يُحاسِبكُم بِهِ اللَّهُ فَيَغفِرُ لِمَن يَشاءُ وَيُعَذِّبُ مَن يَشاءُ وَاللَّهُ عَلى كُلِّ شَيءٍ قَديرٌ  ﴾، وَآيةَ ﴿آمَنَ الرَّسولُ... ﴾ إلخ، ﴿ الم ١ اللَّهُ لا إِلهَ إِلّا هُوَ الحَيُّ القَيّومُ ﴾ ثمَّ ﴿  شَهِدَ اللَّهُ أَنَّهُ لا إِلهَ إِلّا هُوَ وَالمَلائِكَةُ وَأُولُو العِلمِ قائِمًا بِالقِسطِ لا إِلهَ إِلّا هُوَ العَزيزُ الحَكيمُ ١٨ إِنَّ الدّينَ عِندَ اللَّهِ الإِسلامُ وَمَا اختَلَفَ الَّذينَ أوتُوا الكِتابَ إِلّا مِن بَعدِ ما جاءَهُمُ العِلمُ بَغيًا بَينَهُم وَمَن يَكفُر بِآياتِ اللَّهِ فَإِنَّ اللَّهَ سَريعُ الحِسابِ ﴾.
+    _HeaderContentPair(
+      headerName: 'آداب النّوم',
+      contentText:
+          '''إِذَا أَردْتَ النَّومَ.. فَتَوضَّأْ وَاقرَأ (الفَاتِحَةَ) وَآيةَ الكُرسِيِّ، وَآيةَ لِلَّهِ ما فِي السَّماواتِ وَما فِي الأَرضِ وَإِن تُبدوا ما في أَنفُسِكُم أَو تُخفوهُ يُحاسِبكُم بِهِ اللَّهُ فَيَغفِرُ لِمَن يَشاءُ وَيُعَذِّبُ مَن يَشاءُ وَاللَّهُ عَلى كُلِّ شَيءٍ قَديرٌ  ﴾، وَآيةَ ﴿آمَنَ الرَّسولُ... ﴾ إلخ، ﴿ الم ١ اللَّهُ لا إِلهَ إِلّا هُوَ الحَيُّ القَيّومُ ﴾ ثمَّ ﴿  شَهِدَ اللَّهُ أَنَّهُ لا إِلهَ إِلّا هُوَ وَالمَلائِكَةُ وَأُولُو العِلمِ قائِمًا بِالقِسطِ لا إِلهَ إِلّا هُوَ العَزيزُ الحَكيمُ ١٨ إِنَّ الدّينَ عِندَ اللَّهِ الإِسلامُ وَمَا اختَلَفَ الَّذينَ أوتُوا الكِتابَ إِلّا مِن بَعدِ ما جاءَهُمُ العِلمُ بَغيًا بَينَهُم وَمَن يَكفُر بِآياتِ اللَّهِ فَإِنَّ اللَّهَ سَريعُ الحِسابِ ﴾.
 ﴿  قُلِ اللَّهُمَّ مالِكَ المُلكِ تُؤتِي المُلكَ مَن تَشاءُ وَتَنزِعُ المُلكَ مِمَّن تَشاءُ وَتُعِزُّ مَن تَشاءُ وَتُذِلُّ مَن تَشاءُ بِيَدِكَ الخَيرُ إِنَّكَ عَلى كُلِّ شَيءٍ قَديرٌ ٢٦ تولِجُ اللَّيلَ فِي النَّهارِ وَتولِجُ النَّهارَ فِي اللَّيلِ وَتُخرِجُ الحَيَّ مِنَ المَيِّتِ وَتُخرِجُ المَيِّتَ مِنَ الحَيِّ وَتَرزُقُ مَن تَشاءُ بِغَيرِ حِسابٍ ﴾، ﴿  إِنَّ في خَلقِ السَّماواتِ وَالأَرضِ وَاختِلافِ اللَّيلِ وَالنَّهارِ وَالفُلكِ الَّتي تَجري فِي البَحرِ بِما يَنفَعُ النّاسَ وَما أَنزَلَ اللَّهُ مِنَ السَّماءِ مِن ماءٍ فَأَحيا بِهِ الأَرضَ بَعدَ مَوتِها وَبَثَّ فيها مِن كُلِّ دابَّةٍ وَتَصريفِ الرِّياحِ وَالسَّحابِ المُسَخَّرِ بَينَ السَّماءِ وَالأَرضِ لَآياتٍ لِقَومٍ يَعقِلونَ ﴾  ثمَّ (الإِخلاَصَ) "ثَلاَثاً"، وَالمُعوّذَتَينِ "ثَلاَثاً" وَينفُثُ فِي كَفَّيهِ بعَدَ كُلِّ مَرَّةٍ وَيمسَحُ عَلَى رَأسِهِ وَوَجهِهِ وَمَا استَطَاعَ مِنْ بدَنِهِ، وَيُسَبِّحُ (ثَلاَثاً وَثَلاَثِينَ)، وَيحمَدُ (ثَلاَثاً وَثَلاَثِينَ)، وَيُكبِّرُ (ثَلاَثاً وَثَلاَثِينَ) ثمَّ تمَامُ المِئَةِ: لاَ إِلٰهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيْكَ لَهُ، لَهُ المُلْكُ وَلَهُ الحَمْدُ وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيْرٌ.
 وَإِذَا اضْطَجَعَ.. قَالَ بِاسْمِكَ رَبِّي وَضَعْتُ جَنْبِي وَبِكَ أَرفَعُهُ فَاغفِرْ لِي ذَنْبِي، اللَّهُمَّ قِنِي عَذَابَكَ يَوْمَ تَبعَثُ عِبَادَكَ، إِنْ أَمسَكْتَ نَفْسِي.. فَاغفِرْ لَهَا وَارْحَمْهَا، وَإِنْ أَرسَلْتَها.. فَاحفَظْهَا بِمَا تَحفَظُ بهِ عبَادَكَ الصَّالِحِينَ، اللَّهُمَّ إِنِّي أَسأَلُكَ العَافِيةَ فِي الدُّنْيا وَالآخِرَةِ، أَسَتغفِرُ اللهَ العَظِيمَ الَّذِي لاَ إِلٰهَ إِلاَّ هُو الحيَّ القَيُّومَ الَّذِي لاَ يَمُوتُ وَأَتُوبُ إِلَيهِ "ثَلاَثاً" وَيقرَأُ سورة (قل يا أيها الكافرون) وَيَنامُ عَلى خِتامِها.
 ومَنْ قَالَ عِنْدَ مَنامِهِ: (اللَّهُمَّ لاَ تُؤْمِنَّا مَكْركَ، وَلاَ تُنِسنَا ذِكَركَ، وَلاَ تَكشِفْ عَنَّا سِتَركَ، ولاَ تَجعَلْنَا مِنَ الغَافِلِينَ، اللَّهُمَّ ابْعَثْنَا فِي أَحبِّ السَّاعَاتِ إِليْكَ حتَّى نَذكُرَكَ وَتذكُرنَا، ونَسأَلَكَ فَتُعطِيَنا، ونَدعُوَكَ فَتَستَجِيبَ لَنَا، وَنَستَغْفِرَكَ فَتغفِرَ لَنَا) إِلاَّ بَعَث اللهُ إِليهِ مَلَكاً فِي أَحبِّ السَّاعَاتِ إِليهِ فَيُوقِظُهُ، فَإنْ قَامَ وَإِلاَّ صَعدَ المَلَكُ وَيبعَثُ إِلَيهِ مَلَكاً آخَرَ، فَإِنْ قَامَ وإِلاَّ صَعدَ الملَكُ فَقَامَ معَ صَاحِبِهِ الأَوَّلِ، فَإِنْ قَامَ بَعدَ ذَلِكَ وَدَعَا.. استُجِيبَ لَهُ، وَإِنْ لَمْ يَقُمْ كَتَبَ اللهُ لَهُ ثَوابَ أُولئِكَ المَلاَئِكَةِ. اهـ.مِنْ مُكاتَباتِ سَيِّدِنَا الحَبِيبِ حَسَنِ بْنِ صَالحٍ البَحْرِ، وَرَوَى فِيهِ حَدِيثاً. اهـ..
 ''',
-      false,
-      incrementedContentId++, //79,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1XiyzcoYR-4uLVeQJWlDdXIGpTJ6ujffP',
     ),
-
-    /// نصائح وآداب
-    Content(
-      incrementedContentId,
-      //      166,
-      '''عَلَيْكَ بِمُجَاهَدَةِ نَفْسِكَ، بِأَنْ يَكُونَ سِرُّكَ خَيْراً مِنْ عَلانِيَّتِكَ فِيْ كُلِّ أَحْوالِكَ، فَلاَ تَقْصِدْ بإِطْراقِ الرَّأْسِ التَّصَنُّعَ، وَبِإِظْهارِ لَمْعَةِ السُّجُودِ فِي الجَبِيْنِ الصَّلاحَ وَالوِلايَةَ، فَاللهُ يَعْلَمُ حَيْثُ يَجْعَلُ رسالاتِهِ.
+    _HeaderContentPair(
+      headerName: 'نصائح عامّةٌ',
+      contentText:
+          '''عَلَيْكَ بِمُجَاهَدَةِ نَفْسِكَ، بِأَنْ يَكُونَ سِرُّكَ خَيْراً مِنْ عَلانِيَّتِكَ فِيْ كُلِّ أَحْوالِكَ، فَلاَ تَقْصِدْ بإِطْراقِ الرَّأْسِ التَّصَنُّعَ، وَبِإِظْهارِ لَمْعَةِ السُّجُودِ فِي الجَبِيْنِ الصَّلاحَ وَالوِلايَةَ، فَاللهُ يَعْلَمُ حَيْثُ يَجْعَلُ رسالاتِهِ.
 فَلا تَظُنَّنَّ أَنَّ مَنْ أَطالَ السُّجُودَ إِذَا بَدا لِلنَّاسِ ظَفِرَ بِالمَقْصُوْدِ، أَوْ مَنْ كَبَّرَ العَمائِمَ ظَفِرَ بِالمَغانِمِ! وَقَدْ قالَ فِيْ هذا المَعْنَى سَيِّدُنا الإِمامُ عَلِيُّ بْنُ مُحَمَّدٍ الحَبَشِيُّ:
 وَالعَطا والمِنَنْ ما هِيْ بِكُبْرِ العَمائِمْ
 ما هِيَ الاَّ مَواهِبْ مِنْ مُفِيْضِ المَراحِمْ
@@ -1339,13 +1378,12 @@ class IsarHelper {
 وَدُمْ عَلَى الصَّلَوَاتِ فِي الْجَمَاعَةِ، وَفَضْلُ الْجَمَاعَةِ شَهِيرٌ.. لاَ يَخْفَى عَلَى مِثْلِكَ. وَاعْلَمْ أَنَّ رَكْعَتَيْنِ مِنْ عَالِمٍ خيْرٌ مِنْ أَلْفِ رَكْعَةٍ مِنْ جَاهِلٍ، وَرَكْعَتَيْنِ مِنْ عَارِفٍ خَيْرٌ مِنْ أَلْفِ رَكْعَةٍ مِنْ عَالِمٍ، وَرَكْعتَيْنِ مِنْ رَجُلٍ وَرِعٍ أَفْضَلُ مِنْ أَلْفِ رَكْعَةٍ مِنْ مُخَلّطٍ، وَقِيرَاطَ اسْتِقَامَةٍ خَيْرٌ مِنْ أَلْفِ كَرَامَةٍ، وَذَرَّةً مِنْ عَمَلِ البَاطِنِ تَعْدِلُ بِأبْهِرةٍ مِنْ عَمَلِ الجَوارِحِ.
 فَاسْتَيْقِظْ مِنْ نَوْمَةِ الْغَفْلَةِ، وَحَاسِبْ نَفْسَكَ، وَزِنْ أَعْمَالَكَ بِمِيزَانِ الشَّرْعِ، وَاصْرِفْ جَمِيعَ أَنْفَاسِكَ فِي طَاعَةِ مَوْلاَكَ، وَاللهُ يَتَولّىٰ هُدَاكَ، وَالْحَمْدُ لله رَبِّ العَالَمِينَ، وَعَلَيْكَ بِالإِخْلاصِ وَالْحِرْصِ عَلَى مَا تَقَدَّمَ وَغَيْرِهَا مِنْ بَقِيَّةِ الأَعْمَالِ الصَّالِحَةِ، وَكُنْ عَلَى حَدٍّ سَوَاءٍ فِي الْخَلْوَةِ وَالْجَلْوَةِ، وَاحْذَرْ مِمَّا يَعْمَلُهُ بَعْضُ المُرائِينَ مِنْ فِعْلِهِمْ لِبَعْضِ الأَعْمَالِ، إِذَا بَدَوْا لِلنَّاسِ، وَفِي خَلْوَتِهِمْ تَجِدُهُمْ بِمَعْزِلٍ عَنْ ذلِكَ..
 ''',
-      false,
-      incrementedContentId++, //128,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      167,
-      '''اعْلَمْ أَنَّ الْعِلْمَ لاَ يُدْرَكُ بِالْهُوَيْنَا، كَمَا قَالَ بَدِيعُ الزَّمَانِ رَحمَةُ اللهِ عَلَيْهِ:
+    _HeaderContentPair(
+      headerName: 'نصائح لطالب العلم',
+      contentText:
+          '''اعْلَمْ أَنَّ الْعِلْمَ لاَ يُدْرَكُ بِالْهُوَيْنَا، كَمَا قَالَ بَدِيعُ الزَّمَانِ رَحمَةُ اللهِ عَلَيْهِ:
 إِنَّ الْعِلْمَ بَطِيءُ اللِّزَامِ، بَعِيدُ المَرَامِ، لاَ يُدْرَكُ بِالسِّهَامِ، وَلاَ يُرَىٰ فِي المَنَامِ، وَلاَ يُورَثُ عَنِ الآبَاءِ وَالأَعْمَامِ، وَإِنَّمَا هُوَ شَجَرَةٌ لاَ تَصْلُحُ إِلاَّ بِالْغَرْسِ، وَلاَ تُغْرَسُ إِلاَّ فِي الْنَفْسِ، وَلاَ تُسْقَىٰ إِلاَّ بِالدَّرْسِ، وَلاَ تَحْصُلُ إِلاَّ باسْتِنَادِ الحَجَرِ، وَافْتِراشِ الْمَدَرِ، وَإِدْمَانِ السَّهَرِ، وَقِلَّةِ النَّوْمِ، وَصِلَةِ اللَّيْلِ بِالْيَوْمِ، وَلا يُدْرِكُهُ إِلاَّ مَنْ أَنْفَقَ العينَ، وجَثَا عَلَىٰ الْعَيْنِ ، أَيَظُنُّ مَنْ أَشْغَلَ نَهَارَهُ بِالْجَمْعِ، وَلَيْلَهُ بِالجِمَاعِ، يَخْرُجُ مِنَ الْفُقَهَاءِ؟ كَلاَّ.. وَاللهِ حَتَّى يَقْصِدَ الدَّفَاتِرَ، وَيَسْتَصْحِبَ المَحَابِرَ، وَيَقْطَعَ القِفارَ، وَيَصِلَ فِي طَلَبِ العِلْمِ بَيْنَ اللَّيْلِ وَالنَّهارِ، ويُوَافِقَ مِنَ الصَّبْرِ مُرّاً طَيِّباً، وَمِنَ التَّوْفِيقِ مَطَراً صَيِّباً.
 وَقَدْ حَكَىٰ بَعْضُهُمْ أَنَّهُ يُطَالِعُ لَوْحَهُ تَقْرِيباً "خمساً وعِشْرينَ مرةً"، وَمِنْهُمْ أَقَلَّ، وَمِنْهُمْ أَكْثَرَ.
 وَكَانَ الشَّيْخُ مُحَمَّدٌ بِنُ عَلَوِيٍّ بِنِ أَحْمَدَ ابْنِ الأُسْتاذِ الأَعْظَمِ، يُطَالِعُ قِراءَتَهُ بِاللَّيْلِ فَيَسْتَغْرِقُ نِصْفَهُ أَوْ جُلَّهُ، وَرُبَّمَا اسْتَغْرَقَ اللَّيْلَ كُلَّهُ. وَحُكِيَ أَنَّهُ احْتَرَقَ عَلَيْهِ بِالسِّراجِ ثَلاثَ عَشْرَةَ عِمَامَةً، عِنْدَ مُطَالَعَتِهِ لِشِدَّةِ اسْتَغْرَاقِهِ فِيْهَا.
@@ -1365,13 +1403,12 @@ class IsarHelper {
 أَتَحْضُرُ بِالْجَهْلِ فِي مَجْلِسٍ
 وَعِلْمُكَ فِي البَيْتِ مُسْتَوْدَعُ.
 ''',
-      false,
-      incrementedContentId++, //129,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      168,
-      '''إِنْ كُنْتَ مِمَّن يَأْتِي مَجَالِسَ العِلْمِ، وَتُسَمَّى بطالِبِ العِلْمِ.. فَأَعْطِ ذٰلِكَ الاِسْمَ حَقَّهُ؛ فَإِنَّهُ اسْمٌ عَظِيْمٌ، فَإِذَا أَرَدْتَ أَنْ تَبْتَدِئَ فِي الدَّرْسِ.. فَقُلْ:
+    _HeaderContentPair(
+      headerName: 'من آداب طالب العلم',
+      contentText:
+          '''إِنْ كُنْتَ مِمَّن يَأْتِي مَجَالِسَ العِلْمِ، وَتُسَمَّى بطالِبِ العِلْمِ.. فَأَعْطِ ذٰلِكَ الاِسْمَ حَقَّهُ؛ فَإِنَّهُ اسْمٌ عَظِيْمٌ، فَإِذَا أَرَدْتَ أَنْ تَبْتَدِئَ فِي الدَّرْسِ.. فَقُلْ:
 نِيَّةُ ابْتِدَاءِ الدَّرْسِ وهِيَ:
 «نَوَيْتُ التَّعَلُّمَ وَالتَّعْلِيْمَ، وَالتَّذَكُّرَ والتَّذْكِيْرَ، وَالنَّفْعَ وَالانْتِفَاعَ، وَالإِفَادَةَ وَالاسْتِفادَةَ، وَالحَثَّ عَلَى التَّمَسُّكِ بِكِتابِ اللهِ العَزِيْزِ، وَسُنَّةِ رَسُولِهِ، وَالدُّعَاءَ إِلَىٰ الهُدَىٰ، والدِّلالَةَ عَلَى الخَيْرِ، ابْتِغَاءَ وَجْهِ اللهِ تعالىٰ وَرِضائِهِ، وَقُرْبِهِ وَثَوابِهِ، بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ».
 وَلا تَجْلِسْ فِي مَجْلِسِ العِلْمِ إِلاَّ وَأَنْتَ مُتَوَضِّئٌ، وَإِنْ أَمْكَنَكَ الاسْتِقْبَالُ لِلْقِبْلَةِ كُلَّ وَقْتٍ فَافْعَلْ؛ فَإِنَّهُ أَسْرَعُ للفَتْحِ، وَاجْلِسْ بِأَدَبٍ وَسَكِيْنَةٍ، وَلاَ تَعْبَث، وَلاَ تُكَلِّم مَنْ بِجَنْبِكَ حالَ الدَّرْسِ، وَلاَ تَشْتَغِلْ بمُطَالَعةٍ أَوْ كِتابَةٍ إِلاَّ بالإِصْغاءِ إِلى ما يُلْقِيْهِ الشَّيْخُ، وَعَظِّمْهُ وَوَقِّرْهُ، فَإِنَّ البِرَّ سَلَفٌ.
@@ -1390,15 +1427,11 @@ class IsarHelper {
 لَيْسَ بِعِلْمٍ مَا حَوَىٰ الْقِمَطْرُ
 مَا الْعِلْمُ إِلاَّ مَا حَوَاهُ الصَّدْرُ
 وَإِنْ طَلَبَ أَحَدٌ مِنْ إِخْوانِكَ مِنَ الطَّلَبَةِ نَقْلَ فائِدَةٍ مِنْ عِنْدِكَ.. فَاحْذَرْ أَنْ تَمْنَعَهُ، وَأَسْعِفْهُ بِذلِكَ، وَلاَ تَحسُدْهُ فَإِنَّ الحَسَدَ شُؤْمٌ وَآفَةٌ لِما عَلِمْتَهُ مِنَ العِلْمِ، ثُمَّ إِذَا أَنْهَيْتَ الدَّرْسَ.. فَقُلْ عِنْدَ قِيامِكَ؛ دُعَاءَ مُغَادَرَةِ الْمَجْلِس كَمَا وَرَدَ عَنِ النَّبِيِّ صَلَّىٰ اللهُ عَلَّيهِ وَآلِهِ وَسَلَّمَ وَهُوَ: «سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ، أَشْهَدُ أَنْ لا إِلهَ إِلاَّ أَنْتَ، أَسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ»، وَزِدْ: وَصَلَّى اللهُ عَلَى سَيِّدِنا مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ. وَقُلْ ذلِكَ عِنْدَ كُلِّ قِيامٍ.''',
-      false,
-      incrementedContentId++, //130,
+      isLiked: false,
     ),
-
-    /// دلائل الخيرات
-    Content(
-      incrementedContentId,
-      //      176,
-      '''بسم الله الرحمن الرحيم
+    _HeaderContentPair(
+      headerName: 'مقدمة الجزولي',
+      contentText: '''بسم الله الرحمن الرحيم
 الحمد لله الذي هدانا للإيمان، والإسلام.
 والصلاة والسلام على نبيِّه الذي استنقذنا به من عبادة الأوثان، والأصنام، وعلى آله، وصحبه النجباء، البررة الكرام.
 وبعد:
@@ -1406,13 +1439,11 @@ class IsarHelper {
 وسميته بكتاب ((دلائل الخيرات، وشوارق الأنوار، في ذكر الصلاة على النبي المختار))؛ ابتغاء لمرضاة الله تعالى، ومحبةً في رسوله الكريم محمد تسليمًا.
 واللهَ المسؤولُ أن يجعلنا لسنته من التابعين، ولذاته الكاملة من المحبين؛ فإنه على ذلك قدير، لا إله غيره، ولا خير إلا خيره، وهو نعم المولى، ونعم النصير، ولا حول ولا قوة إلا بالله العلي العظيم. 
 ''',
-      false,
-      incrementedContentId++, //131,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      177,
-      '''بسم الله الرحمن الرحيم
+    _HeaderContentPair(
+      headerName: 'فصل في فضل الصلاة على النبي',
+      contentText: '''بسم الله الرحمن الرحيم
 قال الله عزّ وجلّ ﴿إِنَّ اللَّهَ وَمَلائِكَتَهُ يُصَلّونَ عَلَى النَّبِيِّ يا أَيُّهَا الَّذينَ آمَنوا صَلّوا عَلَيهِ وَسَلِّموا تَسليمًا﴾ الأحزاب: ٥٦.
  ويُروى أن رسول الله جاء ذاتَ يوم؛ والبشرى ترى في وجهه؛ فقال:((إنه جاءني جبريل عليه السلام؛ فقال: أما ترضى يا محمد أن لا يصلي عليك أحدٌ من أمتك إلا صليتُ عليه عشرًا، ولا يسلم عليك أحدٌ من أمتك إلا سلمت عليه عشرًا)).
 وقال:  ((إن أولى الناس بي..أكثرهم عليَّ صلاة)).
@@ -1470,13 +1501,11 @@ class IsarHelper {
 فقال:((اسمع صلاة أهل محبتي أعرفهم، وتعرض عليَّ صلاة غيرهم عرضًا)).
 
 ''',
-      false,
-      incrementedContentId++, //132,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      178,
-      '''بسم الله الرحمن الرحيم
+    _HeaderContentPair(
+      headerName: 'دعاء افتتاح الدلائل',
+      contentText: '''بسم الله الرحمن الرحيم
 وَصَلَّى اللهُ عَلَى سَيِّدِنَا مُحَمَّدٍ، وَآلِهِ، وَصَحْبِهِ، وَسَلَّمَ.
 إِلَهِي بِجَاهِ نَبِيِّكَ سَيِّدِنَا مُحَمَّدٍ صَلَّى اللهُ تَعَالَى عَلَيْهِ وَسَلَّمَ عَنْدَكَ، وَمَكَانَتِهِ لَدَيْكَ، وَمَحَبَّتِكَ لَهُ، وَمَحَبَّتِهِ لَكَ، وَبِالسِّرِّ الَّذِي بَيْنَكَ وَبَيْنَهُ..أَسْأَلُكَ أَنْ تُصَلِّيَ وَتُسَلِّمَ عَلَيْهِ، وَعَلَى آلِهِ وَصَحْبِهِ، وَضَاعِفِ اللَّهُمَّ مَحَبَّتِي فِيْهِ، وَعَرِّفْنِي بِحَقِّهِ، وَرُتْبَتِهِ، وَوَفِّقْنِي لِاتِّبَاعِهِ، وَالْقِيَامِ بِآدَابِهِ وَسُنَّتِهِ، وَاجْمَعْنِي عَلَيْهِ، وَمَتِّعْنِيْ بِرُؤْيَتِهِ، وَأَسْعِدْنِي بِمُكَالمَتِهِ، وَارْفَعْ عَنِّي الْعَوَائِقَ، وَالْعَلَائِقَ، وَالْوَسَائِطَ، وَالْحِجَابَ، وَشَنِّفْ سَمْعِي مَعَهُ بِلَذِيْذِ الْخِطَابِ، وَهَيِّئْنِي لِلتَّلَقِّي مِنْهُ، وَأَهِّلْنِي لِخِدْمَتِهِ، وَاجْعَلْ صَلَوَاتِي عَلَيْهِ نُوْرَاً، نَيِّرَاً، كَامِلاًََ، مُكَمَّلاً، طَاهِرَاً، مُطَهَّرَاً، مَاحِيًا كُلَّ ظُلْمٍ، وَظُلْمَةٍ، وَشَكٍّ، وَشِرْكٍ، وَكُفْرٍ، وَزُوْرٍ، وَوِزْرٍ، وَاجْعَلْهَا سَبَبًا لِلتَّمْحِيْصِ، وَمَرْقىً لِأَنَالَ بِهَا أَعْلَى مَقَامِ الْإِخْلَاصِ وَالتَّخْصِيْصِ؛ حَتَّى لَا يَبْقَى فِيَّ رَبَّانِيَّةً لِغَيْرِكَ، وَحَتَّى أَصْلُحَ لِحَضْرَتِكَ، وَأَكُوْنَ مِنْ أَهْلِ خُصُوْصِيَّتِكَ؛ مُسْتَمْسِكًا بِآدَابِهِ وَسُنَّتِهِ صَلَّى اللهُ تَعَالَى عَلَيْهِ وَسَلَّمَ، مُسْتَمِدًا مِنْ حَضْرَتِهِ الْعَالِيَةِ فِي كُلِّ وَقْتٍ وَحِيْنٍ.
 يَا اللهُ، يَا نُوْرُ، يَا حَقُّ، يَا مُبِيْنُ.
@@ -1546,26 +1575,25 @@ class IsarHelper {
 وَصَلَّى اللهُ عَلَى سَيِّدِنَا وَمَوْلَانَا مُحَمَّدٍ، وَعَلَى آلِهِ، وَصَحْبِهِ، وَسَلَّمَ، تَسْلِيمًا، وَالْحَمْدُ للهِ رَبِّ الْعَالَمِينَ.
 
 ''',
-      false,
-      incrementedContentId++, //133,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '11bVqJXT6cjeZUxZA4wD4BlV6FmtOWxVZ',
     ),
-    Content(
-      incrementedContentId,
-      //      179,
-      '''بسم الله الرحمن الرحيم
+    _HeaderContentPair(
+      headerName: 'دعاء يقرأ بعد الأسماء الشريفة',
+      contentText: '''بسم الله الرحمن الرحيم
 الْحَمْدُ للهِ رَبِّ الْعَالَمِيْنَ، وَحَسْبِي اللهُ وَنِعْمَ الْوَكِيْلُ، وَلَا حَوْلَ وَلَا قُوَّةَ إِلَّا بِاللهِ الْعَلِيِّ الْعَظِيْمِ.
 اللَّهُمَّ إِنِّي أَبْرَأُ إِلَيْكَ مِنْ حَوْلِي وَقُوَّتِي إِلَى حَوْلِكَ وَقُوَّتِكَ. 
 اللَّهُمَّ إِنِّي نَوَيْتُ بِصَلَاتِي عَلَى النَّبِيِّ ؛ امْتِثَالَاً لِأَمْرِكَ، وَتَصْدِيْقَاً لِنَبِيِّكَ مُحَمَّدٍ ، وَمَحَبَّةً فِيْهِ، وَشَوْقَاً إِلَيْهِ، وَتَعْظِيْمًا لِقَدْرِهِ، وَلِكَوْنِهِ أَهْلَاً لِذَلِكَ؛ فَتَقَبَّلْهَا مِنِّي بِفَضْلِكَ وَإِحْسَانِكَ، وَأَزِلَّ حِجَابَ الْغَفْلَةِ عَنْ قَلْبِيْ، وَاجْعَلْنِي مِنْ عِبَادِكَ الصَّالِحِينَ.
 اللَّهُمَّ زِدْهُ شَرَفًا عَلَى شَرَفِهِ الَّذِي أَوْلَيْتَهُ وَعِزًّا عَلَى عِزِّهِ الَّذِي أَعْطَيْتَهُ، وَنُوْرًا عَلَى نُوْرِهِ الَّذِي مِنْهُ خَلَقْتَهُ، وَأَعْلِ مَقَامَهُ فِي مَقَامَاتِ المُرْسَلِينَ، وَدَرَجَتَهُ فِي دَرَجَاتِ النَّبِيِّينَ، وَأَسْأَلُكَ رِضَاكَ وَرِضَاهُ، يَا رَبَّ الْعَالَمِينَ مَعَ الْعَافِيَةِ الدَّائِمَةِ، وَالمَوْت عَلَى الْكِتَابِ وَالسُّنَّةِ وَالْجَمَاعَةِ، وَكَلِمَةِ الشَّهَادَةِ عَلَى حَقِيقَتِهَا مِنْ غَيْرِ تَبْدِيْلٍ، وَلَا تَغْيِيْرٍ، وَاغْفِرْ لِي مَا ارْتَكَبْتُهُ بِفَضْلِكَ، وَجُوْدِكَ وَكَرَمِكَ، يَا أَرْحَمَ الرَّاحِمِينَ.
 وَصَلَّى اللهُ عَلَى سَيِّدِنَا مُحَمَّدٍ، وَعَلَى آلِهِ وَصَحْبِهِ وَسَلَّمَ تَسْلِيمًا، وَالْحَمْدُ للهِ رَبِّ الْعَالَمِينَ.
 ''',
-      false,
-      incrementedContentId++, //134,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      169,
-      '''صَلَّى اللهُ عَلى سَيِّدِنَا وَمَوْلانَا مُحَمَّدٍ، وعَلى الِه وَصَحْبِه وَسَلَّم.
+    _HeaderContentPair(
+      headerName: 'حزب يوم الاثنين',
+      contentText:
+          '''صَلَّى اللهُ عَلى سَيِّدِنَا وَمَوْلانَا مُحَمَّدٍ، وعَلى الِه وَصَحْبِه وَسَلَّم.
 اللّهُمَّ صَلِّ عَلى سَيِّدِنَا مُحَمَّدٍ، وَأزْوَاجِه، وَذُرِّيَّتِه؛ كَمَا صَلَّيْتَ عَلى سَيِّدَنَا إبْرَاهِيْمَ.
 وَبَارِكْ عَلى سَيِّدِنَا مُحَمَّدٍ، وأزْوَاجِه، وَذُرِّيَّتِه؛ كَمَا بَارَكْتَ عَلى آل سَيِّدِنَا إبرَاهِيْمَ إِنَّكَ حَمِيْدٌ مَّجِيْدٌ.
 اللّهُمَّ صَلِّ عَلى سَيِّدِنَا مُحَمَّدٍ، وَعَلى آلِه؛ كَمَا صَلَّيْتَ عَلى سَيِّدِنَا إبْرَاهِيْمَ، وَبَارِكْ عَلى سَيِّدِنَا مُحَمَّدٍ وعَلى آلِ سَيِّدِنَا مُحَمَّدٍ، كَمَا بَارَكْتَ عَلى آلِ سَيِّدِنَا إبْرَاهِيْمَ فِيْ الْعَالَمِيْنَ إِنَّكَ حَمِيْدٌ مَّجِيْدٌ.
@@ -1629,13 +1657,14 @@ class IsarHelper {
 اللّهُمَّ إِنَّ لِي ذُنُوْبًا فِيْمَا بَيْنِي وَبَيْنَكَ، وَذُنُوْبًا فِيْمَا بَيْنِي وَبَيْنَ خَلْقِكَ، اللّهُمَّ مَا كَانَ لَكَ مِنْهَا فَاغْفِرْهُ، وَمَا كَانَ مِنْهَا لِخَلْقِكَ فَتَحَمَّلْهُ عَنِّي، وَأَغْنِنِي بِفَضْلِكَ إِنَّكَ وَاسِعُ الْمَغْفِرَةِ.
 اللّهُمَّ نَوِّرْ بِالْعِلْمِ قَلْبِي، وَاسْتَعْمِلْ بِطَاعَتِكَ بَدَنِي، وَخَلِّصْ مِنَ الْفِتَنِ سِرِّي، وَاشْغَلْ بِالْاعْتِبَارِ فِكْرِي، وَقِنِي شَرِّ وَسَاوِسِ الشَّيْطَانَ، وَأَجِرْنِي مِنْهُ، يَا رَحْمنُ؛ حَتّى لا يَكُونَ لَه عَلَيَّ سُلْطَانٌ)).
 ''',
-      false,
-      incrementedContentId++, //135,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1hlV-BfFY5GNeu7Wc_wdA9BCY2n4ouLhl',
     ),
-    Content(
-      incrementedContentId,
-      //      170,
-      '''اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ خَيْرِ مَا تَعْلَمُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا تَعْلَمُ، وَأَسْتغْفِرُكَ مِنْ كُلِّ مَا تَعْلَمُ، إِنَّكَ تَعْلَمُ وَلَا نَعْلَمُ وَأَنْتَ عَلَّامُ الْغُيُوبِ. 
+    _HeaderContentPair(
+      headerName: 'حزب يوم الثلاثاء',
+      contentText:
+          '''اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ خَيْرِ مَا تَعْلَمُ، وَأَعُوذُ بِكَ مِنْ شَرِّ مَا تَعْلَمُ، وَأَسْتغْفِرُكَ مِنْ كُلِّ مَا تَعْلَمُ، إِنَّكَ تَعْلَمُ وَلَا نَعْلَمُ وَأَنْتَ عَلَّامُ الْغُيُوبِ. 
 اللَّهُمَّ ارْحَمْنِي مِنْ زَمَانِي هَذَا، وَإِحْدَاقِ الْفِتَنِ، وَتَطَاوُلِ أَهْلِ الجُرْأَةِ عَليَّ، وَاسْتِضْعَافِهِمْ إِيَّايَ. 
 اللَّهُمَّ اجْعَلْنِي مِنْكَ فِي عِياذٍ مَنِيعٍ، وَحِرْزِ حَصِينٍ؛ مِنْ جَمِيعِ خَلْقِكِ؛ حَتَّى تُبَلِّغَنِي أَجَلِي مُعَافَىً. 
 اللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ، وَعَلى آلِ سَيِّدِنَا مُحَمَّدٍ، عَدَدَ مَنْ صَلَّى عَلَيْهِ. 
@@ -1788,13 +1817,14 @@ class IsarHelper {
 اللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ كَمَا هُوَ أَهْلُهُ. 
 اللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ كَمَا تُحِبُّ وَتَرْضَى لَهُ.
 ''',
-      false,
-      incrementedContentId++, //136,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1NqgD6xoQTTZtRAbLzvr58fATakXo6iE2',
     ),
-    Content(
-      incrementedContentId,
-      //      171,
-      '''اللَّهُمَّ صَلِّ عَلَى رُوحِ سَيِّدِنَا مُحَمَّدٍ فِي الْأَرْوَاحِ، وَعَلَى جَسَدِهِ فِي الْأَجْسَادِ، وَعَلَى قَبْرِهِ فِي الْقُبُورِ، وَعَلَى آلِهِ وَصَحْبِهِ وَسَلِّمْ. 
+    _HeaderContentPair(
+      headerName: 'حزب يوم الاربعاء',
+      contentText:
+          '''اللَّهُمَّ صَلِّ عَلَى رُوحِ سَيِّدِنَا مُحَمَّدٍ فِي الْأَرْوَاحِ، وَعَلَى جَسَدِهِ فِي الْأَجْسَادِ، وَعَلَى قَبْرِهِ فِي الْقُبُورِ، وَعَلَى آلِهِ وَصَحْبِهِ وَسَلِّمْ. 
 اللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ كُلَّمَا ذَكَرَهُ الذَّاكِرُونَ. 
 اللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ كُلَّمَا غَفَلَ عَنْ ذِكْرِهِ الْغَافِلُونَ. 
 اللَّهُمَّ صَلِّ وسَلِّمْ عَلَى سَيِّدِنَا مُحَمَّدٍ النَّبِيِّ، الْأُمِّيِّ، وَأَزْوَاجِهِ أُمَّهَاتِ المُؤْمِنِينَ، وَذُرِّيَّتِهِ، وَأَهْلِ بَيْتِهِ؛ صَلَاةً وَسَلَامًا لا يُحْصَى عَدَدُهُمَا، وَلا يُقْطَعُ مَدَدُهُمَا. 
@@ -1839,13 +1869,14 @@ class IsarHelper {
 وأَفْضَلِ الْأَنْبِيَاءِ دَرَجَةً، وأَكْمَلِهِمْ شَرِيعَةً، وَأَشْرَفِ الْأَنْبِيَاءِ نِصَابًا، وَأَبْيَنِهِمْ بَيَانًا، وَخِطَابًا، وَأَفْضَلِهِمْ مَوْلِدًا، وَمُهَاجَرًا، وَعِتْرَةً، وَأَصْحَابًا.
 وَأَكْرَمِ النَّاسِ أَرُومَةً، وَأَشْرَفِهِمْ جُرْثُومَةً، وَخَيْرِهِمْ نَفْسًا، وَأَطْهَرِهِمْ قَلْبَاً، وَأَصْدَقِهِمْ قَوْلاً، وَأزْكَاهُمْ فِعْلاً، وَأثْبَتِهِمْ أَصْلَاً، وَأَوْفَاهُمْ عَهْدًا، وَأَمْكَنِهِمْ مَجْدًا، وَأَكْرَمِهِمْ طَبْعَا، وَأَحْسَنِهِمْ صُنْعًا، وَأَطْيَبِهِمْ فَرْعًا، وَأَكْثَرِهِمْ طَاعَةً وَسَمْعًا، وَأعْلَاهُمْ مَقَامًا، وَأحْلَاهُمْ كَلَامًا، وَأزْكَاهُمْ سَلَامًا، وَأَجَلِّهِمْ قَدْرًا، وَأَعْظَمِهِمْ فَخْرَا، وَأسْنَاهُمْ فَخْرَا، وَأرْفَعِهِمْ فِيْ المَلَإِ الْأَعْلَى ذِكْرًا، وَأَوْفَاهُمْ عَهْدًا، وَأَصْدَقِهِمْ وَعْدًا، وَأَكْثَرِهِمْ شُكْرًا، وَأَعْلَاهُمْ أَمْرًا، وَأَجْمَلِهِمْ صَبْرًا،وَأَحْسَنِهِمْ خَيْرًا، وَأَقْرَبِهِمْ يُسْرَاً، وَأَبْعَدِهِمْ مَكَانًا، وَأَعْظَمِهِمْ شَأَنَاً، وَأَثْبَتِهِمْ بُرْهَانًا، وَأَرْجَحِهِمْ مِيزَانًا، وَأَوَّلِهِمْ إِيمَانًا، وَأَوْضَحِهِمْ بَيَانًا، وَأفْصَحِهِمْ لِسَانًا، وَأَظْهَرِهِمْ سُلْطانًا.
 ''',
-      false,
-      incrementedContentId++, //137,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1w9uuN6fh-lpM5OWQxM-2uobJzvVjjZba',
     ),
-    Content(
-      incrementedContentId,
-      //      172,
-      '''اللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ عَبْدِكَ، وَرَسُولِكَ النَّبِيِّ الأُمِّيِّ، وَعَلَى آلِ سَيِّدِنَا مُحَمَّدٍ. 
+    _HeaderContentPair(
+      headerName: 'حزب يوم الخميس',
+      contentText:
+          '''اللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ عَبْدِكَ، وَرَسُولِكَ النَّبِيِّ الأُمِّيِّ، وَعَلَى آلِ سَيِّدِنَا مُحَمَّدٍ. 
 اللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّد، وَعَلَى آلِ سَيِّدِنَا مُحَمَّدٍ؛ صَلَاةً تَكُونُ لَكَ رِضَاءً، وَلَهُ جَزَاءً، وَلِحَقِّهِ أَدَاءً، وَأَعْطِهِ الْوَسِيلَةَ وَالْفَضِيلَةَ، وَالمَقَامَ المَحْمُودَ الَّذِي وَعَدْتَهُ، وَاجْزهِ عَنَّا مَا هُوَ أَهْلُهُ، وَاجْزِهِ أَفْضَلَ مَا جَازَيْتَ نَبِيًّا عَنْ قَوْمِهِ، وَرَسُولًا عَنْ أُمَّتِهِ، وَصَلِّ على جَمِيعِ إِخْوَانِهِ مِنَ النَّبِيِّينَ وَالصَّالحِينَ، يَا أَرْحَمَ الرَّاحِمِينَ. 
 اللَّهُمَّ اجْعَلْ فَضَائِلَ صَلَوَاتِكَ، وَشَرَائِفَ زَكَوَاتِكَ، وَنَوَامِي بَرَكَاتِكَ، وَعَوَاطِفَ رَأْفَتِكَ وَرَحْمَتِكَ وَتَحِيَّتِكَ، وَفَضائِلَ آلَائِكَ عَلَى سَيِّدِنَا مُحَمَّدٍ سَيِّدِ الْمرْسَلِينَ، وَرَسُولِ رَبِّ الْعَالَمِينَ، قَائِدِ الخَيْرِ، وَفَاتِحِ الْبِرِّ، وَنَبيِّ الرَّحْمَةِ، وَسَيِّدِ الْأ ُمَّةِ. 
 اللَّهُمَّ ابْعَثْهُ مَقَامًا مَحْمُودًا تُزْلِفُ بِهِ قُرْبَهُ، وَتُقِرُّ بِهِ عَيْنَهُ، يَغْبِطُهُ بِهِ الْأَوَّلُونَ وَالْآخِرُونَ. 
@@ -1895,13 +1926,14 @@ class IsarHelper {
 اللَّهُمَّ إِنِّي أَسْأَلُكَ الْعَفْوَ وَالْعَافِيَةَ، فِيْ الدِّينِ وَالدُّنْيَا وَالْآخِرَةِ. 
 اللَّهُمَّ اسْتُرْنَا بِسِتْرِكَ الجَمِيلِ.
 ''',
-      false,
-      incrementedContentId++, //138,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1iD7aCuWjyRhHBpOinLNj9idvTVDXpwUE',
     ),
-    Content(
-      incrementedContentId,
-      //      173,
-      '''اللَّهُمَّ إِنِّي أَسْأَلُكَ بِحَقِّكَ الْعَظِيمِ، وَبِحَقِّ نُورِ وَجْهِكَ الْكَرِيمِ، وَبِحَقِّ عَرْشِكَ الْعَظِيمِ، وَبِمَا حَمَلَ كُرْسِيُّكَ؛ مِنْ عَظَمَتِكَ، وَجَلَالِكَ، وَجَمَالِكَ، وَبَهَائِكَ، وَقُدْرَتِكَ، وَسُلْطَانِكَ، وَبِحَقِّ أَسْمائِكَ الْمَخْزُونَةِ المَكْنُونَةِ الَّتِيْ لَمْ يَطَّلِعْ عَلَيْهَا أَحَدٌ مِنْ خَلْقِكَ. 
+    _HeaderContentPair(
+      headerName: 'حزب يوم الجمعة',
+      contentText:
+          '''اللَّهُمَّ إِنِّي أَسْأَلُكَ بِحَقِّكَ الْعَظِيمِ، وَبِحَقِّ نُورِ وَجْهِكَ الْكَرِيمِ، وَبِحَقِّ عَرْشِكَ الْعَظِيمِ، وَبِمَا حَمَلَ كُرْسِيُّكَ؛ مِنْ عَظَمَتِكَ، وَجَلَالِكَ، وَجَمَالِكَ، وَبَهَائِكَ، وَقُدْرَتِكَ، وَسُلْطَانِكَ، وَبِحَقِّ أَسْمائِكَ الْمَخْزُونَةِ المَكْنُونَةِ الَّتِيْ لَمْ يَطَّلِعْ عَلَيْهَا أَحَدٌ مِنْ خَلْقِكَ. 
 اللَّهُمَّ وَأَسْأَلُكَ بالْاسْمِ الَّذِي وَضَعْتَهُ عَلَى اللَّيْل فَأَظْلَمَ، وَعَلَى النَّهَارِ فاسْتَنَار، وَعَلَى السَّمَوَاتِ فاسْتَقَلَّتْ، وَعَلَى الْأَرْضِ فاسْتَقَرَّتْ، وَعَلَى الْجِبَالِ فأَرْسَتْ، وَعَلَى الْبِحَارِ وَالْأَوْدِيَةِ فَجَرَتْ، وَعَلَى الْعُيُونِ فَنَبَعَتْ، وَعَلَى السَّحَابِ فأَمْطَرَتْ. 
 وَأَسْأَلُكَ اللَّهُمَّ بِالْأَسْمَاءِ المَكْتُوبَةِ فِيْ جَبْهَةِ إِسْرَافِيلَ عَلَيْهِ السَّلَامُ. 
 وَبِالْأَسْمَاءِ المَكْتُوبَةِ فِيْ جَبْهَةِ جِبْرِيلَ عَلَيْهِ السَّلَامُ، وَعَلَى المَلَائِكَةِ المُقَرَّبِينَ.
@@ -2021,13 +2053,14 @@ class IsarHelper {
 اللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ فِيْ الأَوَّلِينَ، وَصَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ في َالآخِرِينَ. 
 اللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ فِيْ المَلَإِ الْأَعْلَى إِلَى يَوْمِ الدِّينِ، مَا شَاءَ اللهُ لَا قُوَّةَ إِلَّا باللَّـهِ الْعَلِيِّ الْعَظِيمِ)).
 ''',
-      false,
-      incrementedContentId++, //139,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1SJ-Fbr5fAFWl-mhkbQv8xisYxBeTiBht',
     ),
-    Content(
-      incrementedContentId,
-      //      174,
-      '''اللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِ سَيِّدِنَا مُحَمَّدٍ، وَأعْطِهِ الْوَسِيلَةَ وَالْفَضِيلَةَ وَالدَّرَجَةَ الرَّفِيعَةَ، وَابْعَثْهُ مَقَامًا مَحْمُودًا الَّذِي وَعَدْتَهُ، إِنَّكَ لا تُخْلِفُ الْمِيعَادَ. 
+    _HeaderContentPair(
+      headerName: 'حزب يوم السبت',
+      contentText:
+          '''اللَّهُمَّ صَلِّ عَلَى سَيِّدِنَا مُحَمَّدٍ وَعَلَى آلِ سَيِّدِنَا مُحَمَّدٍ، وَأعْطِهِ الْوَسِيلَةَ وَالْفَضِيلَةَ وَالدَّرَجَةَ الرَّفِيعَةَ، وَابْعَثْهُ مَقَامًا مَحْمُودًا الَّذِي وَعَدْتَهُ، إِنَّكَ لا تُخْلِفُ الْمِيعَادَ. 
 اللَّهُمَّ عَظِّمْ شَأْنَهُ، وَبَيِّنْ بُرْهَانَهُ، وَأبْلِجْ حُجَّتَهُ، وَبَيِّنْ فَضِيلَتَهُ، وَتَقَبَّلْ شَفَاعَتَهُ فِيْ أُمَّتِهِ، وَاسْتَعْمِلْنَا بِسُنَّتِهِ، يَا رَبَّ الْعَالَـمِينَ، وَيَا رَبَّ الْعَرْشِ الْعَظِيمِ. 
 اللَّهُمَّ يَا رَبِّ احْشُرْنَا فِيْ زُمْرَتِهِ، وَتَحْتَ لِوَائِهِ، وَاسْقِنَا بِكَأْسِهِ، وَانْفَعْنَا بِمَحَبَّتِهِ، آمِينَ، يَا رَبَّ الْعَالَمِينَ. 
 اللَّهُمَّ، يَا رَبِّ بَلِّغْهُ عَنَّا أَفْضَلَ السَّلَامِ، وَاجْزِهِ عَنَّا أَفْضَلَ مَا جَازَيْتَ بِهِ النَّبِيَّ عَنْ أُمَّتِهِ، يَا رَبَّ الْعَالَمِينَ. 
@@ -2121,13 +2154,14 @@ class IsarHelper {
 وَأَنْ تُصَلِّىَ عَلَيْهِ، وَعَلَى آلِهِ عَدَدَ مَا أَنْتَ خَالِقُهُ فِيهِنَّ إِلَى يَوْمِ الْقِيَامَةِ فِيْ كُلِّ يَوْمٍ "أَلْفَ مَرَّةٍ".
  وَأنْ تُصَلِّيَ عَلَيْهِ وَعَلَى آلِهِ عَدَدَ قَطْرِ المَطَرِ، وَكُلِّ قَطْرَةٍ قَطَرَتْ مِنْ سَمَائِكَ إِلَى أَرْضِكَ مِنْ يَوْمِ خَلَقْتَ الدُّنْيَا إِلَى يَوْمِ الْقِيَامَةِ فِيْ كُلِّ يَوْمٍ "أَلْفَ مَرَّةٍ".
 ''',
-      false,
-      incrementedContentId++, //140,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1G6SfAVUAeCnYGvcNpTi2EckSXgrWJ1sQ',
     ),
-    Content(
-      incrementedContentId,
-      //      175,
-      '''وَأَنْ تُصَلِّي عَلَيْهِ، وَعَلَى آلِهِ عَدَدَ مَنْ سَبَّحَكَ وَقَدَّسَكَ، وَسَجَدَ لَكَ وَعَظَّمَكَ مِنْ يَوْمِ خَلَقْتَ الدُّنْيَا إِلَى يَوْمِ الْقِيَامَةِ فِيْ كُلِّ يَوْمٍ "أَلْفَ مَرَّةٍ". 
+    _HeaderContentPair(
+      headerName: 'حزب يوم الاحد',
+      contentText:
+          '''وَأَنْ تُصَلِّي عَلَيْهِ، وَعَلَى آلِهِ عَدَدَ مَنْ سَبَّحَكَ وَقَدَّسَكَ، وَسَجَدَ لَكَ وَعَظَّمَكَ مِنْ يَوْمِ خَلَقْتَ الدُّنْيَا إِلَى يَوْمِ الْقِيَامَةِ فِيْ كُلِّ يَوْمٍ "أَلْفَ مَرَّةٍ". 
  وَأَنْ تُصَلِّيَ عَلَيْهِ وَعَلَى آلِهِ عَدَدَ كُلِّ سَنَةٍ خَلَقْتَهُمْ فِيها مِنْ يَوْمِ خَلَقْتَ الدُّنْيَا إِلَى يَوْمِ الْقِيَامَةِ فِيْ كُلِّ يَوْمٍ "أَلْفَ مَرَّةٍ". 
  وَأَنْ تُصَلِّيَ عَلَيْهِ، وَعَلَى آلِهِ عَدَدَ السَّحَابِ الجَارِيَةِ. 
  وَأَنْ تُصَلِّيَ عَلَيْهِ، وَعَلَى آلِهِ عَدَدَ الرِّيَاحِ الذَّارِيَةِ مِنْ يَوْمِ خَلَقْتَ الدُّنْيَا إِلَى يَوْمِ الْقِيَامَةِ فِيْ كُلِّ يَوْمٍ "أَلْفَ مَرَّةٍ". 
@@ -2210,17 +2244,13 @@ class IsarHelper {
 وَنَسْأَلُكَ اللَّهُمَّ بِنُورِ وَجْهِكَ الَّذِي مَلَأَ أَرْكَانَ عَرْشِكَ أَنْ تَزْرَعَ فِيْ قَلْبِي مَعْرِفَتَكَ؛ حَتَّى أَعْرِفَكَ حَقَّ مَعْرِفَتِكَ كَمَا يَنْبَغِي أَنْ تُعْرَفَ بِه. 
 وَصَلَّى اللُه عَلَى سَيِّدِنَا مُحَمَّدٍ خَاتَمِ النَّبِيِّينَ، وَإِمَامِ الْمـُرْسَلِينَ، وَعَلَى آلِهِ وَصَحْبِهِ وَسَلَّمَ تَسْلِيمًا، وَالحَمْدُ لِلـَّهِ رَبِّ الْعَالَمِينَ.
 ''',
-      false,
-      incrementedContentId++, //141,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1FlBbPwqR9SQwFn0aDfS3bpXa7JAlXS7h',
     ),
-
-    /// الأذكار
-    ///  أذكار وأوراد اليومية
-    ///  أذكار وأوراد تقرأ صباحًا
-    Content(
-      incrementedContentId,
-      //      124,
-      '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
+    _HeaderContentPair(
+      headerName: 'الورد اللّطيف للحبيب عبد الله الحدّاد رضي الله عنه',
+      contentText: '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
 ﴿  قُلْ هُوَ ٱللَّهُ أَحَدٌ ١ ٱللَّهُ ٱلصَّمَدُ ٢ لَمْ يَلِدْ وَلَمْ يُولَدْ ٣ وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ ٤ ﴾.
 "ثَلاَثاً".
 بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
@@ -2273,19 +2303,19 @@ class IsarHelper {
 ٭ الْحَمْدُ للهِ عَدَدَ مَا خَلَقَ فِيْ السَّمَاءِ. الْحَمْدُ للهِ عَدَدَ مَا خَلَقَ فِيْ الأَرْضِ. الْحَمْدُ للهِ عَدَدَ مَا بَيْنَ ذَلِكَ. الْحَمْدُ للهِ عَدَدَ مَا هُوَ خَالَقٌ.
 ٭ لاَ إِلَهَ إِلاَّ اللهُ عَدَدَ مَا خَلَقَ فِيْ السَّمَاءِ. لاَ إِلَهَ إِلاَّ اللهُ عَدَدَ مَا خَلَقَ فِيْ الأَرْضِ. لاَ إِلَهَ إِلاَّ اللهُ عَدَدَ مَا بَيْنَ ذَلِكَ. لاَ إِلَهَ إِلاَّ اللهُ عَدَدَ مَا هُوَ خَالَقٌ.
 ٭ اللهُ أَكْبَرُ عَدَدَ مَا خَلَقَ فِيْ السَّمَاءِ. اللهُ أَكْبَرُ عَدَدَ مَا خَلَقَ فِيْ الأَرْضِ. اللهُ أَكْبَرُ عَدَدَ مَا بَيْنَ ذَلِكَ. اللهُ أَكْبَرُ عَدَدَ مَا هُوَ خَالَقٌ.
-٭ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ عَدَدَ مَا خَلَقَ فِيْ السَّمَاءِ. لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ عَدَدَ مَا خَلَقَ فِيْ الأَرْضِ. لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ عَدَدَ مَا بَيْنَ ذَلِكَ. لاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ عَدَدَ مَا هُوَ خَالَقٌ.
+٭ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ عَدَدَ مَا خَلَقَ فِيْ السَّمَاءِ. لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ عَدَدَ مَا خَلَقَ فِيْ الأَرْضِ. لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ عَدَدَ مَا بَيْنَ ذَلِكَ. لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ عَدَدَ مَا هُوَ خَالَقٌ.
 ٭ لاَ إِلَهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيْكَ لَهُ، لَهُ المُلْكُ وَلَهُ الحَمْدُ يُحْيـيْ وَيُمِيْتُ وَهُوَ عَلَى كُلِّ شَيء قَدِيْرٌ عَدَدَ كُلِّ ذَرَّةٍ "أَلْفَ مَرَّةٍ". "ثَلاَثاً".
 ٭ لاَ إِلٰهَ إِلاَّ اللهُ مُحَمَّدٌ رَسُوْلُ اللهِ، صَلَّىٰ اللهُ عَلَيْهِ وَسَلَّمَ فِيْ كُلِّ لَمْحَةٍ وَلَحْظَةٍ وَنَفَسٍ عَدَدَ مَا وَسِعَهُ عِلْمُ اللهِ. "ثَلاَثاً".
 ''',
-      false,
-      incrementedContentId++, //86,
+      isLiked: false,
       hasVoice: true,
-      voiceFile: "11bVqJXT6cjeZUxZA4wD4BlV6FmtOWxVZ",
+      voiceFile: '11bVqJXT6cjeZUxZA4wD4BlV6FmtOWxVZ',
     ),
-    Content(
-      incrementedContentId,
-      //      142,
-      '''أَعُوْذُ باللهِ السَّمِيْعِ العَلِيْمِ مِنَ الشَّيْطَانِ الرَّجِيْمِ، بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ "ثَلاَثاً".
+    _HeaderContentPair(
+      headerName:
+          'راتب سيّدنا الإمام الحبيب عبد الله بن حسينٍ بلفقيه ـ رضي الله عنه',
+      contentText:
+          '''أَعُوْذُ باللهِ السَّمِيْعِ العَلِيْمِ مِنَ الشَّيْطَانِ الرَّجِيْمِ، بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ "ثَلاَثاً".
 ثُمَّ ﴿الفَاتِحَةُ﴾، وَ(آيَةُ الكُرْسِيِّ) وَ﴿  لِّلَّهِ مَا فِى ٱلسَّمَـٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۗ وَإِن تُبْدُوا۟ مَا فِىٓ أَنفُسِكُمْ أَوْ تُخْفُوهُ يُحَاسِبْكُم بِهِ ٱللَّهُ ۖ فَيَغْفِرُ لِمَن يَشَآءُ وَيُعَذِّبُ مَن يَشَآءُ ۗ وَٱللَّهُ عَلَىٰ كُلِّ شَىْءٍۢ قَدِيرٌ ٢٨٤ ءَامَنَ ٱلرَّسُولُ بِمَآ أُنزِلَ إِلَيْهِ مِن رَّبِّهِۦ وَٱلْمُؤْمِنُونَ ۚ كُلٌّ ءَامَنَ بِٱللَّهِ وَمَلَـٰٓئِكَتِهِۦ وَكُتُبِهِۦ وَرُسُلِهِۦ لَا نُفَرِّقُ بَيْنَ أَحَدٍۢ مِّن رُّسُلِهِۦ ۚ وَقَالُوا۟ سَمِعْنَا وَأَطَعْنَا ۖ غُفْرَانَكَ رَبَّنَا وَإِلَيْكَ ٱلْمَصِيرُ ٢٨٥ لَا يُكَلِّفُ ٱللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا ٱكْتَسَبَتْ ۗ رَبَّنَا لَا تُؤَاخِذْنَآ إِن نَّسِينَآ أَوْ أَخْطَأْنَا ۚ رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَآ إِصْرًۭا كَمَا حَمَلْتَهُۥ عَلَى ٱلَّذِينَ مِن قَبْلِنَا ۚ رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِۦ ۖ وَٱعْفُ عَنَّا وَٱغْفِرْ لَنَا وَٱرْحَمْنَآ ۚ أَنتَ مَوْلَىٰنَا فَٱنصُرْنَا عَلَى ٱلْقَوْمِ ٱلْكَـٰفِرِينَ ٢٨٦﴾. ثُمَّ ﴿ قُلْ هُوَ ٱللَّهُ أَحَدٌ﴾ "ثَلاَثاً" وَ﴿ المُعَوِّذَتَيْنِ﴾ "ثَلاَثاً، ثَلاَثاً".
 بِسْمِ اللهِ الَّذِي لاَ يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الأَرْضِ وَلاَ فِي السَّمَاءِ، وَهُوَ السَّمِيْعُ الْعَلِيْمُ "ثَلاَثاً".
 بِسْمِ اللهِ عَلَىٰ أَدْيَانِنَا، وأَنْفُسِنَا، وأَهْلِيْنَا، وأَمْوَالِنَا "ثَلاَثاً".
@@ -2317,31 +2347,32 @@ class IsarHelper {
 
 نُقِلَ مِنْ كِتَابِ «عِقْدِ اليَوَاقِيْتِ» لِسَيِّدِنَا الإِمَامِ عَيْدَروسِ بْنِ عُمَرَ الحَبْشِيِّ ـ رَضِيَ اللهُ عَنْهُ ـ فِيْ تَرْجَمَةِ (صَاحِبِ الرَّاتِبِ) 
 ''',
-      false,
-      incrementedContentId++, //104,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1BI8ux7T7LionZWh12I_LwBsCnpSVdbJc',
     ),
-    Content(
-      incrementedContentId,
-      //      120,
-      '''عَلَيْكَ بِاسْمِ اللهِ اللَّطِيْفِ تُكَرِّرُهُ بَعْدَ الصُّبْح وَبَعْدَ الْمَغْرِبِ "129 مَرَّةً"، وَإِنْ زِدْتَ فَحَسَنٌ ثُمَّ تَقُوْلُ بَعْدَهُ: «اللهُ لَطِيْفٌ بِعِبادِهِ، يَرْزُقُ مَنْ يَشَاءُ، وَهُوَ القَوِيُّ الْعَزِيْزُ "سَبْعاً".
+    _HeaderContentPair(
+      headerName: 'اسم الله اللّطيف والدّعاء بعده (بعد الفجر)',
+      contentText:
+          '''عَلَيْكَ بِاسْمِ اللهِ اللَّطِيْفِ تُكَرِّرُهُ بَعْدَ الصُّبْح وَبَعْدَ الْمَغْرِبِ "129 مَرَّةً"، وَإِنْ زِدْتَ فَحَسَنٌ ثُمَّ تَقُوْلُ بَعْدَهُ: «اللهُ لَطِيْفٌ بِعِبادِهِ، يَرْزُقُ مَنْ يَشَاءُ، وَهُوَ القَوِيُّ الْعَزِيْزُ "سَبْعاً".
 اللَّهُمَّ يا مُسَخِّرَ السَّمواتِ السَّبْعِ، وَالأَرَضِيْنَ وَمَنْ فِيْهِنَّ، وَمَنْ عَلَيْهِنَّ، سَخِّرْ لِيْ كُلَّ شَيْءٍ مِنْ عِبادِكَ؛ مِمَّا فِي بَرِّكَ وَبَحْرِكَ يَا رَبَّ العالَمِيْنَ، حَتَّى لا  يَكُوْنَ فِي الْكَوْنِ شَيْءٌ مُتَحَرِّكٌ، أَوْ سَاكِنٌ، أَوْ صَامِتٌ، أَوْ نَاطِقٌ ظاهِراً وَباطِناً، إِلاَّ سَخَّرْتَهُ لِيْ، وَيَكُوْنُ طَوْعَ أَمْرِيْ بِبَرَكَةِ اسْمِكَ اللَّطِيْفِ الْمَكْنُوْنِ، يا اللهُ يا حَيُّ، يا قَيُّومُ، إِنَّما أَمْرُهُ إِذا أَرادَ شَيْئاً أَنْ يَقُوْلَ لَهُ كُنْ فَيَكُوْنُ.
 إِلٰهِيْ جُودُكَ دَلَّنِيْ عَلَيْكَ، وَإِحْسَانُكَ قَرَّبَنِيْ إِلَيْكَ، أَشْكُوْ إِلَيْكَ مَا لاَ يَخْفَىٰ عَلَيْكَ، وَأَسْأَلُكَ مَا لاَ يَعْسُرُ عَلَيْكَ، إِذْ عِلْمُكَ بِحالِيْ يُغْنِيْ عَنْ سُؤالِيْ، يا مُفَرِّجاً عَنْ كُلِّ مَكْرُوبٍ كَرْبَهُ وَمُنْجِّيَهُ، فَرِّجْ عَنِّيْ كُلَّ كَرْبِيْ وَمَا أَنَا فِيْهِ. يا مَنْ لَيْسَ بِغائِبٍ فَأَنْتَظِرُهُ، ولاَ بِنائِمٍ فَأُوْقِظُهُ، وَلا بِغافِلٍ فَأُذَكِّرُهُ، وَلاَ بِعاجِزٍ فَأُمْهِلُهُ، يا عالِماً بِالجُمْلَةِ، وَغَنِيّاً عَنِ التَّفْصِيْلِ، يا سَامِعاً لِلْمَقالِ وَالْقِيْلِ، كَفَىٰ عِلْمُكَ المَقالَ، وَانْقَطَعَ الرَّجاءُ إِلاَّ مِنْكَ يا مُتَعالٍ، وَخَابَتِ الآمالُ إِلاَّ فِيْكَ يا ذا الجَلالِ وَالإِكْرَامِ، وَانْسَدَّتِ الطُّرُقُ إِلاَّ إِلَيْكَ يا مِفْضالُ، يا  سَمِيْعُ، يا قَرِيْبُ، يا بَصِيْرُ، يا مُجِيْبُ، اغْفِرْ لِيْ وَارْحَمْنِيْ بِرَحْمَتِكَ يا أَرْحَمَ الرَّاحِمِيْنَ، وَيَسِّرْ لِيْ رِزْقِيْ، وَسَخِّرْ لِيْ جَمِيْعَ خَلْقِكَ، إِنَّكَ عَلَىٰ كُلِّ شَيْءٍ قَدِيْرٌ، وَصَلَّىٰ اللهُ عَلَى سَيِّدِنا مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ»..
 ''',
-      false,
-      incrementedContentId++, //82,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1OB6P3a3rkswQ0h0mkXhbtZvms6a81xU4',
     ),
-    Content(
-      incrementedContentId,
-      //      131,
-      '''﴿الفاتحة﴾ "سَبْعاً"، و﴿ الناس﴾ "سَبْعاً"، وَ﴿الفَلَقُ﴾ "سَبْعاً"، وَ﴿ الإِخْلاصُ﴾ "سَبْعاً"، و﴿الكَافِرُونَ﴾ "سَبْعاً"، وآيةُ الكرسيِّ "سَبْعاً"، سُبْحانَ اللهِ وَالحَمْدُ للهِ وَلا إِلهَ إِلاَّ اللهُ وَاللهُ أَكْبَرُ "سَبْعاً"، اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلِّمْ "سَبْعاً"، أَسْتَغْفِرُ اللهَ العَظِيْمَ لِيْ وَلِوَالِدَيَّ وَلْلمُؤْمِنِيْنَ وَالمُؤْمِناتِ، وَالمُسْلِمِيْنَ وَالمُسْلِماتِ، الأَحْياءِ مِنْهُمْ وَالأَمْواتِ، إِنَّكَ قَرِيْبٌ مُجِيْبُ الدَّعَواتِ "سَبْعاً"، اللَّهُمَّ افْعَلْ بِيْ وَبِهِمْ عاجِلاً وَآجِلاً فِي الدُّنْيا وَالآخِرَةِ مَا أَنْتَ لَهُ أَهْلٌ، وَلاَ تَفْعَلْ بِنَا يا مَوْلانا ما نَحْنُ لَهُ أَهْلٌ إِنَّكَ غَفُوْرٌ حَلِيْمٌ، جَوَادٌ كَرِيْمٌ، رَؤُوفٌ رَحِيْمٌ "سَبْعاً"..''',
-      false,
-      incrementedContentId++, //93,
+    _HeaderContentPair(
+      headerName: 'المسبّعات  (قبل الإشراق)',
+      contentText:
+          '''﴿الفاتحة﴾ "سَبْعاً"، و﴿ الناس﴾ "سَبْعاً"، وَ﴿الفَلَقُ﴾ "سَبْعاً"، وَ﴿ الإِخْلاصُ﴾ "سَبْعاً"، و﴿الكَافِرُونَ﴾ "سَبْعاً"، وآيةُ الكرسيِّ "سَبْعاً"، سُبْحانَ اللهِ وَالحَمْدُ للهِ وَلا إِلهَ إِلاَّ اللهُ وَاللهُ أَكْبَرُ "سَبْعاً"، اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلِّمْ "سَبْعاً"، أَسْتَغْفِرُ اللهَ العَظِيْمَ لِيْ وَلِوَالِدَيَّ وَلْلمُؤْمِنِيْنَ وَالمُؤْمِناتِ، وَالمُسْلِمِيْنَ وَالمُسْلِماتِ، الأَحْياءِ مِنْهُمْ وَالأَمْواتِ، إِنَّكَ قَرِيْبٌ مُجِيْبُ الدَّعَواتِ "سَبْعاً"، اللَّهُمَّ افْعَلْ بِيْ وَبِهِمْ عاجِلاً وَآجِلاً فِي الدُّنْيا وَالآخِرَةِ مَا أَنْتَ لَهُ أَهْلٌ، وَلاَ تَفْعَلْ بِنَا يا مَوْلانا ما نَحْنُ لَهُ أَهْلٌ إِنَّكَ غَفُوْرٌ حَلِيْمٌ، جَوَادٌ كَرِيْمٌ، رَؤُوفٌ رَحِيْمٌ "سَبْعاً"..''',
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1y-AZxE35e1818smMyCh5waJALP64TNQP',
     ),
-    Content(
-      ///////////////////////////////////////////////////////////////////////////////
-      incrementedContentId,
-      //      136,
-      '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ
+    _HeaderContentPair(
+      headerName: 'حزب الفتح والنّصر', //(بعد صلاة الصبح)
+      contentText: '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ
 يَا اللهُ، يَا وَاحِدُ، يَا أَحَدُ، يَا وَاجِدُ، يَا جَوَادُ؛ انْفَحْنَا مِنْكَ بِنَفْحَةِ خَيْرٍ "ثَلاَثاً".
 ثُمَّ يَقُوْلُ ـ وَهُوَ رَافِعٌ يَدَيْهِ جِدّاً بِحَيْثُ يُرَى بَيَاضُ إِبْطَيْهِ ـ :
 يَا بَاسِطُ "عَشْراً".
@@ -2399,13 +2430,14 @@ class IsarHelper {
 وَاخْتِمْ لَنَا بِالْحُسْنَى فِيْ لُطْفٍ وَعَافِيَةٍ يَا أَرْحَمَ الرَّاحِمِيْنَ.
 وَصَلَّى اللهُ عَلَى سَيِّدِنَا مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ.
 ''',
-      false,
-      incrementedContentId++, //98,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '15tiNMjIDoT7OKylFRKE6Rc9X_RECFPFD',
     ),
-    Content(
-      incrementedContentId,
-      //      139,
-      '''٭ بِسْمِ الله الرَّحْمنِ الرَّحِيْمِ "مِئَةَ مَرَّةٍ".
+    _HeaderContentPair(
+      headerName:
+          'الأذكار العشرة للحبيب عليّ بن حسنٍ العطّاس رضي الله عنه (بعد الفجر)',
+      contentText: '''٭ بِسْمِ الله الرَّحْمنِ الرَّحِيْمِ "مِئَةَ مَرَّةٍ".
 ٭ الحَمْدُ للهِ رَبِّ العَالَمِيْنَ "مِئَةَ مَرَّةٍ".
 ٭ اللَّهُمَّ صَلِّ عَلَىٰ سَيِّدِنا مُحَمَّدٍ وَعَلَىٰ آلِ سَيِّدِنا مُحَمَّدٍ وَسَلِّمْ "مِئَةَ مَرَّةٍ".
 ٭ لا إِلهَ إِلاَّ الله مُحَمَّدٌ رَسُولُ الله "مِئَةَ مَرَّةٍ".
@@ -2415,18 +2447,16 @@ class IsarHelper {
 ٭ سُوْرَةُ (الإِخْلاصِ) "مِئَةَ مَرَّةٍ".
 ٭ حَسْبُنَا اللهُ وَنِعْمَ الوَكِيْلُ ـ "مِئَةَ مَرَّةٍ".
 ٭ اللَّهُمَّ صَلِّ عَلَىٰ سَيِّدِنا مُحَمَّدٍ النَّبيِّ الأُمِّيِّ، وَعَلَى آلِ سَيِّدِنا مُحَمَّدٍ وَسَلِّمْ "ثَلاثَ مَرَّاتٍ".
-وَلا تَسْتَعْظِمْ ذلِكَ وَتَقُولُ: إِنَّ عَدَدَ مِئَةٍ لِكُلِّ ذِكْرٍ كَثِيْرٌ، فَإِذَا وَاظَبْتَ عَلَيْها فَإِنَّها تَسْهُلُ عَلَى اللِّسانِ، وَتَقْطَعُها فِي أَسْرَعِ وَقْتٍ، وَلاَ بَأْسَ بِحَمْلِ المَسْبَحَةِ فِي بَعْضِ الأَحْيانِ، لِضَبْطِ العَدَدِ لا لِلْفَخْرِ وَالتَّصَنُّعِ وَالتَّزْيِيْفِ عَلَىٰ النَّاسِ! ـ وَيُعْتَبَرُ ذلِكَ تَدْلِيْساً، وَيَكُوْنُ ذٰلِكَ كَمَنْ يَشْهَدُ زُوْراً، وَيَرْتَكِبُ فُجُوراً !
-وقد رَتَّبَها الحَبِيْبُ عَلِيُّ بْنُ حَسَنٍ العَطَّاسُ، وَأَمَرَ بَقِراءَتِها مَعَ الحَثِّ مِنْهُ عَلَى ذٰلِكَ، وَالبِشارَةِ لِمَنْ واظَبَ عَلَيْها بِبُلُوغِ المَرامِ بَعْدَ الصُّبْحِ، وَبَعْدَ المَغْرِبِ؛ وفِيْها الخَيْرَ وَالبَرَكَةَ.
+((وَلا تَسْتَعْظِمْ ذلِكَ وَتَقُولُ: إِنَّ عَدَدَ مِئَةٍ لِكُلِّ ذِكْرٍ كَثِيْرٌ، فَإِذَا وَاظَبْتَ عَلَيْها فَإِنَّها تَسْهُلُ عَلَى اللِّسانِ، وَتَقْطَعُها فِي أَسْرَعِ وَقْتٍ، وَلاَ بَأْسَ بِحَمْلِ المَسْبَحَةِ فِي بَعْضِ الأَحْيانِ، لِضَبْطِ العَدَدِ لا لِلْفَخْرِ وَالتَّصَنُّعِ وَالتَّزْيِيْفِ عَلَىٰ النَّاسِ! ـ وَيُعْتَبَرُ ذلِكَ تَدْلِيْساً، وَيَكُوْنُ ذٰلِكَ كَمَنْ يَشْهَدُ زُوْراً، وَيَرْتَكِبُ فُجُوراً !))
+وقد رَتَّبَها الحَبِيْبُ عَلِيُّ بْنُ حَسَنٍ العَطَّاسُ، وَأَمَرَ بَقِراءَتِها مَعَ الحَثِّ مِنْهُ عَلَى ذٰلِكَ، وَالبِشارَةِ لِمَنْ واظَبَ عَلَيْها بِبُلُوغِ المَرامِ بَعْدَ الصُّبْحِ، وَبَعْدَ المَغْرِبِ؛ وفِيْها الخَيْرَ وَالبَرَكَةَ.))
 ''',
-      false,
-      incrementedContentId++, //101,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1TAsQEHEa4SvuWgVkx_4fnqWfJoIXfOwo',
     ),
-
-    ///  أذكار وأوراد تقرأ مساءً
-    Content(
-      incrementedContentId,
-      //      124,
-      '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
+    _HeaderContentPair(
+      headerName: 'الورد اللّطيف للحبيب عبد الله الحدّاد رضي الله عنه',
+      contentText: '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
 ﴿  قُلْ هُوَ ٱللَّهُ أَحَدٌ ١ ٱللَّهُ ٱلصَّمَدُ ٢ لَمْ يَلِدْ وَلَمْ يُولَدْ ٣ وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ ٤ ﴾.
 "ثَلاَثاً".
 بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
@@ -2482,15 +2512,15 @@ class IsarHelper {
 ٭ لاَ إِلَهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيْكَ لَهُ، لَهُ المُلْكُ وَلَهُ الحَمْدُ يُحْيـيْ وَيُمِيْتُ وَهُوَ عَلَى كُلِّ شَيء قَدِيْرٌ عَدَدَ كُلِّ ذَرَّةٍ "أَلْفَ مَرَّةٍ". "ثَلاَثاً".
 ٭ لاَ إِلٰهَ إِلاَّ اللهُ مُحَمَّدٌ رَسُوْلُ اللهِ، صَلَّىٰ اللهُ عَلَيْهِ وَسَلَّمَ فِيْ كُلِّ لَمْحَةٍ وَلَحْظَةٍ وَنَفَسٍ عَدَدَ مَا وَسِعَهُ عِلْمُ اللهِ. "ثَلاَثاً".
 ''',
-      false,
-      incrementedContentId++, //86,
+      isLiked: false,
       hasVoice: true,
-      voiceFile: "11bVqJXT6cjeZUxZA4wD4BlV6FmtOWxVZ",
+      voiceFile: '11bVqJXT6cjeZUxZA4wD4BlV6FmtOWxVZ',
     ),
-    Content(
-      incrementedContentId,
-      //      142,
-      '''أَعُوْذُ باللهِ السَّمِيْعِ العَلِيْمِ مِنَ الشَّيْطَانِ الرَّجِيْمِ، بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ "ثَلاَثاً".
+    _HeaderContentPair(
+      headerName:
+          'راتب سيّدنا الإمام الحبيب عبد الله بن حسينٍ بلفقيه ـ رضي الله عنه',
+      contentText:
+          '''أَعُوْذُ باللهِ السَّمِيْعِ العَلِيْمِ مِنَ الشَّيْطَانِ الرَّجِيْمِ، بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ "ثَلاَثاً".
 ثُمَّ ﴿الفَاتِحَةُ﴾، وَ(آيَةُ الكُرْسِيِّ) وَ﴿  لِّلَّهِ مَا فِى ٱلسَّمَـٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۗ وَإِن تُبْدُوا۟ مَا فِىٓ أَنفُسِكُمْ أَوْ تُخْفُوهُ يُحَاسِبْكُم بِهِ ٱللَّهُ ۖ فَيَغْفِرُ لِمَن يَشَآءُ وَيُعَذِّبُ مَن يَشَآءُ ۗ وَٱللَّهُ عَلَىٰ كُلِّ شَىْءٍۢ قَدِيرٌ ٢٨٤ ءَامَنَ ٱلرَّسُولُ بِمَآ أُنزِلَ إِلَيْهِ مِن رَّبِّهِۦ وَٱلْمُؤْمِنُونَ ۚ كُلٌّ ءَامَنَ بِٱللَّهِ وَمَلَـٰٓئِكَتِهِۦ وَكُتُبِهِۦ وَرُسُلِهِۦ لَا نُفَرِّقُ بَيْنَ أَحَدٍۢ مِّن رُّسُلِهِۦ ۚ وَقَالُوا۟ سَمِعْنَا وَأَطَعْنَا ۖ غُفْرَانَكَ رَبَّنَا وَإِلَيْكَ ٱلْمَصِيرُ ٢٨٥ لَا يُكَلِّفُ ٱللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا ٱكْتَسَبَتْ ۗ رَبَّنَا لَا تُؤَاخِذْنَآ إِن نَّسِينَآ أَوْ أَخْطَأْنَا ۚ رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَآ إِصْرًۭا كَمَا حَمَلْتَهُۥ عَلَى ٱلَّذِينَ مِن قَبْلِنَا ۚ رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِۦ ۖ وَٱعْفُ عَنَّا وَٱغْفِرْ لَنَا وَٱرْحَمْنَآ ۚ أَنتَ مَوْلَىٰنَا فَٱنصُرْنَا عَلَى ٱلْقَوْمِ ٱلْكَـٰفِرِينَ ٢٨٦﴾. ثُمَّ ﴿ قُلْ هُوَ ٱللَّهُ أَحَدٌ﴾ "ثَلاَثاً" وَ﴿ المُعَوِّذَتَيْنِ﴾ "ثَلاَثاً، ثَلاَثاً".
 بِسْمِ اللهِ الَّذِي لاَ يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الأَرْضِ وَلاَ فِي السَّمَاءِ، وَهُوَ السَّمِيْعُ الْعَلِيْمُ "ثَلاَثاً".
 بِسْمِ اللهِ عَلَىٰ أَدْيَانِنَا، وأَنْفُسِنَا، وأَهْلِيْنَا، وأَمْوَالِنَا "ثَلاَثاً".
@@ -2522,30 +2552,33 @@ class IsarHelper {
 
 نُقِلَ مِنْ كِتَابِ «عِقْدِ اليَوَاقِيْتِ» لِسَيِّدِنَا الإِمَامِ عَيْدَروسِ بْنِ عُمَرَ الحَبْشِيِّ ـ رَضِيَ اللهُ عَنْهُ ـ فِيْ تَرْجَمَةِ (صَاحِبِ الرَّاتِبِ) 
 ''',
-      false,
-      incrementedContentId++, //104,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1BI8ux7T7LionZWh12I_LwBsCnpSVdbJc',
     ),
-    Content(
-      incrementedContentId,
-      //      120,
-      '''عَلَيْكَ بِاسْمِ اللهِ اللَّطِيْفِ تُكَرِّرُهُ بَعْدَ الصُّبْح وَبَعْدَ الْمَغْرِبِ "129 مَرَّةً"، وَإِنْ زِدْتَ فَحَسَنٌ ثُمَّ تَقُوْلُ بَعْدَهُ: «اللهُ لَطِيْفٌ بِعِبادِهِ، يَرْزُقُ مَنْ يَشَاءُ، وَهُوَ القَوِيُّ الْعَزِيْزُ "سَبْعاً".
+    _HeaderContentPair(
+      headerName: 'اسم الله اللّطيف والدّعاء بعده (بعد المغرب)',
+      contentText:
+          '''عَلَيْكَ بِاسْمِ اللهِ اللَّطِيْفِ تُكَرِّرُهُ بَعْدَ الصُّبْح وَبَعْدَ الْمَغْرِبِ "129 مَرَّةً"، وَإِنْ زِدْتَ فَحَسَنٌ ثُمَّ تَقُوْلُ بَعْدَهُ: «اللهُ لَطِيْفٌ بِعِبادِهِ، يَرْزُقُ مَنْ يَشَاءُ، وَهُوَ القَوِيُّ الْعَزِيْزُ "سَبْعاً".
 اللَّهُمَّ يا مُسَخِّرَ السَّمواتِ السَّبْعِ، وَالأَرَضِيْنَ وَمَنْ فِيْهِنَّ، وَمَنْ عَلَيْهِنَّ، سَخِّرْ لِيْ كُلَّ شَيْءٍ مِنْ عِبادِكَ؛ مِمَّا فِي بَرِّكَ وَبَحْرِكَ يَا رَبَّ العالَمِيْنَ، حَتَّى لا  يَكُوْنَ فِي الْكَوْنِ شَيْءٌ مُتَحَرِّكٌ، أَوْ سَاكِنٌ، أَوْ صَامِتٌ، أَوْ نَاطِقٌ ظاهِراً وَباطِناً، إِلاَّ سَخَّرْتَهُ لِيْ، وَيَكُوْنُ طَوْعَ أَمْرِيْ بِبَرَكَةِ اسْمِكَ اللَّطِيْفِ الْمَكْنُوْنِ، يا اللهُ يا حَيُّ، يا قَيُّومُ، إِنَّما أَمْرُهُ إِذا أَرادَ شَيْئاً أَنْ يَقُوْلَ لَهُ كُنْ فَيَكُوْنُ.
 إِلٰهِيْ جُودُكَ دَلَّنِيْ عَلَيْكَ، وَإِحْسَانُكَ قَرَّبَنِيْ إِلَيْكَ، أَشْكُوْ إِلَيْكَ مَا لاَ يَخْفَىٰ عَلَيْكَ، وَأَسْأَلُكَ مَا لاَ يَعْسُرُ عَلَيْكَ، إِذْ عِلْمُكَ بِحالِيْ يُغْنِيْ عَنْ سُؤالِيْ، يا مُفَرِّجاً عَنْ كُلِّ مَكْرُوبٍ كَرْبَهُ وَمُنْجِّيَهُ، فَرِّجْ عَنِّيْ كُلَّ كَرْبِيْ وَمَا أَنَا فِيْهِ. يا مَنْ لَيْسَ بِغائِبٍ فَأَنْتَظِرُهُ، ولاَ بِنائِمٍ فَأُوْقِظُهُ، وَلا بِغافِلٍ فَأُذَكِّرُهُ، وَلاَ بِعاجِزٍ فَأُمْهِلُهُ، يا عالِماً بِالجُمْلَةِ، وَغَنِيّاً عَنِ التَّفْصِيْلِ، يا سَامِعاً لِلْمَقالِ وَالْقِيْلِ، كَفَىٰ عِلْمُكَ المَقالَ، وَانْقَطَعَ الرَّجاءُ إِلاَّ مِنْكَ يا مُتَعالٍ، وَخَابَتِ الآمالُ إِلاَّ فِيْكَ يا ذا الجَلالِ وَالإِكْرَامِ، وَانْسَدَّتِ الطُّرُقُ إِلاَّ إِلَيْكَ يا مِفْضالُ، يا  سَمِيْعُ، يا قَرِيْبُ، يا بَصِيْرُ، يا مُجِيْبُ، اغْفِرْ لِيْ وَارْحَمْنِيْ بِرَحْمَتِكَ يا أَرْحَمَ الرَّاحِمِيْنَ، وَيَسِّرْ لِيْ رِزْقِيْ، وَسَخِّرْ لِيْ جَمِيْعَ خَلْقِكَ، إِنَّكَ عَلَىٰ كُلِّ شَيْءٍ قَدِيْرٌ، وَصَلَّىٰ اللهُ عَلَى سَيِّدِنا مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ»..
 ''',
-      false,
-      incrementedContentId++, //82,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1OB6P3a3rkswQ0h0mkXhbtZvms6a81xU4',
     ),
-    Content(
-      incrementedContentId,
-      //      131,
-      '''﴿الفاتحة﴾ "سَبْعاً"، و﴿ الناس﴾ "سَبْعاً"، وَ﴿الفَلَقُ﴾ "سَبْعاً"، وَ﴿ الإِخْلاصُ﴾ "سَبْعاً"، و﴿الكَافِرُونَ﴾ "سَبْعاً"، وآيةُ الكرسيِّ "سَبْعاً"، سُبْحانَ اللهِ وَالحَمْدُ للهِ وَلا إِلهَ إِلاَّ اللهُ وَاللهُ أَكْبَرُ "سَبْعاً"، اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلِّمْ "سَبْعاً"، أَسْتَغْفِرُ اللهَ العَظِيْمَ لِيْ وَلِوَالِدَيَّ وَلْلمُؤْمِنِيْنَ وَالمُؤْمِناتِ، وَالمُسْلِمِيْنَ وَالمُسْلِماتِ، الأَحْياءِ مِنْهُمْ وَالأَمْواتِ، إِنَّكَ قَرِيْبٌ مُجِيْبُ الدَّعَواتِ "سَبْعاً"، اللَّهُمَّ افْعَلْ بِيْ وَبِهِمْ عاجِلاً وَآجِلاً فِي الدُّنْيا وَالآخِرَةِ مَا أَنْتَ لَهُ أَهْلٌ، وَلاَ تَفْعَلْ بِنَا يا مَوْلانا ما نَحْنُ لَهُ أَهْلٌ إِنَّكَ غَفُوْرٌ حَلِيْمٌ، جَوَادٌ كَرِيْمٌ، رَؤُوفٌ رَحِيْمٌ "سَبْعاً"..''',
-      false,
-      incrementedContentId++, //93,
+    _HeaderContentPair(
+      headerName: 'المسبّعات',
+      contentText:
+          '''﴿الفاتحة﴾ "سَبْعاً"، و﴿ الناس﴾ "سَبْعاً"، وَ﴿الفَلَقُ﴾ "سَبْعاً"، وَ﴿ الإِخْلاصُ﴾ "سَبْعاً"، و﴿الكَافِرُونَ﴾ "سَبْعاً"، وآيةُ الكرسيِّ "سَبْعاً"، سُبْحانَ اللهِ وَالحَمْدُ للهِ وَلا إِلهَ إِلاَّ اللهُ وَاللهُ أَكْبَرُ "سَبْعاً"، اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلِّمْ "سَبْعاً"، أَسْتَغْفِرُ اللهَ العَظِيْمَ لِيْ وَلِوَالِدَيَّ وَلْلمُؤْمِنِيْنَ وَالمُؤْمِناتِ، وَالمُسْلِمِيْنَ وَالمُسْلِماتِ، الأَحْياءِ مِنْهُمْ وَالأَمْواتِ، إِنَّكَ قَرِيْبٌ مُجِيْبُ الدَّعَواتِ "سَبْعاً"، اللَّهُمَّ افْعَلْ بِيْ وَبِهِمْ عاجِلاً وَآجِلاً فِي الدُّنْيا وَالآخِرَةِ مَا أَنْتَ لَهُ أَهْلٌ، وَلاَ تَفْعَلْ بِنَا يا مَوْلانا ما نَحْنُ لَهُ أَهْلٌ إِنَّكَ غَفُوْرٌ حَلِيْمٌ، جَوَادٌ كَرِيْمٌ، رَؤُوفٌ رَحِيْمٌ "سَبْعاً"..''',
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1y-AZxE35e1818smMyCh5waJALP64TNQP',
     ),
-    Content(
-      incrementedContentId,
-      //      139,
-      '''٭ بِسْمِ الله الرَّحْمنِ الرَّحِيْمِ "مِئَةَ مَرَّةٍ".
+    _HeaderContentPair(
+      headerName:
+          'الأذكار العشرة للحبيب عليّ بن حسنٍ العطّاس رضي الله عنه (بعد المغرب)',
+      contentText: '''٭ بِسْمِ الله الرَّحْمنِ الرَّحِيْمِ "مِئَةَ مَرَّةٍ".
 ٭ الحَمْدُ للهِ رَبِّ العَالَمِيْنَ "مِئَةَ مَرَّةٍ".
 ٭ اللَّهُمَّ صَلِّ عَلَىٰ سَيِّدِنا مُحَمَّدٍ وَعَلَىٰ آلِ سَيِّدِنا مُحَمَّدٍ وَسَلِّمْ "مِئَةَ مَرَّةٍ".
 ٭ لا إِلهَ إِلاَّ الله مُحَمَّدٌ رَسُولُ الله "مِئَةَ مَرَّةٍ".
@@ -2555,16 +2588,17 @@ class IsarHelper {
 ٭ سُوْرَةُ (الإِخْلاصِ) "مِئَةَ مَرَّةٍ".
 ٭ حَسْبُنَا اللهُ وَنِعْمَ الوَكِيْلُ ـ "مِئَةَ مَرَّةٍ".
 ٭ اللَّهُمَّ صَلِّ عَلَىٰ سَيِّدِنا مُحَمَّدٍ النَّبيِّ الأُمِّيِّ، وَعَلَى آلِ سَيِّدِنا مُحَمَّدٍ وَسَلِّمْ "ثَلاثَ مَرَّاتٍ".
-وَلا تَسْتَعْظِمْ ذلِكَ وَتَقُولُ: إِنَّ عَدَدَ مِئَةٍ لِكُلِّ ذِكْرٍ كَثِيْرٌ، فَإِذَا وَاظَبْتَ عَلَيْها فَإِنَّها تَسْهُلُ عَلَى اللِّسانِ، وَتَقْطَعُها فِي أَسْرَعِ وَقْتٍ، وَلاَ بَأْسَ بِحَمْلِ المَسْبَحَةِ فِي بَعْضِ الأَحْيانِ، لِضَبْطِ العَدَدِ لا لِلْفَخْرِ وَالتَّصَنُّعِ وَالتَّزْيِيْفِ عَلَىٰ النَّاسِ! ـ وَيُعْتَبَرُ ذلِكَ تَدْلِيْساً، وَيَكُوْنُ ذٰلِكَ كَمَنْ يَشْهَدُ زُوْراً، وَيَرْتَكِبُ فُجُوراً !
-وقد رَتَّبَها الحَبِيْبُ عَلِيُّ بْنُ حَسَنٍ العَطَّاسُ، وَأَمَرَ بَقِراءَتِها مَعَ الحَثِّ مِنْهُ عَلَى ذٰلِكَ، وَالبِشارَةِ لِمَنْ واظَبَ عَلَيْها بِبُلُوغِ المَرامِ بَعْدَ الصُّبْحِ، وَبَعْدَ المَغْرِبِ؛ وفِيْها الخَيْرَ وَالبَرَكَةَ.
+((وَلا تَسْتَعْظِمْ ذلِكَ وَتَقُولُ: إِنَّ عَدَدَ مِئَةٍ لِكُلِّ ذِكْرٍ كَثِيْرٌ، فَإِذَا وَاظَبْتَ عَلَيْها فَإِنَّها تَسْهُلُ عَلَى اللِّسانِ، وَتَقْطَعُها فِي أَسْرَعِ وَقْتٍ، وَلاَ بَأْسَ بِحَمْلِ المَسْبَحَةِ فِي بَعْضِ الأَحْيانِ، لِضَبْطِ العَدَدِ لا لِلْفَخْرِ وَالتَّصَنُّعِ وَالتَّزْيِيْفِ عَلَىٰ النَّاسِ! ـ وَيُعْتَبَرُ ذلِكَ تَدْلِيْساً، وَيَكُوْنُ ذٰلِكَ كَمَنْ يَشْهَدُ زُوْراً، وَيَرْتَكِبُ فُجُوراً !
+وقد رَتَّبَها الحَبِيْبُ عَلِيُّ بْنُ حَسَنٍ العَطَّاسُ، وَأَمَرَ بَقِراءَتِها مَعَ الحَثِّ مِنْهُ عَلَى ذٰلِكَ، وَالبِشارَةِ لِمَنْ واظَبَ عَلَيْها بِبُلُوغِ المَرامِ بَعْدَ الصُّبْحِ، وَبَعْدَ المَغْرِبِ؛ وفِيْها الخَيْرَ وَالبَرَكَةَ.))
 ''',
-      false,
-      incrementedContentId++, //101,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1TAsQEHEa4SvuWgVkx_4fnqWfJoIXfOwo',
     ),
-    Content(
-      incrementedContentId,
-      //      60,
-      '''اللَّهُمَّ يَا اللهُ، يَا عَلِيُّ، يَا عَظِيْمُ، يَا حَلِيْمُ، يَا عَلِيْمُ، أَنْتَ رَبِّيْ، وَعِلْمُكَ حَسْبِيْ، فَنِعْمَ الرَّبُّ رَبِّيْ، وَنِعْمَ الْحَسْبُ حَسْبِيْ، تَنْصُرُ مَنْ تَشَاءُ، وَأَنْتَ الْعَزِيْزُ الرَّحِيْمُ.
+    _HeaderContentPair(
+      headerName: 'حزب البحر (بعد العصر)',
+      contentText:
+          '''اللَّهُمَّ يَا اللهُ، يَا عَلِيُّ، يَا عَظِيْمُ، يَا حَلِيْمُ، يَا عَلِيْمُ، أَنْتَ رَبِّيْ، وَعِلْمُكَ حَسْبِيْ، فَنِعْمَ الرَّبُّ رَبِّيْ، وَنِعْمَ الْحَسْبُ حَسْبِيْ، تَنْصُرُ مَنْ تَشَاءُ، وَأَنْتَ الْعَزِيْزُ الرَّحِيْمُ.
 نَسْأَلُكَ الْعِصْمَةَ فِيْ الْحَرَكَاتِ وَالسَّكَنَاتِ، وَالْكَلِمَاتِ وَالإِرَادَاتِ وَالْخَطَرَاتِ.. مِنَ الشُّكُوْكِ وَالظُّنُوْنِ، وَالأَوْهَامِ السَّاتِرَةِ لِلْقُلُوْبِ، عَنْ مُطَالَعَةِ الْغُيُوْبِ، فَقَدِ ابْتُلِيَ الْمُؤْمِنُوْنَ وَزُلْزِلُوْا زِلْزَالاً شَدِيْداً.
 ﴿ وَإِذْ يَقُولُ ٱلْمُنَـٰفِقُونَ وَٱلَّذِينَ فِى قُلُوبِهِم مَّرَضٌۭ مَّا وَعَدَنَا ٱللَّهُ وَرَسُولُهُۥٓ إِلَّا غُرُورًۭا ١٢﴾.
 فَثَبِّتْنَا وَانْصُرْنَا، وَسَخِّرْ لَنَا هَذَا الْبَحْرَ، كَمَا سَخَّرْتَ الْبَحْرَ لِمُوْسَى، وَسَخَّرْتَ النَّارَ لإِبْرَاهِيْمَ، وَسَخَّرْتَ الْجِبَالَ وَالْحَدِيْدَ لِدَاوُوْدَ، وَسَخَّرْتَ الرِّيْحَ وَالشَّيَاطِيْنَ وَالْجِنَّ لِسُلَيْمَانَ، وَسَخِّرْ لَنَا كُلَّ بَحْرٍ هُوَ لَكَ فِيْ الأَرْضِ وَالسَّمَاءِ، وَالْمُلْكِ وَالْمَلَكُوْتِ، وَبَحْرِ الدُّنْيَا، وبَحْرِ الآخِرَةِ، وَسَخِّرْ لَنَا كُلَّ شَيْءٍ، يَا مَنْ بِيَدِهِ مَلَكُوْتُ كُلِّ شَيْءٍ.
@@ -2588,15 +2622,14 @@ class IsarHelper {
 اللَّهُمَّ أَنْتَ تَعْلَمُ ما نَحْنُ فِيْهِ، وَما نَطْلُبُهُ وَنُرَجِّيْهِ، مِنْ رَحْمَتِكَ فِي أَمْرِنا كُلِّهِ، فَيَسِّرْ لَنا ما نَحْنُ فِيْهِ مِنْ سَفَرِنا، وَما نَطْلُبُهُ مِنْ حَوائِجِنَا، وَقَرِّبْ عَلَيْنا المَسافاتِ، وَسَلِّمْنا مِنَ العِلَلِ وَالآفاتِ، وَلا تَجْعَلِ الدُّنْيا أَكْبَرَ همِّنا، ولا مَبْلَغَ عِلْمِنا، وَلا تُسَلِّطْ عَلَيْنا مَنْ لا يَرْحَمُنا بِرَحْمَتِكَ يا أَرْحَمَ الرَّاحِمِيْنَ..
 وصَلَّىٰ اللهُ عَلَى سَيِّدِنا مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ. سُبْحانَ اللهِ وَبِحَمْدِهِ، سُبْحانَ اللهِ العَظِيْمِ، لا إِلٰهَ إِلاَّ اللهُ، اللَّهُمَّ ثَبِّتْ عِلْمَها فِي قَلْبِيْ، وَاغْفِرْ لِي ذَنْبِيْ، وَلِلمُؤْمِنِيْنَ وَالمُؤْمِناتِ.. وَقُلِ الحَمْدُ للهِ، وَسَلامٌ عَلَى عِبادِهِ الَّذِيْنَ اصْطَفَى "ثَلاَثاً".. ثُمَّ آيَةَ الكُرسِيِّ..
 ''',
-      false,
-      incrementedContentId++, //34,
+      isLiked: false,
       hasVoice: true,
-      voiceFile: "1w1AOARSdMJhQJV2HS4zSLxD_WVHremHT",
+      voiceFile: '1w1AOARSdMJhQJV2HS4zSLxD_WVHremHT',
     ),
-    Content(
-      incrementedContentId,
-      //      102,
-      '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
+    _HeaderContentPair(
+      headerName:
+          'حزب النصر للإمام أبي الحسن الشاذلي رضي الله عنه (بعد العشاء)',
+      contentText: '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
 ﴿ وَقَالَ مُوسَىٰٓ إِنِّى عُذْتُ بِرَبِّى وَرَبِّكُم مِّن كُلِّ مُتَكَبِّرٍۢ لَّا يُؤْمِنُ بِيَوْمِ ٱلْحِسَابِ ٢٧﴾. "ثَلاَثاً".
 اللَّهُمَّ بِسَطْوَةِ جَبَرُوْتِ قَهْرِكَ، وَبِسُرْعَةِ إِغَاثَةِ نَصْرِكَ، وَبِغَيْرَتِكَ لاِنْتِهَاكِ حُرُمَاتِكَ، وَبِحِمَايَتِكَ لِمَنِ احْتَمَى بِبَابِكَ.. نَسْأَلُكَ يَا  اللهُ يَا اللهُ يَا اللهُ، يَا سَمِيْعُ يَا مُجِيْبُ، يَا  قَرِيْبُ يَا سَرِيْعُ، يَا مُنْتَقِمُ يَا قَهَّارُ، يَا شَدِيْدَ الْبَطْشِ، يَا مَنْ لاَ يُعْجِزُهُ قَهْرُ الْجَبَابِرَةِ، وَلاَ يَعْظُمُ عَلَيْهِ هَلاَكُ الْمُتَمَرِّدِيْنَ مِنَ الْمُلُوْكِ وَالأَكَاسِرَةِ.. أَنْ تَجْعَلَ كَيْدَ مَنْ كَادَنَا فِيْ نَحْرِهِ، وَمَكْرَ مَنْ مَكَرَ بِنَا عَائِداً عَلَيْهِ، وَحُفْرَةَ مَنْ حَفَرَ لَنَا حُفْرَةً وَاقِعاً هُوَ فِيْهَا، وَمَنْ نَصَبَ لَنَا شَبَكَةَ الْخِدَاعِ.. اجْعَلْهُ يَا سَيِّدِيْ مَسُوْقاً إِلَيْهَا، وَمُصَاداً فِيْهَا، وَأَسِيْراً لَدَيْهَا.
 اللَّهُمَّ بِحَقِّ ﴿كهيعص﴾.. اكْفِنَا الْعِدَا، وَلَقِّهِمُ الرَّدَى، وَاجْعَلْهُمْ لِكُل حَبِيْبٍ فِدَا، وَسَلِّطِ اللَّهُمَّ عَلَيْهِمْ عَاجِلَ النِّقَمِ فِيْ الْيَوْمِ وَالْغَدَا.
@@ -2626,15 +2659,13 @@ class IsarHelper {
 فَقُطِعَ دَابِرُ الْقَوْمِ الَّذِيْنَ ظَلَمُوْا، فَأَصْبَحُوْا لاَ يُرَى إِلاَّ مَسَاكِنُهُمْ، وَالحَمْدُ للهِ رَبِّ العالَمِيْنَ.
 وصلَّىٰ الله على سيدنا مُحمَّد النَّبيِّ الأُمِّيِّ، وعلى آله وصحبه وسَلَّم تسليماً..
 ''',
-      false,
-      incrementedContentId++, //64,
+      isLiked: false,
       hasVoice: true,
-      voiceFile: "1dUG88heXJ_bNFGUJFVDso1L0eU-m6c07",
+      voiceFile: '1jkB3-UIw6qYt5KAFXoQz_gM4LSiA_W8o',
     ),
-    Content(
-      incrementedContentId,
-      //      81,
-      '''يَبْدَأُ بِقِرَاءَةِ الْفَاتِحَةِ:
+    _HeaderContentPair(
+      headerName: 'راتب الامام الحداد (بعد المغرب)',
+      contentText: '''يَبْدَأُ بِقِرَاءَةِ الْفَاتِحَةِ:
 بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ ١ ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ ٢ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ ٣ مَـٰلِكِ يَوْمِ ٱلدِّينِ ٤ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ٥ ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ ٦ صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ ٧﴾.
 وَآيَةِ الْكُرْسِيْ:
 ٱللَّهُ لَآ إِلَـٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌۭ وَلَا نَوْمٌۭ ۚ لَّهُۥ مَا فِى ٱلسَّمَـٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۗ مَن ذَا ٱلَّذِى يَشْفَعُ عِندَهُۥٓ إِلَّا بِإِذْنِهِۦ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَىْءٍۢ مِّنْ عِلْمِهِۦٓ إِلَّا بِمَا شَآءَ ۚ وَسِعَ كُرْسِيُّهُ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضَ ۖ وَلَا يَـُٔودُهُۥ حِفْظُهُمَا ۚ وَهُوَ ٱلْعَلِىُّ ٱلْعَظِيمُ ٢٥٥﴾.
@@ -2670,26 +2701,26 @@ class IsarHelper {
 انتهى الرَّاتِبُ الشَّهِيرُ.
 واحْذَرْ أَنْ تَتْرُكَ الرَّاتِبَ لِلحَبِيْبِ عَبْدِ الله الحدَّادِ، فَإِنَّهُ مُهِمٌّ. فَإِنْ كُنْتَ مِمَّنْ يُحَزِّبُ فَاقْرَأْهُ قَبْلَ العِشاءِ فِي المَسْجِدِ كَما هِيَ عَادَتُهُمْ، وَإِلاَّ فَلا تَغْفُلْ عَنْ قِراءَتِهِ إِذَا عُدْتَ إِلَى مَنْزِلِكَ، وَلا تَتْرُكْهُ؛ فَإِنَّ لَهُ فَوائِدَ عَظِيْمَةً، لا نُطِيْلُ بِذِكْرِها، وَيَكْفِيْكَ مِنْهَا أَنَّ مَنْ وَاظَبَ عَلَى قِراءَتِهِ يَمُوْتُ عَلَى حُسْنِ الخِتام، وَلَوْ لَمْ تَكُنْ إِلاَّ هذِهِ لَكَفَتْ في التَّحْرِيْضِ عَلَى قِراءَتِهِ.
 ''',
-      false,
-      incrementedContentId++, //49,
+      isLiked: false,
       hasVoice: true,
-      voiceFile: "1ZiEN8-3aJGcZHIxrDb9UE9PDDPgSEcZJ",
+      voiceFile: '1ZiEN8-3aJGcZHIxrDb9UE9PDDPgSEcZJ',
     ),
-    Content(
-      incrementedContentId,
-      //      82,
-      '''أَشْهَدُ أَنْ لاَ إِلٰهَ إِلاَّ اللهُ وَحْدَهُ لاَ  شَرِيْكَ لَهُ، وَأَشْهَدُ أَنَّ سَيِّدَنَا مُحَمَّداً عَبْدُهُ وَرَسُوْلُهُ، آمَنْتُ بِاللهِ، وَمَلائِكَتِهِ، وَكُتُبِهِ، وَرُسُلِه، وَاليَوْمِ الآخِرِ، وَبِالْقَدَرِ خَيْرِهِ وَشَرِّهِ، صَدَقَ اللهُ، وَصَدَقَ رَسُوْلُهُ، صَدَقَ اللهُ، وَصَدَقَ رُسُلُهُ، آمَنْتُ بِالشَّرِيْعَةِ، وَصَدَّقْتُ بِالشَّرِيْعَةِ، وَإِنْ كُنْتُ قُلْتُ شَيْئاً خِلافَ الإِجْمَاعِ رَجَعْتُ عَنْهُ، وَتَبَرَّأْتُ مِنْ كُلِّ دِيْنٍ يُخَالِفُ دِيْنَ الإِسْلاَمِ.
+    _HeaderContentPair(
+      headerName: 'عقيدة سيّدنا الشّيخ عليّ بن أبي بكرٍ السّكران رضي الله عنه',
+      contentText:
+          '''أَشْهَدُ أَنْ لاَ إِلٰهَ إِلاَّ اللهُ وَحْدَهُ لاَ  شَرِيْكَ لَهُ، وَأَشْهَدُ أَنَّ سَيِّدَنَا مُحَمَّداً عَبْدُهُ وَرَسُوْلُهُ، آمَنْتُ بِاللهِ، وَمَلائِكَتِهِ، وَكُتُبِهِ، وَرُسُلِه، وَاليَوْمِ الآخِرِ، وَبِالْقَدَرِ خَيْرِهِ وَشَرِّهِ، صَدَقَ اللهُ، وَصَدَقَ رَسُوْلُهُ، صَدَقَ اللهُ، وَصَدَقَ رُسُلُهُ، آمَنْتُ بِالشَّرِيْعَةِ، وَصَدَّقْتُ بِالشَّرِيْعَةِ، وَإِنْ كُنْتُ قُلْتُ شَيْئاً خِلافَ الإِجْمَاعِ رَجَعْتُ عَنْهُ، وَتَبَرَّأْتُ مِنْ كُلِّ دِيْنٍ يُخَالِفُ دِيْنَ الإِسْلاَمِ.
 اللَّهُمَّ إِنِّي أُؤْمِنُ بِمَا تَعْلَمُ أَنَّهُ الْحَقُّ عِنْدَكَ، وَأَبْرَأُ إِلَيْكَ مِمَّا تَعْلَمُ أَنَّهُ البَاطِلُ عِنْدَكَ، فَخُذْ مِنِّي جُمَلاً، وَلاَ تُطَالِبْنِيْ بِالتَّفْصِيْلِ.
 أَسْتَغْفِرُ اللهَ العَظِيْمَ وَأَتُوْبُ إِلَيْهِ، نَدِمْتُ مِنْ كُلِّ شَرٍّ. أَشْهَدُ أَنْ لاَ إِلَهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيْكَ لَهُ، وَأَشْهَدُ أَنَّ سَيِّدَنَا مُحَمَّداً عَبْدُهُ ورَسُوْلُهُ، وَأَنَّ عِيْسىٰ عَبْدُ اللهِ وَرَسُوْلُهُ، وَابْنُ أَمَتِهِ، وَكَلِمَتُهُ أَلْقَاهَا إِلَى مَرْيَمَ وَرُوْحٌ مِنْهُ، وأَنَّ الجَنَّةَ حَقٌّ، وَالنَّارَ حَقٌّ، وأَنَّ كُلَّ مَا أَخْبَرَ بِهِ رَسُوْلُ الله صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ حَقٌّ، وَأَنَّ السَّاعَةَ آتِيَةٌ لاَ رَيْبَ فِيْهَا، وأَنَّ اللهَ يَبْعَثُ مَنْ فِيْ القُبُوْرِ.
 أَشْهَدُ أَنْ لاَ إِلٰهَ إِلاَّ اللهُ وَحْدَهُ لاَ  شَرِيْكَ لَهُ، وَأَشْهَدُ أَنَّ سَيِّدَنَا مُحَمَّداً عَبْدُهُ ورَسُوْلُهُ، لاَ إِلٰهَ إِلاَّ اللهُ، أُفْنِي بِهَا عُمْرِيْ، لاَ إِلٰهَ إِلاَّ اللهُ، أَدْخُلُ بِهَا قَبْرِيْ، لاَ إِلٰهَ إِلاَّ اللهُ، أَخْلُوْ بِهَا وَحْدِيْ، لاَ إِلٰهَ إِلاَّ الله، أَلْقَى بِهَا رَبِّي، لاَ إِلٰهَ إِلاَّ اللهُ قَبْلَ كُلِّ شَيْءٍ، لاَ  إِلٰهَ إِلاَّ اللهُ بَعْدَ كُلِّ شَيْءٍ، لاَ إِلٰهَ إِلاَّ اللهُ يَبْقَى رَبُّنَا، وَيَفْنَى كُلُّ شَيْءٍ، لاَ إِلٰهَ إِلاَّ اللهُ، نَسْتَغْفِرُ اللهَ "ثلاثاً"، لاَ إِلٰهَ إِلاَّ اللهُ وَنَتُوْبُ إِلَىٰ اللهِ، لاَ إِلٰهَ إِلاَّ اللهُ، مُحَمَّدٌ رَسُوْلُ اللهِ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ. اهـ..
 ''',
-      false,
-      incrementedContentId++, //50,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '199wkhcX8BWEV_QWEq3Skx7-uANJTXZFb',
     ),
-    Content(
-      incrementedContentId,
-      //      83,
-      '''عَلَيْكَ بِالإِتْيَانِ بِهٰذَا الرَّاتِبِ وَالْمُسَمَّى (عَزِيْزُ الْمَنَالِ وَفَتْحُ بَابِ الْوِصَالِ)، يُقْرَأُ صَبَاحاً وَمَسَاءً، وَهُوَ:
+    _HeaderContentPair(
+      headerName: 'راتب العطّاس',
+      contentText:
+          '''عَلَيْكَ بِالإِتْيَانِ بِهٰذَا الرَّاتِبِ وَالْمُسَمَّى (عَزِيْزُ الْمَنَالِ وَفَتْحُ بَابِ الْوِصَالِ)، يُقْرَأُ صَبَاحاً وَمَسَاءً، وَهُوَ:
 اَلْفَاتِحَةَ: إِلَى حَضْرَةِ سَيِّدِنَا وَحَبِيْبِنَا مُحَمَّدٍ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ.
 وَإِلَى رُوْحِ سَيِّدِنَا الْحَبِيْبِ عُمَرَ بْنِ عَبْدِ الرَّحْمٰنِ الْعَطَّاسِ، صَاحِبِ الرَّاتِبِ.
 وَالشَّيْخِ عَلِيِّ بْنِ عَبْدِ اللهِ بارَاسٍ.
@@ -2723,16 +2754,8 @@ class IsarHelper {
 ثُمَّ الْفَاتِحَةَ: إِلَى رُوْحِ سَيِّدِنَا وَحَبِيْبِنَا وَبَرَكَتِنَا صَاحِبِ الرَّاتِبِ، قُطْبِ الأَنْفَاسِ، الْحَبِيْبِ عُمَرَ بنِ عَبْدِ الرَّحْمٰنِ الْعَطَّاسِ، ثُمَّ إِلَى رُوْحِ الشَّيْخِ عَلِيِّ بنِ عَبْدِ اللهِ بَارَاسٍ، ثُمَّ إِلَى رُوْحِ سَيِّدِنَا وَحَبِيْبِنَا وَبَرَكَتِنَا وَقُدْوَتِنَا وَمُرْشِدِنَا الإِمَامِ الْحَبِيْبِ أَحْمَدَ بنِ حَسَنِ بنِ عَبْدِ الله الْعَطَّاسِ، وَأُصُوْلِهِمْ وَفُرُوْعِهِمْ وَذَوِيْ الْحُقُوْقِ عَلَيْهِمْ أَجْمَعِيْنَ.. أَنَّ الله يَغْفِرُ لَهُمْ، وَيَرْحَمُهُمْ، وَيُعْلِيْ دَرَجَاتِهِمْ فِيْ الْجَنَّةِ، وَيَنْفَعُنَا بِأَسْرَارِهِمْ وَأَنْوَارِهِمْ وَعُلُوْمِهِمْ وَنَفَحَاتِهِمْ فِيْ الدِّيْنِ وَالدُّنْيَا وَالآخِرَةِ.. اَلْفَاتِحَةَ أَثَابَكُمُ اللهُ.
 ثُمَّ الْفَاتِحَةَ: إِلَى رُوْحِ الأَوْلِيَاءِ وَالشُّهَدَاءِ وَالصَّالِحِيْنَ، وَالأَئِمَّةِ الرَّاشِدِيْنَ، ثُمَّ أَرْوَاحِ وَالِدِيْنَا وَمَشَايِخِنَا وَمُعَلِّمِيْنَا، وَذَوِيْ الْحُقُوْقِ عَلَيْنَا أَجْمَعِيْنَ، ثُمَّ إِلَىٰ أَرْوَاحِ أَمْوَاتِ الْمُؤْمِنِيْنَ وَالْمُؤْمِنَاتِ وَالْمُسْلِمِيْنَ وَالْمُسْلِمَاتِ.. أَنَّ اللهَ يَغْفِرُ لَهُمْ، وَيَرْحَمُهُمْ، وَيُعْلِيْ دَرَجَاتِهِمْ فِيْ الْجَنَّةِ، وَيَنْفَعُنَا بِأَسْرَارِهِمْ وَأَنْوَارِهِمْ وَعُلُوْمِهِمْ فِيْ الدِّيْنِ وَالدُّنْيَا وَالآخِرَةِ.. اَلْفَاتِحَةَ أَثَابَكُمُ اللهُ.
 ثُمَّ الْفَاتِحَةَ: بِالْقَبُوْلِ وَتَمَامِ كُلِّ سُوْلٍ وَمَأْمُوْلٍ، وَصَلاَحِ الشَّأْنِ ظَاهِراً وَبَاطناً، فِيْ الدِّيْنِ وَالدُّنْيَا وَالآخِرَةِ، دَافِعَةً لِكُلِّ شَرٍّ، جَالِبَةً لِكُلِّ خَيْرٍ، لَنَا وَلأَحْبَابِنَا وَلِوَالِدِيْنَا وَمَشَايِخِنَا فِيْ الدِّيْنِ، مَعَ اللُّطْفِ وَالْعَافِيَةِ، وَعَلَىٰ نِيَّةِ أَنَّ اللهَ يُنَوِّرُ قُلُوْبَنَا وَقَوَالِبَنَا، مَعَ التُّقَىٰ والْهُدَىٰ وَالْعَفَافِ وَالْمَوْتِ عَلَى دِيْنِ الإِسْلاَمِ وَالإِيْمَانِ، بِلاَ مِحْنَةٍ وَلاَ امْتِحَانٍ، بِحَقِّ سَيِّدِ وَلَدِ عَدْنَانَ، وَلِكُلِّ نِيَّةٍ صَالِحَةٍ، وَإِلَىٰ حَضْرَةِ الْحَبِيْبِ مُحَمَّدٍ صَلَّىٰ اللهُ عَلَيْهِ وَسَلَّمَ وَمَنْ وَالاَهُ.. اَلْفَاتِحَةَ أَثَابَكُمُ اللهُ.
-''',
-      false,
-      incrementedContentId++, //51,
-      hasVoice: true,
-      voiceFile: "1EUMC-ZRCeQkl-cXtS8FuwrX-FHmOzrYu",
-    ),
-    Content(
-      incrementedContentId,
-      //      84,
-      '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
+
+بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
 الْحَمْدُ للهِ رَبِّ الْعَالَمِيْنَ، حَمداً يُوَافِيْ نِعَمَهُ، وَيُكَافِئُ مَزِيْدَهُ، يَا رَبَّنَا لَكَ الْحَمْدُ كَمَا يَنْبَغِيْ لِجَلاَلِ وَجْهِكَ، وَعَظِيْمِ سُلْطَانِكَ، سُبْحَانَكَ لاَ نُحْصِيْ ثَنَاءً عَلَيْكَ أَنْتَ كَمَا أَثْنَيْتَ عَلَىٰ نَفْسِكَ، فَلَكَ الْحَمْدُ حَتَّى تَرْضَىٰ، وَلَكَ الْحَمْدُ إِذَا رَضِيْتَ، وَلَكَ الْحَمْدُ بَعْدَ الرِّضَا.
 اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَىٰ سَيِّدِنَا مُحَمَّدٍ فِيْ الأَوَّلِيْنَ، وَصلِّ وَسَلِّمْ عَلَىٰ سَيِّدِنَا مُحَمَّدٍ فِيْ الآخِرِيْنَ، وَصَلِّ وَسَلِّمْ عَلَىٰ سَيِّدِنَا مُحَمَّدٍ فِيْ الْمَلأ الأَعْلَىٰ إِلَىٰ يَوْمِ الدِّيْنِ، وَصَلِّ وَسَلِّمْ عَلَىٰ سَيِّدِنَا مُحَمَّدٍ حَتَّىٰ تَرِثَ الأَرْضَ وَمَنْ عَلَيْهَا، وَأَنْتَ خَيْرُ الْوَارِثِيْنَ.
 اللَّهُمَّ إِنَّا نَسْتَحْفِظُكَ وَنَسْتَوْدِعُكَ أَدْيَانَنَا، وَأَنْفُسَنَا، وَأَمْوَالَنَا، وَأَهْلَنَا، وَكُلَّ شَيْءٍ أَعْطَيْتَنَا.
@@ -2740,15 +2763,19 @@ class IsarHelper {
 اللَّهُمَّ جَمِّلْنَا بِالْعَافِيَةِ وَالسَّلاَمَةِ، وَحَقِّقْنَا بِالتَّقْوَى وَالاِسْتِقَامَةِ، وَأَعِذْنَا مِنْ مُوْجِبَاتِ النَّدَامَةِ فِيْ الْحَالِ وَالْمَالِ وَالْمَآلِ، إِنَّكَ سَمِيْعُ الدُّعَاءِ.
 وَصَلِّ اللَّهُمَّ بِجَلاَلِكَ وَجَمَالِكَ عَلَى سَيِّدِنَا مُحَمَّدٍ، وَعَلَىٰ آلِهِ وَصَحْبِهِ أَجْمَعِيْنَ وَارْزُقْنَا كَمَالَ الْمُتَابَعَةِ لَهُ ظَاهِراً وَبَاطِناً، يَا  أَرْحَمَ الرَّاحِمِيْنَ، بِفَضْلِ: ﴿سُبحانَ رَبِّكَ رَبِّ العِزَّةِ عَمّا يَصِفونَ۝وَسَلامٌ عَلَى المُرسَلينَ۝وَالحَمدُ لِلَّهِ رَبِّ العالَمينَ﴾.
 قَالَ سَيِّدِنَا الإِمَامُ الْحَبِيْبُ عَلِيُّ بْنُ حَسَنٍ العطَّاسُ في كتابه «القرطاس» في أَثناءِ شرحهِ لهذا الرَّاتبِ ما نصُّهُ: والأَحسنُ لمن كانت له همَّةٌ عاليةٌ في طلب الخيرِ وحرصاً عَلَيْهِ أَن يقرأ هذا الراتبَ صباحاً ومَسَاءً؛ لأَنَّ جملةَ ما جاءَ بِهِ منَ الأَذكارِ وردتِ السنَّةُ بالإِتْيَانِ بها صباحاً ومساءً. كما يَعْلَمُ ذلِكَ مَنْ لهُ أَدنى إِشرافٍ عَلَى كتبِ الحديثِ. انتهى.''',
-      false,
-      incrementedContentId++, //52,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1EUMC-ZRCeQkl-cXtS8FuwrX-FHmOzrYu',
     ),
-
-    // مشترك بينهم
-    Content(
-      incrementedContentId,
-      //      134,
-      '''عَلَيْكَ بِقِراءَةِ المُنْجِياتِ، وَالمُهْلِكاتِ، وَالمُنْقِذاتِ، كُلَّ يَوْمٍ، وَإِنْ قَدَرْتَ صَباحاً وَمَساءً. فَالمُنْجِياتُ: ﴿الجُرُزُ﴾ وَ﴿يس﴾ وَ﴿ فُصِّلَتْ﴾ وَ﴿ الدُّخانُ﴾ وَ﴿الواقِعَةُ﴾ وَ﴿الحَشْرُ﴾ وَ﴿ المُلْكُ﴾. وَالمُهْلِكاتُ هِيَ: ﴿ المُدَّثِّرُ﴾ وَ﴿البُرُوْجُ﴾ وَ﴿الطَّارِقُ﴾ وَ﴿ الضُّحَى﴾ وَ﴿الشَّرْحُ﴾ وَ﴿القَدْرُ﴾ وَ﴿ لإِيلافِ﴾. وَالمُنْقِذاتُ: ﴿الكَوْثَرُ﴾ إِلَى آخِرِ القُرآنِ، وَقَدْ نَظَمَها بَعْضُهُم بِقَوْلِهِ:
+    _HeaderContentPair(
+      headerName: 'سورة تبارك',
+      contentText: '''قراءة سورة (تبارك[67]).''',
+      isLiked: false,
+    ),
+    _HeaderContentPair(
+      headerName: 'المنجيات والمهلكات، والمنقذات',
+      contentText:
+          '''عَلَيْكَ بِقِراءَةِ المُنْجِياتِ، وَالمُهْلِكاتِ، وَالمُنْقِذاتِ، كُلَّ يَوْمٍ، وَإِنْ قَدَرْتَ صَباحاً وَمَساءً. فَالمُنْجِياتُ: ﴿الجُرُزُ﴾ وَ﴿يس﴾ وَ﴿ فُصِّلَتْ﴾ وَ﴿ الدُّخانُ﴾ وَ﴿الواقِعَةُ﴾ وَ﴿الحَشْرُ﴾ وَ﴿ المُلْكُ﴾. وَالمُهْلِكاتُ هِيَ: ﴿ المُدَّثِّرُ﴾ وَ﴿البُرُوْجُ﴾ وَ﴿الطَّارِقُ﴾ وَ﴿ الضُّحَى﴾ وَ﴿الشَّرْحُ﴾ وَ﴿القَدْرُ﴾ وَ﴿ لإِيلافِ﴾. وَالمُنْقِذاتُ: ﴿الكَوْثَرُ﴾ إِلَى آخِرِ القُرآنِ، وَقَدْ نَظَمَها بَعْضُهُم بِقَوْلِهِ:
 جُرُزٌ، وَيٰس الَّتِيْ قَدْ فُصِّلَتْ
 تُنْجِيْ المُوَحِّدَ مِنْ دُخانِ الواقِعَةْ
 وَتَمامُ سَبْعِ المُنْجِياتِ حَشْرُها
@@ -2760,38 +2787,36 @@ class IsarHelper {
 وَالمُنْقِذاتُ السَّبْعُ سُوْرَةُ كَوْثَرٍ
 مِنْهَا وَسِتٌّ بَعْدَها مُتَتابِعَةْ
 ''',
-      false,
-      incrementedContentId++, //96,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1uzY__6vCPOlFm3Aimqsh-xxjDb3c26rr',
     ),
-    Content(
-      incrementedContentId,
-      //      135,
-      '''لاَ تَغْفُلْ عَنْ قِراءَةِ أَرْبَع سُوَرٍ صَباحاً وَمَساءً وَهُنَّ: ﴿ إقرأ﴾ إِلخ، وَ﴿القدر  ﴾، وَ﴿ الزلزلة ﴾ وَ: ﴿  قُرَيْش ﴾.. فَإِنَّ مَنْ قَرَأَهُنَّ حُفِظَ مِنْ أَهْلِ الظَّاهِرِ وَالباطِنِ.
+    _HeaderContentPair(
+      headerName: 'بعض السّور  التي يطلب قراءتها',
+      contentText:
+          '''لاَ تَغْفُلْ عَنْ قِراءَةِ أَرْبَع سُوَرٍ صَباحاً وَمَساءً وَهُنَّ: ﴿ إقرأ﴾ إِلخ، وَ﴿القدر  ﴾، وَ﴿ الزلزلة ﴾ وَ: ﴿  قُرَيْش ﴾.. فَإِنَّ مَنْ قَرَأَهُنَّ حُفِظَ مِنْ أَهْلِ الظَّاهِرِ وَالباطِنِ.
 وَكَذلِكَ للفَتْحِ مِنْ غَيْرِ تَعَبٍ؛ تَقْرَأُ: ﴿ الفاتحة﴾ وَ﴿ ألم نشرح﴾ "ثَلاَثاً" وَ﴿ القدر﴾ "إِحْدَى عَشْرَةَ مَرَّةً".
 وكَذلِكَ لِصَلاحِ القَلْبِ؛ تَقْرَأُ: ﴿ العصر﴾ "ثَلاَثاً"، وَ﴿ المسد﴾ "ثَلاَثاً"، وَ﴿ الفلق﴾ "ثَلاَثاً"..
 ''',
-      false,
-      incrementedContentId++, //97,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1CUwFFcVbYp6-nsUxCdD1H7sCyH2HKAdX',
     ),
-    Content(
-      incrementedContentId,
-      //      144,
-      '''مِمَّا يُوصِي بِهِ الحبيبُ عَلِيٌّ بنُ حَسَنٍ الْعَطَّاسُ فِي الأَسْحَارِ: الاسْتِغْفَارُ.
+    _HeaderContentPair(
+      headerName: 'من وصايا الحبيب عليّ بن حسنٍ العطّاس رضي الله عنه',
+      contentText:
+          '''مِمَّا يُوصِي بِهِ الحبيبُ عَلِيٌّ بنُ حَسَنٍ الْعَطَّاسُ فِي الأَسْحَارِ: الاسْتِغْفَارُ.
 وَبَعْدَ صَلاَةِ الصُّبْحِ: سُبْحَانَ اللهِ وَبِحَمْدِهِ، سُبْحَانَ اللهِ الْعَظِيمِ، أَسْتَغْفِرُ اللهَ.
 وَبَعْدَ الإِشراقِ إِلىٰ الظُّهْرِ: اللَّهُمَّ صَلِّ عَلَىٰ مُحَمَّدٍ، اللَّهُمَّ صَلِّ عَلَيْهِ وَسَلِّمْ.
 وَبَعْدَ العَصْرِ: سُبْحَانَ اللهِ وَبِحَمْدِهِ، سُبْحَانَ اللهِ الْعَظِيمِ.
 وَبَعْدَ الْمَغْرِبِ: لاَ إِلٰهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيْكَ لَهُ، لَهُ الْمُلْكُ وَلَهُ الحَمْدُ يُحْيِـي وَيُمِيتُ، بِيَدِهِ الخَيْرُ، وَهُوَ عَلَىٰ كُلِّ شَيْءٍ قَدِيْرٌ.
 وَبَعْدَ الْعِشَاءِ: يَا لَطِيفاً بِخَلْقِهِ، يَا  عَلِيماً بخَلْقِهِ يَا خَبِيراً بِخَلْقِهِ، الْطُفْ بِنَا يَا  لَطِيفُ، يَا عَلِيمُ، يَا خَبِيرُ. اهـ. ملخَّصاً مِنَ «الرِّياضِ المونقة»..
 ''',
-      false,
-      incrementedContentId++, //106,
+      isLiked: false,
     ),
-
-    ///  أذكار وأوراد تقرأ صباحًا أو مساء
-    Content(
-      incrementedContentId,
-      //      118,
-      '''اجْعَلْ مِنْ أَوْرَادِكَ قَصِيْدَةَ سَيِّدِنا العَدَنِيِّ:
+    _HeaderContentPair(
+      headerName: 'قصيدة ببسم الله مولانا ابتدينا',
+      contentText: '''اجْعَلْ مِنْ أَوْرَادِكَ قَصِيْدَةَ سَيِّدِنا العَدَنِيِّ:
 بِبِسْمِ اللهِ مَوْلانا ابْتَدَيْنا
 وَنَحْمَدُهُ عَلَىٰ نَعْماهُ فِيْنا
 تَوَسَّلْنا بِهِ فِي كُلِّ أَمْرٍ
@@ -2830,13 +2855,14 @@ class IsarHelper {
 إِمامِ الكُلِّ خَيْرِ الشَّافِعِيْنا
 فَإِنَّها حِصْنٌ وَوِقايَةٌ. وَقَدْ ذَكَرَ الثِّقاتُ أَنَّ الحَبِيْبَ عَلِيَّ بْنَ مُحَمَّدٍ الحَبْشِيَّ يَقُولُ: إِنَّنِيْ أُقَدِّمُها عَلَى أَوْرَادِيْ كُلِّها، وَذلِكَ لِما فِيْها مِنَ التَّحْصِيْنِ وَالأَسْرارِ، الَّتِيْ لا يَعْرِفُها إِلاَّ أَهْلُها.
 ''',
-      false,
-      incrementedContentId++, //80,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1kgforkEff3qNMv7eZ81LFZg-0UBQcA9b',
     ),
-    Content(
-      incrementedContentId,
-      //      119,
-      '''بِبِسْمِ اللهِ أَبْدِيْ فِي مَقالِيْ
+    _HeaderContentPair(
+      headerName:
+          'قصيدة ببسم الله أبدي في مقالي الشَّيْخِ عَلِيِّ بْنِ أَبِي بَكْرٍ السَّكْرَانِ',
+      contentText: '''بِبِسْمِ اللهِ أَبْدِيْ فِي مَقالِيْ
 هُوَ الرَّحْمنُ فَيَّاضُ النَّوالِ
 رَحِيْمٌ دافِعُ الضَّرَّاءِ عَنَّا
 وَمِنْهُ الجُوْدُ يَبْدُوْ كُلَّ حالِ
@@ -2861,13 +2887,14 @@ class IsarHelper {
 وَيُوهِبُنِيْ مِنَ التَّقْوَى جَمالاً
 وَسَيْفاً مِنْ عُلا قَهْرِ الجَلالِ.
 ''',
-      false,
-      incrementedContentId++, //81,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1FAoRoZtjcQUpt1buUHM4mRyI5tso0ID8',
     ),
-    Content(
-      incrementedContentId,
-      //      121,
-      '''﴿ قُل لَّن يُصِيبَنَآ إِلَّا مَا كَتَبَ ٱللَّهُ لَنَا هُوَ مَوْلَىٰنَا ۚ وَعَلَى ٱللَّهِ فَلْيَتَوَكَّلِ ٱلْمُؤْمِنُونَ﴾.
+    _HeaderContentPair(
+      headerName: 'آيات الكفاية',
+      contentText:
+          '''﴿ قُل لَّن يُصِيبَنَآ إِلَّا مَا كَتَبَ ٱللَّهُ لَنَا هُوَ مَوْلَىٰنَا ۚ وَعَلَى ٱللَّهِ فَلْيَتَوَكَّلِ ٱلْمُؤْمِنُونَ﴾.
 ﴿  وَإِن يَمْسَسْكَ ٱللَّهُ بِضُرٍّۢ فَلَا كَاشِفَ لَهُۥٓ إِلَّا هُوَ ۖ وَإِن يُرِدْكَ بِخَيْرٍۢ فَلَا رَآدَّ لِفَضْلِهِۦ ۚ يُصِيبُ بِهِۦ مَن يَشَآءُ مِنْ عِبَادِهِۦ ۚ وَهُوَ ٱلْغَفُورُ ٱلرَّحِيمُ﴾.
 ﴿  ۞ وَمَا مِن دَآبَّةٍۢ فِى ٱلْأَرْضِ إِلَّا عَلَى ٱللَّهِ رِزْقُهَا وَيَعْلَمُ مُسْتَقَرَّهَا وَمُسْتَوْدَعَهَا ۚ كُلٌّۭ فِى كِتَـٰبٍۢ مُّبِينٍۢ﴾.
 ﴿  إِنِّى تَوَكَّلْتُ عَلَى ٱللَّهِ رَبِّى وَرَبِّكُم ۚ مَّا مِن دَآبَّةٍ إِلَّا هُوَ ءَاخِذٌۢ بِنَاصِيَتِهَآ ۚ إِنَّ رَبِّى عَلَىٰ صِرَٰطٍۢ مُّسْتَقِيمٍۢ﴾.
@@ -2876,13 +2903,14 @@ class IsarHelper {
 ﴿  وَلَئِن سَأَلْتَهُم مَّنْ خَلَقَ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضَ لَيَقُولُنَّ ٱللَّهُ ۚ قُلْ أَفَرَءَيْتُم مَّا تَدْعُونَ مِن دُونِ ٱللَّهِ إِنْ أَرَادَنِىَ ٱللَّهُ بِضُرٍّ هَلْ هُنَّ كَـٰشِفَـٰتُ ضُرِّهِۦٓ أَوْ أَرَادَنِى بِرَحْمَةٍ هَلْ هُنَّ مُمْسِكَـٰتُ رَحْمَتِهِۦ ۚ قُلْ حَسْبِىَ ٱللَّهُ ۖ عَلَيْهِ يَتَوَكَّلُ ٱلْمُتَوَكِّلُونَ﴾..
 وفِي قِرَاءَتِهَا ثَوَابٌ عَظِيْمٌ وَحِفْظٌ؛ كَمَا فِي الأَثَرِ عَنْ كَعْبِ الأَحْبَارِ أَنَّهُ قَالَ؛ سَبْعُ آيَاتٍ مِنْ كِتَابِ اللهِ تَعَالَىٰ.. إِذَا قَرَأْتُهُنَّ لا أُبَالِي، وَلَو انْطَبَقَتِ السَّمَاءُ عَلَى الأَرْضِ لَنَجَوْتُ
 ''',
-      false,
-      incrementedContentId++, //83,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1MC4IwBJFgPirg97KNqB4UuMru1As_CCY',
     ),
-    Content(
-      incrementedContentId,
-      //      122,
-      '''وَهِيَ: الْفَاتِحَةُ وَأَوَّلُ الْبَقَرَةِ: بسم الله الرحمن الرحيم ﴿  الٓمٓ ١ ذَٰلِكَ ٱلۡكِتَٰبُ لَا رَيۡبَۛ فِيهِۛ هُدٗى لِّلۡمُتَّقِينَ ٢ ٱلَّذِينَ يُؤۡمِنُونَ بِٱلۡغَيۡبِ وَيُقِيمُونَ ٱلصَّلَوٰةَ وَمِمَّا رَزَقۡنَٰهُمۡ يُنفِقُونَ ٣ وَٱلَّذِينَ يُؤۡمِنُونَ بِمَآ أُنزِلَ إِلَيۡكَ وَمَآ أُنزِلَ مِن قَبۡلِكَ وَبِٱلۡأٓخِرَةِ هُمۡ يُوقِنُونَ ٤ أُوْلَٰٓئِكَ عَلَىٰ هُدٗى مِّن رَّبِّهِمۡۖ وَأُوْلَٰٓئِكَ هُمُ ٱلۡمُفۡلِحُونَ ٥﴾.
+    _HeaderContentPair(
+      headerName: 'آيات الحرز',
+      contentText:
+          '''وَهِيَ: الْفَاتِحَةُ وَأَوَّلُ الْبَقَرَةِ: بسم الله الرحمن الرحيم ﴿  الٓمٓ ١ ذَٰلِكَ ٱلۡكِتَٰبُ لَا رَيۡبَۛ فِيهِۛ هُدٗى لِّلۡمُتَّقِينَ ٢ ٱلَّذِينَ يُؤۡمِنُونَ بِٱلۡغَيۡبِ وَيُقِيمُونَ ٱلصَّلَوٰةَ وَمِمَّا رَزَقۡنَٰهُمۡ يُنفِقُونَ ٣ وَٱلَّذِينَ يُؤۡمِنُونَ بِمَآ أُنزِلَ إِلَيۡكَ وَمَآ أُنزِلَ مِن قَبۡلِكَ وَبِٱلۡأٓخِرَةِ هُمۡ يُوقِنُونَ ٤ أُوْلَٰٓئِكَ عَلَىٰ هُدٗى مِّن رَّبِّهِمۡۖ وَأُوْلَٰٓئِكَ هُمُ ٱلۡمُفۡلِحُونَ ٥﴾.
 ﴿  وَإِلَـٰهُكُمْ إِلَـٰهٌۭ وَٰحِدٌۭ ۖ لَّآ إِلَـٰهَ إِلَّا هُوَ ٱلرَّحْمَـٰنُ ٱلرَّحِيمُ ١٦٣﴾، ﴿  إِنَّ فِى خَلْقِ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضِ وَٱخْتِلَـٰفِ ٱلَّيْلِ وَٱلنَّهَارِ وَٱلْفُلْكِ ٱلَّتِى تَجْرِى فِى ٱلْبَحْرِ بِمَا يَنفَعُ ٱلنَّاسَ وَمَآ أَنزَلَ ٱللَّهُ مِنَ ٱلسَّمَآءِ مِن مَّآءٍۢ فَأَحْيَا بِهِ ٱلْأَرْضَ بَعْدَ مَوْتِهَا وَبَثَّ فِيهَا مِن كُلِّ دَآبَّةٍۢ وَتَصْرِيفِ ٱلرِّيَـٰحِ وَٱلسَّحَابِ ٱلْمُسَخَّرِ بَيْنَ ٱلسَّمَآءِ وَٱلْأَرْضِ لَـَٔايَـٰتٍۢ لِّقَوْمٍۢ يَعْقِلُونَ ١٦٤﴾.
 ﴿ ٱللَّهُ لَآ إِلَـٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌۭ وَلَا نَوْمٌۭ ۚ لَّهُۥ مَا فِى ٱلسَّمَـٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۗ مَن ذَا ٱلَّذِى يَشْفَعُ عِندَهُۥٓ إِلَّا بِإِذْنِهِۦ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَىْءٍۢ مِّنْ عِلْمِهِۦٓ إِلَّا بِمَا شَآءَ ۚ وَسِعَ كُرْسِيُّهُ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضَ ۖ وَلَا يَـُٔودُهُۥ حِفْظُهُمَا ۚ وَهُوَ ٱلْعَلِىُّ ٱلْعَظِيمُ ٢٥٥ لَآ إِكْرَاهَ فِى ٱلدِّينِ ۖ قَد تَّبَيَّنَ ٱلرُّشْدُ مِنَ ٱلْغَىِّ ۚ فَمَن يَكْفُرْ بِٱلطَّـٰغُوتِ وَيُؤْمِنۢ بِٱللَّهِ فَقَدِ ٱسْتَمْسَكَ بِٱلْعُرْوَةِ ٱلْوُثْقَىٰ لَا ٱنفِصَامَ لَهَا ۗ وَٱللَّهُ سَمِيعٌ عَلِيمٌ ٢٥٦ ٱللَّهُ وَلِىُّ ٱلَّذِينَ ءَامَنُوا۟ يُخْرِجُهُم مِّنَ ٱلظُّلُمَـٰتِ إِلَى ٱلنُّورِ ۖ وَٱلَّذِينَ كَفَرُوٓا۟ أَوْلِيَآؤُهُمُ ٱلطَّـٰغُوتُ يُخْرِجُونَهُم مِّنَ ٱلنُّورِ إِلَى ٱلظُّلُمَـٰتِ ۗ أُو۟لَـٰٓئِكَ أَصْحَـٰبُ ٱلنَّارِ ۖ هُمْ فِيهَا خَـٰلِدُونَ ٢٥٧﴾.
 ﴿  لِّلَّهِ مَا فِى ٱلسَّمَـٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۗ وَإِن تُبْدُوا۟ مَا فِىٓ أَنفُسِكُمْ أَوْ تُخْفُوهُ يُحَاسِبْكُم بِهِ ٱللَّهُ ۖ فَيَغْفِرُ لِمَن يَشَآءُ وَيُعَذِّبُ مَن يَشَآءُ ۗ وَٱللَّهُ عَلَىٰ كُلِّ شَىْءٍۢ قَدِيرٌ ٢٨٤ ءَامَنَ ٱلرَّسُولُ بِمَآ أُنزِلَ إِلَيْهِ مِن رَّبِّهِۦ وَٱلْمُؤْمِنُونَ ۚ كُلٌّ ءَامَنَ بِٱللَّهِ وَمَلَـٰٓئِكَتِهِۦ وَكُتُبِهِۦ وَرُسُلِهِۦ لَا نُفَرِّقُ بَيْنَ أَحَدٍۢ مِّن رُّسُلِهِۦ ۚ وَقَالُوا۟ سَمِعْنَا وَأَطَعْنَا ۖ غُفْرَانَكَ رَبَّنَا وَإِلَيْكَ ٱلْمَصِيرُ ٢٨٥ لَا يُكَلِّفُ ٱللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا ٱكْتَسَبَتْ ۗ رَبَّنَا لَا تُؤَاخِذْنَآ إِن نَّسِينَآ أَوْ أَخْطَأْنَا ۚ رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَآ إِصْرًۭا كَمَا حَمَلْتَهُۥ عَلَى ٱلَّذِينَ مِن قَبْلِنَا ۚ رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِۦ ۖ وَٱعْفُ عَنَّا وَٱغْفِرْ لَنَا وَٱرْحَمْنَآ ۚ أَنتَ مَوْلَىٰنَا فَٱنصُرْنَا عَلَى ٱلْقَوْمِ ٱلْكَـٰفِرِينَ ٢٨٦ ﴾.
@@ -2893,13 +2921,13 @@ class IsarHelper {
 ﴿  لَوْ أَنزَلْنَا هَـٰذَا ٱلْقُرْءَانَ عَلَىٰ جَبَلٍۢ لَّرَأَيْتَهُۥ خَـٰشِعًۭا مُّتَصَدِّعًۭا مِّنْ خَشْيَةِ ٱللَّهِ ۚ وَتِلْكَ ٱلْأَمْثَـٰلُ نَضْرِبُهَا لِلنَّاسِ لَعَلَّهُمْ يَتَفَكَّرُونَ ٢١ هُوَ ٱللَّهُ ٱلَّذِى لَآ إِلَـٰهَ إِلَّا هُوَ ۖ عَـٰلِمُ ٱلْغَيْبِ وَٱلشَّهَـٰدَةِ ۖ هُوَ ٱلرَّحْمَـٰنُ ٱلرَّحِيمُ ٢٢ هُوَ ٱللَّهُ ٱلَّذِى لَآ إِلَـٰهَ إِلَّا هُوَ ٱلْمَلِكُ ٱلْقُدُّوسُ ٱلسَّلَـٰمُ ٱلْمُؤْمِنُ ٱلْمُهَيْمِنُ ٱلْعَزِيزُ ٱلْجَبَّارُ ٱلْمُتَكَبِّرُ ۚ سُبْحَـٰنَ ٱللَّهِ عَمَّا يُشْرِكُونَ ٢٣ هُوَ ٱللَّهُ ٱلْخَـٰلِقُ ٱلْبَارِئُ ٱلْمُصَوِّرُ ۖ لَهُ ٱلْأَسْمَآءُ ٱلْحُسْنَىٰ ۚ يُسَبِّحُ لَهُۥ مَا فِى ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضِ ۖ وَهُوَ ٱلْعَزِيزُ ٱلْحَكِيمُ ٢٤﴾.
 ﴿ وَأَنَّهُۥ تَعَـٰلَىٰ جَدُّ رَبِّنَا مَا ٱتَّخَذَ صَـٰحِبَةًۭ وَلَا وَلَدًۭا ٣ وَأَنَّهُۥ كَانَ يَقُولُ سَفِيهُنَا عَلَى ٱللَّهِ شَطَطًۭا ٤ ﴾.
 ''',
-      false,
-      incrementedContentId++, //84,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1i6CKDhz-Rv1Ai8whAWHCeRsF9S69oaX1',
     ),
-    Content(
-      incrementedContentId,
-      //      123,
-      '''بسم الله الرحمن الرحيم
+    _HeaderContentPair(
+      headerName: 'حزب النّصر على الأعداء للإمام الحداد',
+      contentText: '''بسم الله الرحمن الرحيم
 ﴿  إِنَّا فَتَحْنَا لَكَ فَتْحًۭا مُّبِينًۭا ١ لِّيَغْفِرَ لَكَ ٱللَّهُ مَا تَقَدَّمَ مِن ذَنۢبِكَ وَمَا تَأَخَّرَ وَيُتِمَّ نِعْمَتَهُۥ عَلَيْكَ وَيَهْدِيَكَ صِرَٰطًۭا مُّسْتَقِيمًۭا ٢ وَيَنصُرَكَ ٱللَّهُ نَصْرًا عَزِيزًا ٣ ﴾.
 ﴿  وَكَانَ عِندَ ٱللَّهِ وَجِيهًۭا ﴾.
 ﴿  وَجِيهًۭا فِى ٱلدُّنْيَا وَٱلْـَٔاخِرَةِ وَمِنَ ٱلْمُقَرَّبِينَ ﴾.
@@ -2917,13 +2945,13 @@ class IsarHelper {
 يَا ذَا الْجَلاَلِ وَالإِكْرَامِ، وَالْمَوَاهِبِ الْعِظَامِ؛ أَسْأَلُكَ أَنْ تَكْفِيَنِيْ مِنْ شَرِّ كُلِّ ذِيْ شَرٍّ، إِنَّكَ أَنْتَ اللهُ الْخَالِقُ الأَكْبَرُ، وَصَلَّىٰ اللهُ عَلَى سَيِّدِنَا مُحَمَّدٍ، وَآلِهِ وَصَحْبِهِ وَسَلَّمَ تَسْلِيْماً كَثِيْراً طَيِّباً مُبَارَكاً فِيْهِ.
 وَالحَمْدُ للهِ رَبِّ العالَمِيْنَ، ظَاهِراً وَبَاطِناً، وَعَلَى كُلِّ حَالٍ، يَا أَرْحَمَ الرَّاحِمِيْنَ.
 ''',
-      false,
-      incrementedContentId++, //85,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1dUG88heXJ_bNFGUJFVDso1L0eU-m6c07',
     ),
-    Content(
-      incrementedContentId,
-      //      124,
-      '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
+    _HeaderContentPair(
+      headerName: 'الورد اللّطيف للحبيب عبد الله الحدّاد رضي الله عنه',
+      contentText: '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
 ﴿  قُلْ هُوَ ٱللَّهُ أَحَدٌ ١ ٱللَّهُ ٱلصَّمَدُ ٢ لَمْ يَلِدْ وَلَمْ يُولَدْ ٣ وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ ٤ ﴾.
 "ثَلاَثاً".
 بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
@@ -2975,34 +3003,30 @@ class IsarHelper {
 ٭ الْحَمْدُ للهِ عَدَدَ مَا خَلَقَ فِيْ السَّمَاءِ. الْحَمْدُ للهِ عَدَدَ مَا خَلَقَ فِيْ الأَرْضِ. الْحَمْدُ للهِ عَدَدَ مَا بَيْنَ ذَلِكَ. الْحَمْدُ للهِ عَدَدَ مَا هُوَ خَالَقٌ.
 ٭ لاَ إِلَهَ إِلاَّ اللهُ عَدَدَ مَا خَلَقَ فِيْ السَّمَاءِ. لاَ إِلَهَ إِلاَّ اللهُ عَدَدَ مَا خَلَقَ فِيْ الأَرْضِ. لاَ إِلَهَ إِلاَّ اللهُ عَدَدَ مَا بَيْنَ ذَلِكَ. لاَ إِلَهَ إِلاَّ اللهُ عَدَدَ مَا هُوَ خَالَقٌ.
 ٭ اللهُ أَكْبَرُ عَدَدَ مَا خَلَقَ فِيْ السَّمَاءِ. اللهُ أَكْبَرُ عَدَدَ مَا خَلَقَ فِيْ الأَرْضِ. اللهُ أَكْبَرُ عَدَدَ مَا بَيْنَ ذَلِكَ. اللهُ أَكْبَرُ عَدَدَ مَا هُوَ خَالَقٌ.
-٭ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ عَدَدَ مَا خَلَقَ فِيْ السَّمَاءِ. لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ عَدَدَ مَا خَلَقَ فِيْ الأَرْضِ. لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ عَدَدَ مَا بَيْنَ ذَلِكَ. لاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ عَدَدَ مَا هُوَ خَالَقٌ.
+٭ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ عَدَدَ مَا خَلَقَ فِيْ السَّمَاءِ. لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ عَدَدَ مَا خَلَقَ فِيْ الأَرْضِ. لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ عَدَدَ مَا بَيْنَ ذَلِكَ. لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ عَدَدَ مَا هُوَ خَالَقٌ.
 ٭ لاَ إِلَهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيْكَ لَهُ، لَهُ المُلْكُ وَلَهُ الحَمْدُ يُحْيـيْ وَيُمِيْتُ وَهُوَ عَلَى كُلِّ شَيء قَدِيْرٌ عَدَدَ كُلِّ ذَرَّةٍ "أَلْفَ مَرَّةٍ". "ثَلاَثاً".
 ٭ لاَ إِلٰهَ إِلاَّ اللهُ مُحَمَّدٌ رَسُوْلُ اللهِ، صَلَّىٰ اللهُ عَلَيْهِ وَسَلَّمَ فِيْ كُلِّ لَمْحَةٍ وَلَحْظَةٍ وَنَفَسٍ عَدَدَ مَا وَسِعَهُ عِلْمُ اللهِ. "ثَلاَثاً".
 ''',
-      false,
-      incrementedContentId++, //86,
+      isLiked: false,
       hasVoice: true,
-      voiceFile: "11bVqJXT6cjeZUxZA4wD4BlV6FmtOWxVZ",
+      voiceFile: '11bVqJXT6cjeZUxZA4wD4BlV6FmtOWxVZ',
     ),
-    Content(
-      incrementedContentId,
-      //      125,
-      '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
+    _HeaderContentPair(
+      headerName: 'ورد سيّدنا أبي بكرٍ السّكران رضي الله عنه',
+      contentText: '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
 اللَّهُمَّ إِنِّيْ احْتَطْتُ بِدَرْبِ اللهِ، طُوْلُهُ: مَا شَاءَ الله، قُفْلُهُ: لاَ إِلَهَ إِلاَّ اللهُ، بَابُهُ: مُحَمَّدٌ رَسُوْلُ اللهِ صَلَىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ، سَقْفُهُ: لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ، أَحَاطَ بِنَا مِنْ: ﴿  بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ ١ ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ ٢ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ ٣ مَـٰلِكِ يَوْمِ ٱلدِّينِ ٤ إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ٥ ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ ٦ صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ ٧﴾ سُوْرٌ "ثَلاَثاً".
-وَآيَةُ: ﴿ ٱللَّهُ لَآ إِلَـٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌۭ وَلَا نَوْمٌۭ ۚ لَّهُۥ مَا فِى ٱلسَّمَـٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۗ مَن ذَا ٱلَّذِى يَشْفَعُ عِندَهُۥٓ إِلَّا بِإِذْنِهِۦ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَىْءٍۢ مِّنْ عِلْمِهِۦٓ إِلَّا بِمَا شَآءَ ۚ وَسِعَ كُرْسِيُّهُ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضَ ۖ وَلَا يَـُٔودُهُۥ حِفْظُهُمَا ۚ وَهُوَ ٱلْعَلِىُّ ٱلْعَظِيمُ ٢٥٥ لَآ إِكْرَاهَ فِى ٱلدِّينِ ۖ قَد تَّبَيَّنَ ٱلرُّشْدُ مِنَ ٱلْغَىِّ ۚ فَمَن يَكْفُرْ بِٱلطَّـٰغُوتِ وَيُؤْمِنۢ بِٱللَّهِ فَقَدِ ٱسْتَمْسَكَ بِٱلْعُرْوَةِ ٱلْوُثْقَىٰ لَا ٱنفِصَامَ لَهَا ۗ وَٱللَّهُ سَمِيعٌ عَلِيمٌ ٢٥٦﴾.
+وَآيَةُ: ﴿ ٱللَّهُ لَآ إِلَـٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌۭ وَلَا نَوْمٌۭ ۚ لَّهُۥ مَا فِى ٱلسَّمَـٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۗ مَن ذَا ٱلَّذِى يَشْفَعُ عِندَهُۥٓ إِلَّا بِإِذْنِهِۦ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَىْءٍۢ مِّنْ عِلْمِهِۦٓ إِلَّا بِمَا شَآءَ ۚ وَسِعَ كُرْسِيُّهُ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضَ ۖ وَلَا يَـُٔودُهُۥ حِفْظُهُمَا ۚ وَهُوَ ٱلْعَلِىُّ ٱلْعَظِيمُ ٢٥٥﴾.
 بِنَا اسْتَدَارَتْ كَمَا اسْتَدَارَتِ الْمَلاَئِكَةُ بِمَدِيْنَةِ الرَّسُوْلِ، بِلاَ خَنْدَقٍ وَلاَ سُوْرٍ، مِنْ كُلِّ قَدَرٍ مَقْدُورٍ، وَحَذَرٍ مَحْذُوْرٍ، وَمِنْ جَمِيْعِ الشُّرُوْرِ.
 تَتَرَّسْنَا بِالله ـ "ثَلاَثاً" ـ مِنْ عَدُوِّنَا وَعَدُوِّ اللهِ، مِنْ سَاقِ عَرْشِ الله إِلَى قَاعِ أَرْضِ اللهِ.. بِمِئَةِ أَلْفِ أَلْفِ أَلْفِ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ، عَزِيْمَتُهُ لاَ تَنْشَقُّ بِمِئَةِ أَلْفِ أَلْفِ أَلْفِ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ، صَنْعَتُهُ لاَ تَنْقَطِعُ بِمِئَةِ أَلْفِ أَلْفِ أَلْفِ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ.
 اللَّهُمَّ إِنْ أَحَدٌ أَرَادَنِيْ بِسُوْءٍ مِنَ الْجِنِّ وَالإِنْسِ وَالْوُحُوْشِ، مِنْ بَشَرٍ أَوْ شَيْطَانٍ أَوْ سُلْطَانٍ أَوْ وَسْوَاسٍ.. فَارْدُدْ نَظَرَهُمْ فِيْ انْتِكَاسٍ، وَقُلُوبَهُمْ فِيْ وَسْوَاسٍ، وَأَيْدِيَهُمْ فِيْ إِفْلاَسٍ، وَأَوْبِقْهُمْ مِنَ الرِّجْلِ إِلَى الرَّأْسِ، لاَ سَهْلَ يُجْدَعُ، وَلاَ جَبَلَ يُقطع .. بِمِئَةِ أَلْفِ أَلْفِ أَلْفِ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ، وَصَلَىٰ اللهُ عَلَى سَيِّدِنَا مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ.
 ''',
-      false,
-      incrementedContentId++, //87,
+      isLiked: false,
       hasVoice: true,
-      voiceFile: "1pbFtdfksbGQdHmNooxa9W4A-WrYx56zI",
+      voiceFile: '1pbFtdfksbGQdHmNooxa9W4A-WrYx56zI',
     ),
-    Content(
-      incrementedContentId,
-      //      126,
-      '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
+    _HeaderContentPair(
+      headerName: 'ورد الشّيخ أبي بكرٍ بن سالمٍ باعلوي',
+      contentText: '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
 اللَّهُمَّ يَا عَظِيْمَ السُّلْطَانِ، يَا قَدِيْمَ الإِحْسَانِ، يَا دَائِمَ النِّعَمِ، يَا كَثِيْرَ الْخَيْرِ، يَا وَاسِعَ الْعَطَا، يَا باسِطَ الرِّزْقِ، يَا خَفِيَّ اللُّطْفِ، يَا جَمِيْلَ الصُّنْعِ، يَا جَمِيْلَ السَّتْرِ، يَا حَلِيْماً لاَ يَعْجَلُ، يَا كَرِيْماً لاَ يَبْخَلُ.. صَلِّ يَا رَبِّ عَلَى سَيِّدِنَا مُحَمَّدٍ وَآلِهِ وَسَلِّمْ، وَارْضَ اللَّهُمَّ عَنِ الصَّحَابَةِ أَجْمَعِيْنَ.
 اللَّهُمَّ لَكَ الْحَمْدُ شُكْراً، وَلَكَ الْمَنُّ فَضْلاً، وَأَنْتَ رَبُّنَا حَقّاً، وَنَحْنُ عَبِيْدُكَ رِقّاً، وَأَنْتَ لَمْ تَزَلْ لِذَلِكَ أَهْلاً.
 اللَّهُمَّ يَا مُيَسِّرَ كُلِّ عَسِيْرٍ، وَيَا جَابِرَ كُلِّ كَسِيْرٍ، وَيَا صَاحِبَ كُلِّ فَرِيْدٍ، وَيَا مُغْنِيَ كُلِّ فَقِيْرٍ، وَيَا مُقَوِّيَ كُلِّ ضَعِيْفٍ، وَيَا مَأْمَنَ كُلِّ مَخِيْفٍ.. يَسِّرْ عَلَيْنَا كُلَّ عَسِيْرٍ، فَتَيْسِيْرُ الْعَسِيْرِ عَلَيْكَ يَسِيْرٌ.
@@ -3013,15 +3037,13 @@ class IsarHelper {
 وَصَلَّىٰ اللهُ عَلَىٰ سَيِّدِنَا مُحَمَّدٍ الْبَشِيْرِ الْنَّذِيْرِ، وَالسِّرَاجِ الْمُنِيْرِ، وَعَلَىٰ آلِهِ وَصَحْبِهِ وَسَلَّمَ.
 وَالْحَمْدُ للهِ رَبِّ الْعَالَمِيْنَ..
 ''',
-      false,
-      incrementedContentId++, //88,
+      isLiked: false,
       hasVoice: true,
-      voiceFile: "1bI3SFC9MOw_qfbygCuMBMytCAoYNzd-a",
+      voiceFile: '1bI3SFC9MOw_qfbygCuMBMytCAoYNzd-a',
     ),
-    Content(
-      incrementedContentId,
-      //      127,
-      '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
+    _HeaderContentPair(
+      headerName: 'ورد الإمام النّووي',
+      contentText: '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
 بِاسْمِ اللهِ، اللهُ أَكْبَرُ، أَقُوْلُ عَلَى نَفْسِيْ وَعَلَى دِيْنِيْ، وَعَلَىٰ أَهْلِيْ وَعَلَىٰ أَوْلاَدِيْ، وَعَلَىٰ مَالِيْ، وَعَلَىٰ أَصْحَابِيْ، وَعَلَىٰ أَدْيَانِهِمْ، وَعَلَىٰ أَمْوَالِهِمْ: أَلْفَ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ.
 بِاسْمِ اللهِ، اللهُ أَكْبَرُ، اللهُ أَكْبَرُ، أَقُوْلُ عَلَىٰ نَفْسِيْ، وَعَلَىٰ دِيْنِيْ، وعَلَىٰ أَهْلِيْ، وَعَلَىٰ أَوْلاَدِيْ، وَعَلَىٰ مَالِيْ، وَعَلَىٰ أَصْحَابِيْ، وَعَلَىٰ أَدْيَانِهِمْ، وَعَلَىٰ أَمْوَالِهِمْ: أَلْفَ أَلْفِ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ.
 بِاسْمِ اللهِ، اللهُ أَكْبَرُ، اللهُ أَكْبَرُ، اللهُ أَكْبَرُ، أَقُوْلُ عَلَى نَفْسِيْ، وَعَلَى دِيْنِيْ، وَعَلَى أَهْلِيْ، وَعَلَى أَوْلاَدِيْ، وَعَلَى مَالِيْ، وَعَلَى أَصْحَابِيْ، وَعَلَى أَدْيَانِهِمْ، وَعَلَى أَمْوَالِهِمْ: أَلْفَ أَلْفِ أَلْفِ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ.
@@ -3047,27 +3069,27 @@ class IsarHelper {
 وَصَلَّىٰ اللهُ عَلَىٰ سَيِّدِنَا مُحَمَّدٍ، وَآلِهِ وَصَحْبِهِ وَسَلَّمَ.
 حَسْبِيَ اللهُ وَنِعْمَ الْوَكِيْلُ..
 ''',
-      false,
-      incrementedContentId++,
+      isLiked: false,
       hasVoice: true,
-      voiceFile: "1ek2tnjJvmT3DAZMmpCtlcv1gIpsjDtdZ",
+      voiceFile: '1ek2tnjJvmT3DAZMmpCtlcv1gIpsjDtdZ',
     ),
-    Content(
-      incrementedContentId,
-      //      128,
-      '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ، بِاسْمِ اللهِ مَا شَاءَ اللهُ، لاَ يَصْرِفُ السُّوءَ إِلاَّ اللهُ، بِاسْمِ اللهِ مَا شَاءَ اللهُ، مَا كَانَ مِنْ نِعْمَةٍ فَمِنَ اللهِ، بِاسْمِ اللهِ مَا شَاءَ اللهُ، وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ، بِاسْمِ اللهِ، وباللهِ، وَمِنَ اللهِ، وَإِلَىٰ اللهِ، وَعَلَىٰ اللهِ، وَفِي اللهِ، وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ، بِاسْمِ اللهِ احْتَجَبْتُ، وَبِحَوْلِ اللهِ اعْتَصَمْتُ، وَبِقُوَّةِ اللهِ اسْتَمْسَكْتُ، مَا شَاءَ اللهُ لاَ قُوَّةَ إِلاَّ بِاللهِ العَلِيِّ العَظِيْمِ، دَخَلْتُ فِي طَيِّ أَمْواجِ أسْرَارِ الحُجُبِ النَّوْرَانِيَّةِ، الَّتِيْ لاَ يُطِيقُ النَّاظِرُ إِلَى كَشْفِ حَقَائِقِها، وَاتَّزَرْتُ بِسُرَادِقِ الهَيْبَةِ الْمُنْزَلَةِ مِنْ أَنْوَارِ أَسْرارِ الجَلاَلِ، وَتَرَدَّيْتُ بالإِمْدَادَاتِ الوَاصِلَةِ مِنْ أَسْرَارِ الأَسْماءِ الْحُسْنَى، وَاكْتَنَفْتُ بِكَنَفِ اللهِ الْمُطْلَقِ، الَّذِي مَنَعَ عَنِّي أَذَىٰ كُلِّ مَخْلُوقٍ مِنْ أَهْلِ السَّمٰواتِ وَالأَرَضِينَ، حِرْزُ اللهِ مَانِعٌ، وَسِرُّ أَسْمَائِهِ دَافِعٌ، وَنُوْرُ جَلالِهِ لاَمِعٌ، وَبَهَاءُ جَمَالِهِ سَاطِعٌ، فَمَنْ أَرَادَنِي بِسُوءٍ، أَوْ كَادَنِيْ بِكَيْدٍ.. كَانَ بِإِذْنِ اللهِ مَمْنُوعاً مَدْفُوعاً، وَكُنْتُ بِأَمْنِ اللهِ مَحْفُوظاً مَعْصُوماً، مُؤَيَّداً مَنْصُوراً، انْدَحَضَ كُلُّ شَيْطَانٍ، وَقُهِرَ كُلُّ جَبَّارٍ، وَذَلَّ كُلُّ مُتَكَبِّرٍ، وَخَضَعَ كُلُّ مَلِكٍ لِهَيْبَةِ عَظَمَةِ جَلالِ اللهِ، امْتَنَعَ السُّوءُ عَنِّيْ وَانْدَفَعَ، وَظَهَرَ نُورُ النَّصْرِ وَلَمَعَ، وَبَدا سِرُّ أَسْمَاءِ اللهِ وَسَطَعَ، وَذَلَّ كُلٌّ مِنَ الجِنِّ وَالإِنْسِ وَخَضَعَ، إِنَّ عِبَادِي لَيْسَ لَكَ عَلَيْهِمْ سُلْطَانٌ، وَكَفَى بِرَبِّكَ وَكِيلاً، مَا شَاءَ اللهُ كَانَ، وَمَا لَمْ يَشَأْ لَمْ يَكُنْ، وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ العَلِيِّ العَظِيْمِ، حم حم حم حم حم حم حم حُمَّ الأَمْرُ، وَجَاءَ النَّصْرُ، فَعَلَيْنَا لا يُنْصَرُون.
+    _HeaderContentPair(
+      headerName: 'ورد الحبيب عقيل بن يحيـى',
+      contentText:
+          '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ، بِاسْمِ اللهِ مَا شَاءَ اللهُ، لاَ يَصْرِفُ السُّوءَ إِلاَّ اللهُ، بِاسْمِ اللهِ مَا شَاءَ اللهُ، مَا كَانَ مِنْ نِعْمَةٍ فَمِنَ اللهِ، بِاسْمِ اللهِ مَا شَاءَ اللهُ، وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ، بِاسْمِ اللهِ، وباللهِ، وَمِنَ اللهِ، وَإِلَىٰ اللهِ، وَعَلَىٰ اللهِ، وَفِي اللهِ، وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ، بِاسْمِ اللهِ احْتَجَبْتُ، وَبِحَوْلِ اللهِ اعْتَصَمْتُ، وَبِقُوَّةِ اللهِ اسْتَمْسَكْتُ، مَا شَاءَ اللهُ لاَ قُوَّةَ إِلاَّ بِاللهِ العَلِيِّ العَظِيْمِ، دَخَلْتُ فِي طَيِّ أَمْواجِ أسْرَارِ الحُجُبِ النَّوْرَانِيَّةِ، الَّتِيْ لاَ يُطِيقُ النَّاظِرُ إِلَى كَشْفِ حَقَائِقِها، وَاتَّزَرْتُ بِسُرَادِقِ الهَيْبَةِ الْمُنْزَلَةِ مِنْ أَنْوَارِ أَسْرارِ الجَلاَلِ، وَتَرَدَّيْتُ بالإِمْدَادَاتِ الوَاصِلَةِ مِنْ أَسْرَارِ الأَسْماءِ الْحُسْنَى، وَاكْتَنَفْتُ بِكَنَفِ اللهِ الْمُطْلَقِ، الَّذِي مَنَعَ عَنِّي أَذَىٰ كُلِّ مَخْلُوقٍ مِنْ أَهْلِ السَّمٰواتِ وَالأَرَضِينَ، حِرْزُ اللهِ مَانِعٌ، وَسِرُّ أَسْمَائِهِ دَافِعٌ، وَنُوْرُ جَلالِهِ لاَمِعٌ، وَبَهَاءُ جَمَالِهِ سَاطِعٌ، فَمَنْ أَرَادَنِي بِسُوءٍ، أَوْ كَادَنِيْ بِكَيْدٍ.. كَانَ بِإِذْنِ اللهِ مَمْنُوعاً مَدْفُوعاً، وَكُنْتُ بِأَمْنِ اللهِ مَحْفُوظاً مَعْصُوماً، مُؤَيَّداً مَنْصُوراً، انْدَحَضَ كُلُّ شَيْطَانٍ، وَقُهِرَ كُلُّ جَبَّارٍ، وَذَلَّ كُلُّ مُتَكَبِّرٍ، وَخَضَعَ كُلُّ مَلِكٍ لِهَيْبَةِ عَظَمَةِ جَلالِ اللهِ، امْتَنَعَ السُّوءُ عَنِّيْ وَانْدَفَعَ، وَظَهَرَ نُورُ النَّصْرِ وَلَمَعَ، وَبَدا سِرُّ أَسْمَاءِ اللهِ وَسَطَعَ، وَذَلَّ كُلٌّ مِنَ الجِنِّ وَالإِنْسِ وَخَضَعَ، إِنَّ عِبَادِي لَيْسَ لَكَ عَلَيْهِمْ سُلْطَانٌ، وَكَفَى بِرَبِّكَ وَكِيلاً، مَا شَاءَ اللهُ كَانَ، وَمَا لَمْ يَشَأْ لَمْ يَكُنْ، وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ العَلِيِّ العَظِيْمِ، حم حم حم حم حم حم حم حُمَّ الأَمْرُ، وَجَاءَ النَّصْرُ، فَعَلَيْنَا لا يُنْصَرُون.
 بِاسْمِ اللهِ الْعَزِيزِ تَسَرْبَلْتُ، وَبِحِجَابِهِ الْحَصِيْنِ تَحَصَّنْتُ، وَمِنَ الشَّفَاعَةِ بِرَسُولِهِ الكَرِيمِ تَرَجَّيْتُ.
 بِاسْمِ اللهِ القادِرِ، القَاهِرِ، القَوِيِّ، المَلِكِ، القَدِيرِ، النَّصِيرِ، الْحَيِّ، القَيُّوْمِ، ذِي الْجَلالِ وَالإِكْرَامِ، هَبَّ نَسِيمُ النَّصْرِ، وَخَمَدَتْ نَارُ الْعَداوَةِ وَالحَرْبِ.
 قُل هُوَ رَبِّي لاَ إِلٰهَ إِلاَّ هُوَ، عَلَيْهِ تَوَكَّلْتُ، وَإِلَيْهِ مَتَاب ﴿  فَإِن تَوَلَّوْا۟ فَقُلْ حَسْبِىَ ٱللَّهُ لَآ إِلَـٰهَ إِلَّا هُوَ ۖ عَلَيْهِ تَوَكَّلْتُ ۖ وَهُوَ رَبُّ ٱلْعَرْشِ ٱلْعَظِيمِ ١٢٩ ﴾. وَيُكَرِّرُ هَذِهِ الآيَةَ (سَبْعَ مَرَّاتٍ).
 وَكانَ سَيِّدُنا الحَبِيْبُ عَبْدُ اللهِ بْنُ حُسَيْنِ ابْنِ طَاهِرٍ يُوصِي بِهذَا الْوِرْدِ المَذْكُورِ كَثِيراً، وَيَذْكُرُ لَهُ فَضَائِلَ وَخَواصَّ جَلِيلَةً، وَأَنَّهُ لِقَهْرِ الأَعْدَاءِ. اهـ.
 ''',
-      false,
-      incrementedContentId++, //90,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1FL66tccQcl1GL7oduwX9oHm8Yf5QwQO6',
     ),
-    Content(
-      incrementedContentId,
-      //      129,
-      '''«بِاسْمِ اللهِ، اللهُ أَكْبَرُ عَلَى مَنْ أَرادَنَا بِسُوءٍ وَأَضْمَرَ، مِنْ جَمِيعِ الأَسْوَدِ وَالأَحْمَرِ، وَمِنْ كُلِّ البَشَرِ، وَمِنْ شَرِّ كُلِّ دَابَّةٍ فِي البَحْرِ وَالْبَرِّ.
+    _HeaderContentPair(
+      headerName: 'ورد سيّدنا الإمام شيخان بن عليٍّ بن هاشمٍ',
+      contentText:
+          '''«بِاسْمِ اللهِ، اللهُ أَكْبَرُ عَلَى مَنْ أَرادَنَا بِسُوءٍ وَأَضْمَرَ، مِنْ جَمِيعِ الأَسْوَدِ وَالأَحْمَرِ، وَمِنْ كُلِّ البَشَرِ، وَمِنْ شَرِّ كُلِّ دَابَّةٍ فِي البَحْرِ وَالْبَرِّ.
 بَاسْمِ اللهِ، اللهُ أَكْبَرُ، الْقَوِيُّ، الْغَالِبُ، القَاهِرُ، الْمَانِعُ، السَّالِبُ، عَلَى مَنْ هَمَّ بِنَا بِشَرٍّ، أَوْ مَكْرٍ، أوْ غَدْرٍ، أَوْ سِحْرٍ مِنْ حَاسِدٍ، أَوْ كَائِدٍ، وَمِنْ شَرّ كُلّ مَنْ فِي المَشَارِقِ وَالْمَغَارِبِ.
 بِاسْمِ اللهِ، اللهُ أَكْبَرُ الْعَزِيْزُ، الكَبِيرُ، الْحَفِيْظُ، النَّصِيرُ، السَّمِيعُ، البَصِيرُ، الْعَلِيْمُ، الْخَبِيرُ مِنْ شَرِّ وَسْوَاسٍ فِي صُدُورِ أَهْلِ البَغْيِ وَالطُّغْيانِ، مِنَ الإِنْسِ وَالْجَانِّ. وَاحْفَظْنِيْ مِنْ شَرِّهِمْ يَا حَفِيظُ، يَا حَافِظُ فِي كَنَفِكَ الْمَكْنُونِ، وَفِي حِفْظِ سِتْرِكَ الْمَصُونِ، وَاحْمِنيْ بِوِقَايَةِ عِنَايَتِكَ يَا مَنْ لاَ تَرَاهُ الْعُيُونُ، مَزِّقْ جَمْعَهُمْ، وَشَتِّتْ شَمْلَهُمْ، فَعَلَيْنَا لاَ يَقْدِرُون، وَبِـ﴿حم﴾ لا يُنْصَرُون؛ ﴿ فَأَغْشَيْنَـٰهُمْ فَهُمْ لَا يُبْصِرُونَ﴾، ﴿  صُمٌّۢ بُكْمٌ عُمْىٌۭ فَهُمْ لَا يَعْقِلُونَ﴾، وَلاَ يَسْتَطِيْعُونَ الْمُضِيَّ وَلاَ المَجِيءَ إِلَيْنَا، وَسِتْرُ اللهِ مَسْبُولٌ عَلَيْنَا، وَعَيْنُ اللهِ نَاظِرَةٌ إِلَيْنَا، بِحَوْلِ اللهِ لاَ يُقْدَرُ عَلَيْنَا، 
 يا غَارَةَ اللهِ حُلِّي رَبْطَ مَا شَبَكُوا، 
@@ -3079,13 +3101,14 @@ class IsarHelper {
 اللَّهُمَّ اجْعَلْ بُيُوتَهُمْ خَاوِيَةً، وَأَيْدِيَهِمْ خَالِيَةً، فَلاَ تَبْقَىٰ مِنْهُمْ بَاقِيَةٌ، وَاحْفَظْنِيْ فِي نَفْسِي، وَدِيْنِي، وَأَهْلِي، وَمَالِيْ، وَأَوْلاَدِي. وَمَا أَحَاطَتْ بِهِ شَفَقَةُ قَلْبِي، بِعَيْنِ عِنَايَتِكَ الْوَاقِيةِ، وَأَسْعِدْنِي فِي كُلِّ حَرَكَةٍ وَسَكْنَةٍ وَنَظْرَةٍ وَخَطْرَةٍ، وَكَلِمَاتٍ وَإِرَادَاتٍ وَنِيَّاتٍ، وَوَفِّقْنِيْ لِلْعَمَلِ الصَّالِحِ، وَلاَ تَجْعَلْ عَلَيَّ لأَحَدٍ تَبِعَةً، وَخَلِّصْنِي اللَّهُمَّ مِنْ كُلِّ هَمٍّ، وَغَمٍّ، وَدَيْنٍ، وَعَدُوٍّ، وَظَالِمٍ، وَكَرْبٍ، وَضِيْقٍ، وَجَارِ سُوءٍ، وَحَاسِدٍ، وَضَارٍّ، وَكَائِدٍ، وَسَاحِرٍ، وَعَائِنٍ، وخَائِنٍ، وَمِنْ سِبَاعٍ، وَحَيَّاتٍ، وَأَفَاعٍ، وَمِنْ شَرِّ كُلِّ ذِي شَرٍّ.
 احْتَرَزْتُ بِاسْمِكَ الأَعْظَمِ مِنْ كُلِّ فَصِيحٍ وَأَعْجَمٍ، وَمِنْ كُلِّ هَمٍّ وَغَمٍّ، وَمِنْ كُلِّ سِحْرٍ وَسُمٍّ، فَأَنْتَ ثِقَتِي وَرَجَائِي، فَاشْفِ عِلتِي وَدَائِي، وَأَسْأَلُكَ السَّلاَمَةَ فِي الأَدْيَانِ وَالأَبْدَانِ، وَاجْعَلْنِي مِنْ عَبِيدِ الامْتِنَانِ وَالإِحْسَانِ، وَاكْفِنِي شَرَّ الامْتِحَانِ، وَأَصْلِحْ لِيْ كُلَّ شَأْنٍ، وَاخْتِمْ لَنَا بِالإِيْمَانِ، يَا حَنَّانُ، يَا مَنَّانُ، وَتُبْ عَلَيْنَا تَوْبَةً نَصُوحاً، واغْفِرْ لِيْ، وَلِوَالِدَيَّ، وَلْلمُؤمِنِينَ وَالْمُؤْمِنَاتِ؛ إِنَّكَ مُجِيبُ الدَّعَواتِ، بِرَحْمَتِكَ يَا أَرْحَمَ الرَّاحِمينَ، وَحَسْبُنَا اللهُ وَنِعْمَ الوَكِيلُ، وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ العَلِيِّ العَظِيْمِ، وَصَلَّىٰ اللهُ عَلَىٰ سَيِّدِنا مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ. اهـ..
 ''',
-      false,
-      incrementedContentId++, //91,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1S_Jze1oU7SfY0PgeKvw-rLrXu-HMnU1U',
     ),
-    Content(
-      incrementedContentId,
-      //      130,
-      '''أَعْدَدْتُ لِكُلِّ هَوْلٍ أَلْقَاهُ فِي الدُّنْيَا وَالآخِرَةِ: لا إِلٰهَ إِلاَّ اللهُ، وَلِكُلِّ هَمٍّ وَغَمٍّ مَا شَاءَ اللهُ، وَلِكُلِّ نِعْمَةٍ الحَمْدُ للهِ، وَلِكُلِّ رَخَاءٍ وَشِدَةٍ الشُّكْرُ للهِ، وَلِكُلِّ أُعْجُوْبَةٍ سُبْحَانَ اللهِ، وَلِكُلِّ ذَنْبٍ أَسْتَغْفِرُ اللهَ، وَلِكُلِّ مُصِيْبَةٍ إِنَّا للهِ وَإِنَّا إِلَيْهِ رَاجِعُوْنَ، وَلِكُلِّ ضِيْقٍ، حَسْبِيَ اللهُ، وَلِكُلِّ قَضَاءٍ وَقَدَرٍ تَوَكَّلْتُ عَلَىٰ اللهِ، وَلِكُلِّ طَاعَةٍ وَمَعْصِيَةٍ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ، وَلِكُلِّ سُكُوْنٍ وَحَرَكَةٍ بِاسْمِ اللهِ.
+    _HeaderContentPair(
+      headerName: 'المعشّرات',
+      contentText:
+          '''أَعْدَدْتُ لِكُلِّ هَوْلٍ أَلْقَاهُ فِي الدُّنْيَا وَالآخِرَةِ: لا إِلٰهَ إِلاَّ اللهُ، وَلِكُلِّ هَمٍّ وَغَمٍّ مَا شَاءَ اللهُ، وَلِكُلِّ نِعْمَةٍ الحَمْدُ للهِ، وَلِكُلِّ رَخَاءٍ وَشِدَةٍ الشُّكْرُ للهِ، وَلِكُلِّ أُعْجُوْبَةٍ سُبْحَانَ اللهِ، وَلِكُلِّ ذَنْبٍ أَسْتَغْفِرُ اللهَ، وَلِكُلِّ مُصِيْبَةٍ إِنَّا للهِ وَإِنَّا إِلَيْهِ رَاجِعُوْنَ، وَلِكُلِّ ضِيْقٍ، حَسْبِيَ اللهُ، وَلِكُلِّ قَضَاءٍ وَقَدَرٍ تَوَكَّلْتُ عَلَىٰ اللهِ، وَلِكُلِّ طَاعَةٍ وَمَعْصِيَةٍ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ، وَلِكُلِّ سُكُوْنٍ وَحَرَكَةٍ بِاسْمِ اللهِ.
 لاَ إِلٰهَ إِلاَّ اللهُ وَحْدَهُ لاَ شَرِيْكَ لَهُ، لَهُ المُلْكُ، وَلَهُ الحَمْدُ، يُحْيِـيْ وَيُمِيْتُ، بِيَدِهِ الْخَيْرُ وَهُوَ عَلَىٰ كُلِّ شَيء قَدِيْرٌ "عَشْراً".
 لاَ إِلٰهَ إِلاَّ اللهُ المَلِكُ الحَقُّ المُبِيْنُ "عَشْراً".
 لاَ إِلٰهَ إِلاَّ اللهُ الوَاحِدُ القَهَّارُ، رَبُّ السَّموَاتِ وَالأَرْضِ وَمَا بَيْنَهُمَا العَزِيْزُ الغَفَّار "عَشْراً".
@@ -3096,33 +3119,36 @@ class IsarHelper {
 اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ النَّبيِّ الأُمِّيِّ، وَعَلَى آلِهِ وَصَحْبِهِ وَسَلِّمْ "عَشْراً".
 بِاسْمِ الله الَّذِي لاَ يَضُرُّ مَعَ اسْمِهِ شَيْءٌ فِي الأَرْضِ وَلاَ فِي السَّمَاءِ وَهُوَ السَّمِيْعُ العَلِيْمُ "عَشْراً"..
 ''',
-      false,
-      incrementedContentId++, //92,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1iaTfbFLj5j_UKHTSo9gs-EgVG1EzosRG',
     ),
-    Content(
-      incrementedContentId,
-      //      132,
-      '''اللَّهُمَّ كَما لَطَفْتَ في عَظَمَتِكَ دُونَ اللُّطَفَاءِ، وعَلَوْتَ بِعظمتِكَ على الْعُظَمَاءِ، وعَلِمْتَ مَا تحتَ أَرْضِكَ كَعلمِكَ بما فوقَ عَرشِكَ، وكانتْ وسَاوِسُ الصُّدُورِ كالعَلانِيَةِ عِنْدَكَ، وعَلانِيَةُ القَولِ كالسرِّ في عِلْمِكَ، وانقَادَ كُلُّ شَيْءٍ لعظمَتِكَ، وخَضَعَ كُلُّ ذِي سُلطانٍ لسُلطَانِكَ، وصَارَ أمْرُ الدُّنْيَا والآخرةِ كُلُّهُ بِيَدِكَ.. اجْعَلْ لِي مِنْ كُلِّ هَمٍّ أَصْبَحْتُ أو أَمْسَيْتُ فيهِ فَرَجاً ومَخْرَجاً.
+    _HeaderContentPair(
+      headerName: 'دعاء الفرج',
+      contentText:
+          '''اللَّهُمَّ كَما لَطَفْتَ في عَظَمَتِكَ دُونَ اللُّطَفَاءِ، وعَلَوْتَ بِعظمتِكَ على الْعُظَمَاءِ، وعَلِمْتَ مَا تحتَ أَرْضِكَ كَعلمِكَ بما فوقَ عَرشِكَ، وكانتْ وسَاوِسُ الصُّدُورِ كالعَلانِيَةِ عِنْدَكَ، وعَلانِيَةُ القَولِ كالسرِّ في عِلْمِكَ، وانقَادَ كُلُّ شَيْءٍ لعظمَتِكَ، وخَضَعَ كُلُّ ذِي سُلطانٍ لسُلطَانِكَ، وصَارَ أمْرُ الدُّنْيَا والآخرةِ كُلُّهُ بِيَدِكَ.. اجْعَلْ لِي مِنْ كُلِّ هَمٍّ أَصْبَحْتُ أو أَمْسَيْتُ فيهِ فَرَجاً ومَخْرَجاً.
 اللَّهُمَّ إنّ عَفْوَكَ عَنْ ذُنُوبِي، وتَجَاوُزَكَ عَنْ خَطِيئَتي، وَسِتْرَكَ عَلَى قَبِيحِ عَمَلِي.. أطْمَعَنِي أنْ أَسأَلَكَ مَا لا أَسْتَوْجِبُهُ مِنْكَ مِمَّا قَصّرْتُ فِيهِ.
 أَدْعُوكَ آمِناً، وأَسْأَلُكَ مُسْتَأْنِساً، وإِنَّكَ المُحْسِنُ إليَّ، وأنَا المُسيءُ إلى نَفْسِي فِيمَا بَيني وبَيْنَكَ، تَتَوَدَّدُ إِليَّ بِنِعْمَتِكَ، وأتَبَّغَّضُ إليْكَ بالْمَعَاصِي، ولٰكِنَّ الثّقَةَ بِكَ حَمَلَتْنِي عَلَى الجَراءَةِ عَليكَ، فَعُدْ بفَضْلِكَ وإِحْسَانكَ عَليَّ؛ إِنّكَ أَنْتَ التَّوَّابُ الرّحِيمُ.
 فإِنَّكَ قلتَ وقولكَ الحقُّ: ﴿اللَّهُ لَطيفٌ بِعِبادِهِ يَرزُقُ مَن يَشاءُ وَهُوَ القَوِيُّ العَزيزُ﴾.
 يا لطيفُ يا خبيرُ يا حفيظُ. وصلَّىٰ اللهُ على سَيِّدِنَا مُحَمَّدٍ وآلهِ وسلَّمَ.
 وهذا الدعاء ينسب لسيِّدِنا الخضرِ عليهِ السلامُ.
 ''',
-      false,
-      incrementedContentId++, //94,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '173EUrCR8R6fwBnlZzpwP21_e7jpcn0Aa',
     ),
-    Content(
-      incrementedContentId,
-      //      133,
-      '''لا إِلهَ إِلاَّ اللهُ العَظِيْمُ الحَلِيْمُ، لا إِلهَ إِلاَّ اللهُ رَبُّ العَرْشِ العَظِيْمُ، لا إِلٰهَ إِلاَّ اللهُ رَبُّ السَّمواتِ وَرَبُّ الأَرْضِ، وَرَبُّ العَرْشِ الكَرِيْمُ، لا إِلهَ إِلاَّ أَنْتَ سُبْحانَكَ، إِنِّي كُنْتُ مِنَ الظَّالمِيْنَ "ثَلاَثاً"..''',
-      false,
-      incrementedContentId++, //95,
+    _HeaderContentPair(
+      headerName: 'دعاء الكرب',
+      contentText:
+          '''لا إِلهَ إِلاَّ اللهُ العَظِيْمُ الحَلِيْمُ، لا إِلهَ إِلاَّ اللهُ رَبُّ العَرْشِ العَظِيْمُ، لا إِلٰهَ إِلاَّ اللهُ رَبُّ السَّمواتِ وَرَبُّ الأَرْضِ، وَرَبُّ العَرْشِ الكَرِيْمُ، لا إِلهَ إِلاَّ أَنْتَ سُبْحانَكَ، إِنِّي كُنْتُ مِنَ الظَّالمِيْنَ "ثَلاَثاً"..''',
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1UYE3rxVKUx2bUHlTq5L4jGKoCWawHJlQ',
     ),
-    Content(
-      incrementedContentId,
-      //      137,
-      ''' أَعُوْذُ بِاللهِ مِنَ الشَّيْطَانِ الرَّجِيْمِ بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
+    _HeaderContentPair(
+      headerName: 'حزب البرّ للشاذليّ رضي الله عنه',
+      contentText:
+          ''' أَعُوْذُ بِاللهِ مِنَ الشَّيْطَانِ الرَّجِيْمِ بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
 ﴿  وَإِذَا جَآءَكَ ٱلَّذِينَ يُؤْمِنُونَ بِـَٔايَـٰتِنَا فَقُلْ سَلَـٰمٌ عَلَيْكُمْ ۖ كَتَبَ رَبُّكُمْ عَلَىٰ نَفْسِهِ ٱلرَّحْمَةَ ۖ أَنَّهُۥ مَنْ عَمِلَ مِنكُمْ سُوٓءًۢا بِجَهَـٰلَةٍۢ ثُمَّ تَابَ مِنۢ بَعْدِهِۦ وَأَصْلَحَ فَأَنَّهُۥ غَفُورٌۭ رَّحِيمٌۭ ٥٤﴾ ﴿ بَدِيعُ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضِ ۖ أَنَّىٰ يَكُونُ لَهُۥ وَلَدٌۭ وَلَمْ تَكُن لَّهُۥ صَـٰحِبَةٌۭ ۖ وَخَلَقَ كُلَّ شَىْءٍۢ ۖ وَهُوَ بِكُلِّ شَىْءٍ عَلِيمٌۭ ١٠١ ذَٰلِكُمُ ٱللَّهُ رَبُّكُمْ ۖ لَآ إِلَـٰهَ إِلَّا هُوَ ۖ خَـٰلِقُ كُلِّ شَىْءٍۢ فَٱعْبُدُوهُ ۚ وَهُوَ عَلَىٰ كُلِّ شَىْءٍۢ وَكِيلٌۭ ١٠٢ لَّا تُدْرِكُهُ ٱلْأَبْصَـٰرُ وَهُوَ يُدْرِكُ ٱلْأَبْصَـٰرَ ۖ وَهُوَ ٱللَّطِيفُ ٱلْخَبِيرُ ١٠٣﴾ ﴿  الٓر ۚ﴾ ﴿  كٓهيعٓصٓ﴾ ﴿  حمٓ ١ عٓسٓقٓ ٢﴾ ﴿  قَـٰلَ رَبِّ ٱحْكُم بِٱلْحَقِّ ۗ وَرَبُّنَا ٱلرَّحْمَـٰنُ ٱلْمُسْتَعَانُ عَلَىٰ مَا تَصِفُونَ ١١٢﴾ ﴿  طه ١ مَآ أَنزَلْنَا عَلَيْكَ ٱلْقُرْءَانَ لِتَشْقَىٰٓ ٢ إِلَّا تَذْكِرَةًۭ لِّمَن يَخْشَىٰ ٣ تَنزِيلًۭا مِّمَّنْ خَلَقَ ٱلْأَرْضَ وَٱلسَّمَـٰوَٰتِ ٱلْعُلَى ٤ ٱلرَّحْمَـٰنُ عَلَى ٱلْعَرْشِ ٱسْتَوَىٰ ٥ لَهُۥ مَا فِى ٱلسَّمَـٰوَٰتِ وَمَا فِى ٱلْأَرْضِ وَمَا بَيْنَهُمَا وَمَا تَحْتَ ٱلثَّرَىٰ ٦ وَإِن تَجْهَرْ بِٱلْقَوْلِ فَإِنَّهُۥ يَعْلَمُ ٱلسِّرَّ وَأَخْفَى ٧ ٱللَّهُ لَآ إِلَـٰهَ إِلَّا هُوَ ۖ لَهُ ٱلْأَسْمَآءُ ٱلْحُسْنَىٰ ٨ ﴾ "ثَلاَثاً".
 اللَّهُمَّ إِنكَ تَعْلَمُ أَنِّيْ بِالجَهَالَةِ مَعْرُوْفٌ، وَأَنْتَ بِالْعِلْمِ مَوْصُوْفٌ، وَقَدْ وَسِعْتَ كُلَّ شَيْءٍ مِنْ جَهَالَتِيْ بِعِلْمِكَ، فَسَعْ ذٰلِكَ بِرَحْمَتِكَ، كَمَا وَسِعْتَهُ بِعِلْمِكَ، وَاغْفِرْ لِيْ إِنَّكَ عَلَى كُلِّ شَيْءٍ قَدِيْرٍ، يَا اللهُ... يَا مَالِكُ يَا وَهَّابُ، هَبْ لَنَا مِنْ نَعْمَاكَ مَا عَلِمْتَ لَنَا فِيْه رِضْاكَ، وَاكْسُنَا كِسْوَةً تَقِينَا بِهَا مِنَ الْفِتَنِ فِيْ جَمِيْعِ عَطَايَاكَ، وَقَدِّسْنَا بِهَا عَنْ كُلِّ وَصْفٍ يُوْجِبُ نَقْصاً مِمَّا اسْتَأْثَرْتَ بِهِ فِيْ عِلْمِكَ عَمَّنْ سِوَاكَ، يَا اللهُ يَا عَظِيْمُ، يَا عَلِيُّ يَا كَبِيْرُ، نَسْأَلُكَ الْفَقْرَ مِمَّا سِوَاكَ، وَالْغِنَى بِكَ حَتَّى لاَ نَشْهَدَ إِلاَّ إِيَّاكَ، وَالْطُفْ بِنَا فِيْهِمَا لُطْفاً عَلِمْتَهُ يَصْلُحُ لِمَنْ وَالاَكَ، وَاكْسُنَا جَلاَبِيْبَ الْعِصْمَةِ فِيْ الأَنْفَاسِ وَاللَّحَظَاتِ، وَاجْعَلْنَا عَبِيْداً لَكَ فِيْ جَمِيْعِ الْحَالاَتِ، وَعَلِّمْنَا مِنْ لَدُنْكَ عِلْمَاً نَصِيْرُ بِهِ كَامِلِيْنَ فِيْ الْمَحْيَا وَالْمَمَاتِ.
 اللَّهُمَّ أنْتَ الْحَمِيْدُ، الرَّبُّ الْمَجِيْدُ، الْفَعَّالُ لِمَا يُرِيْدُ، تَعْلَمُ فَرَحَنَا بِمَاذَا وَلِمَاذَا وَعَلَى مَاذَا، وَتَعْلَمُ حُزْنَنَا كَذلِكَ، وَقَدْ أَوجَبْتَ كَوْنَ مَا أَرَدْتَهُ فِيْنَا وَمِنَّا، وَلاَ نَسْأَلُكَ دَفْعَ مَا تُرِيْدُ، وَلكِنْ نَسْأَلُكَ التَّأْيِيدَ بِرُوْحٍ مِنْ عِنْدِكَ فِيْمَا تُرِيْدُ، كَمَا أَيَّدْتَ أَنْبِيَاءَكَ وَرُسُلَكَ، وَخَاصَّةً الصِّدِّيْقِيْنَ مِنْ خَلْقِكَ؛ إِنَّكَ عَلَىٰ كُلِّ شَيْءٍ قَدِيْرٌ.
@@ -3143,65 +3169,65 @@ class IsarHelper {
 وَلَقَدْ شَكَا إِلَيْكَ يَعْقُوْبُ فَخَلَّصْتَهُ مِنْ حُزْنِهِ، وَرَدَدْتَ عَلَيْهِ مَا ذَهَبَ مِنْ بَصَرِهِ، وَجَمَعْتَ بَيْنَهُ وَبَيْنَ وَلَدِهِ، وَلَقدْ نَادَاكَ نُوْحٌ مِنْ قَبْلُ فَنَجَّيْتَهُ مِنْ كَرْبهِ، وَلَقدْ نَادَاكَ أَيُّوْبُ مِنْ بَعْدُ فَكَشَفْتَ مَا بِهِ مِنْ ضُرِّهِ، وَلَقدْ نَادَاكَ يُوْنُسُ فَنَجَّيْتَهُ مِنْ غَمِّهِ، وَلَقدْ نَادَاكَ زَكَرِيَّا فَوَهَبْتَ لَهُ وَلَداً مِنْ صُلْبِهِ؛ بَعْدَ يَأْسِ أَهْلِهِ وَكِبَرِ سِنِّهِ، وَلَقَدْ عَلِمْتَ مَا نَزَلَ بِإِبْرَاهِيْمَ فَأَنْقَذْتَهُ مِنْ نَارِ عَدُوِّهِ، وَأَنْجَيْتَ لُوْطاً وَأَهْلَهُ مِنَ الْعَذَابِ النَّازِلِ بِقَوْمِهِ، فَها أَنَا عَبْدُكَ، إِنْ تُعَذِّبْنِيْ بِجَمِيْعِ مَا عَلِمْتَ مِنْ عَذَابِكَ.. فَأَنَا حَقِيْقٌ بِهِ، وَإِنْ تَرْحَمْنِيْ كَمَا رَحِمْتَهُمْ مَعَ عَظِيْمِ إِجْرَامِيْ.. فَأَنْتَ أَوْلَى بذلِكَ، وَأَحَقُّ مَنْ أَكْرَمَ بِهِ، فَلَيْسَ كَرَمُكَ مَخْصُوْصاً بِمَنْ أَطَاعَكَ وَأَقْبَلَ عَلَيْكَ، بَلْ هُوَ مَبْذُوْلٌ بِالسَّبْقِ لِمَنْ شِئْتَ مِنْ خَلْقِكَ، وَإِنْ عَصَاكَ وَأَعْرَضَ عَنْكَ، وَلَيْسَ مِنَ الْكَرَمِ أَنْ لاَ تُحْسِنَ إِلاَّ لِمَنْ أَحْسَنَ إِلَيْكَ، وَأَنْتَ الْمِفْضَالُ الْغَنِيُّ، بَلْ مِنَ الْكَرَمِ أَنْ تُحْسِنَ إِلَى منْ أَسَاءَ إِلَيْكَ وَأَنْتَ الرَّحِيْمُ الْعَلِيُّ، كَيْفَ وَقَدْ أَمَرْتَنَا أَنْ نُحْسِنَ إِلَى مَنْ أَسَاءَ إِلَيْنَا، فَأَنْتَ أَوْلَى بِذلِكَ مِنَّا، ربَّنَا ظَلَمْنَا أَنْفُسَنَا وَإِنْ لَمْ تَغْفِرْ لَنَا وَتَرْحَمْنَا لَنَكُوْنَنَّ مِنَ الْخَاسِرِيْنَ، يَا اللهُ يَا اللهُ يَا اللهُ يَا رَحْمٰنُ، يَا رَحِيْمُ، يَا  حَيٌّ، يَا قَيُّوْمُ، يَا مَنْ هُوَ هُوَ هُو، يَا هُو إِنْ لَمْ نَكُنْ لِرَحْمَتِكَ أَهْلاً أَنْ نَنَالَهَا.. فَرَحْمَتُكَ أَهْلٌ أَنْ تَنَالَنَا، يَا رَبَّاهُ يَا مَوْلاَهُ، يَا مُغِيْثَ مَنْ عصَاهُ.. أَغِثْنَا "ثَلاَثاً" يَا رَبُّ يَا كَرِيْمُ، وَارْحَمْنَا يَا بَرُّ يَا رَحِيْمُ، يَا مَنْ وَسِعَ كُرْسِيُّهُ السَّموَاتِ وَالأَرْضَ، وَلاَ يَؤُودُهُ حِفْظُهُمَا وَهُوَ الْعَلِيُّ الْعَظِيْمُ "ثَلاَثاً"، أَسْأَلُكَ الإِيْمَانَ بِحِفْظِكَ، إِيمَاناً يَسْكُنُ بِهِ قَلْبِيْ مِنْ هَمِّ الرِّزْقِ، وَخَوْفِ الْخَلْقِ، وَاقْرُبْ مِنِّي قُرْباً، تَمْحَقُ بِهِ عَنِّيْ كُلَّ حِجَابٍ مَحَقْتَهُ عَنْ إِبْرَاهِيْمَ خَلِيْلِكَ، فَلَمْ يَحْتَجْ لِجِبْرِيْلَ رَسُوْلِكَ، وَلاَ لِسُؤَالِهِ مِنْكَ، وَحَجَبْتَهُ بِذلِكَ عَنْ نَارِ عَدُوِّهِ، وَكَيْفَ لاَ  يُحْجَبُ عَنْ مَضَرَّةِ الأَعْدَاءِ مَنْ غَيَّبْتَهُ عَنْ مَنْفَعةِ الأَحِبَّاءِ، كَلَّا إِنِّيْ أَسْأَلُكَ أَنْ تُغَيِّبَنِيْ بِقُرْبِكَ مِنِّي؛ حَتَّى لاَ أَرَى وَلاَ أَسْمَعَ وَلاَ أُحِسَّ بِقُرْبِ شَيْءٍ وَلاَ بِبُعْدِهِ عَنِّي، إِنَّكَ عَلَى كُلِّ شَيْءٍ قَدِيْرٌ.
 ﴿  أَفَحَسِبْتُمْ أَنَّمَا خَلَقْنَـٰكُمْ عَبَثًۭا وَأَنَّكُمْ إِلَيْنَا لَا تُرْجَعُونَ ١١٥ فَتَعَـٰلَى ٱللَّهُ ٱلْمَلِكُ ٱلْحَقُّ ۖ لَآ إِلَـٰهَ إِلَّا هُوَ رَبُّ ٱلْعَرْشِ ٱلْكَرِيمِ ١١٦ وَمَن يَدْعُ مَعَ ٱللَّهِ إِلَـٰهًا ءَاخَرَ لَا بُرْهَـٰنَ لَهُۥ بِهِۦ فَإِنَّمَا حِسَابُهُۥ عِندَ رَبِّهِۦٓ ۚ إِنَّهُۥ لَا يُفْلِحُ ٱلْكَـٰفِرُونَ ١١٧ وَقُل رَّبِّ ٱغْفِرْ وَٱرْحَمْ وَأَنتَ خَيْرُ ٱلرَّٰحِمِينَ ١١٨ ﴾ ﴿ هُوَ ٱلْحَىُّ لَآ إِلَـٰهَ إِلَّا هُوَ فَٱدْعُوهُ مُخْلِصِينَ لَهُ ٱلدِّينَ ۗ ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ ٦٥﴾ ﴿  إِنَّ ٱللَّهَ وَمَلَـٰٓئِكَتَهُۥ يُصَلُّونَ عَلَى ٱلنَّبِىِّ ۚ يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ صَلُّوا۟ عَلَيْهِ وَسَلِّمُوا۟ تَسْلِيمًا ٥٦﴾ ﴿  سُبْحَـٰنَ رَبِّكَ رَبِّ ٱلْعِزَّةِ عَمَّا يَصِفُونَ ١٨٠ وَسَلَـٰمٌ عَلَى ٱلْمُرْسَلِينَ ١٨١ وَٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ ١٨٢﴾.
 ''',
-      false,
-      incrementedContentId++, //99,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1bcHt_nVi6nkbcQfcMBuOW_kz9wu8ouo_',
     ),
-    Content(
-      incrementedContentId,
-      //      138,
-      '''بِسْمِ اللهِ، مَا شَاءَ اللهُ، لا قُوَّةَ إِلاَّ بِاللهِ، ما شَاءَ اللهُ، كُلُّ نِعْمَةٍ مِنَ اللهِ، ما شَاءَ اللهُ، الخَيْرُ كُلُّهُ بِيَدِ اللهِ، ما شاءَ اللهُ، لا يَصْرِفُ السُّوْءَ إِلاَّ اللهُ، فَمَنْ قالَها "ثَلاثَ مَرَّاتٍ".. إِذا أصْبَحَ أَمِنَ مِنَ الحَرَقِ، وَالغَرَقِ، والسَّرَقِ، إِنْ شاءَ اللهُ تَعالىٰ.
+    _HeaderContentPair(
+      headerName: 'دعاءٌ لسيّدنا الخضر وإلياس عليهما السّلام',
+      contentText:
+          '''بِسْمِ اللهِ، مَا شَاءَ اللهُ، لا قُوَّةَ إِلاَّ بِاللهِ، ما شَاءَ اللهُ، كُلُّ نِعْمَةٍ مِنَ اللهِ، ما شَاءَ اللهُ، الخَيْرُ كُلُّهُ بِيَدِ اللهِ، ما شاءَ اللهُ، لا يَصْرِفُ السُّوْءَ إِلاَّ اللهُ، فَمَنْ قالَها "ثَلاثَ مَرَّاتٍ".. إِذا أصْبَحَ أَمِنَ مِنَ الحَرَقِ، وَالغَرَقِ، والسَّرَقِ، إِنْ شاءَ اللهُ تَعالىٰ.
 وَيُقالُ إِنَّ الخَضِرَ وَإِلْياسَ عَلَيْهِما السَّلامُ إِذا الْتَقَيا كُلَّ مَوْسِمٍ لَمْ يَتَفَرَّقا إِلاَّ عَنْ هذِهِ الكَلِماتِ.
 ''',
-      false,
-      incrementedContentId++, //100,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1_Kj_JY3GhfOjNlmAs59tDU_ipPcHCXQl',
     ),
-    Content(
-      incrementedContentId,
-      //      140,
-      '''«يَا مُبْدِئُ يَا خَالِقُ» "مِئَةَ مَرَّةٍ" ؛ فَإِنَّهُمَا مِنَ الأَسْمَاءِ الَّتِيْ تُوْرِثُكَ حِفْظَ العُلُوْمِ، وَفَهْمَ مَعَانِيْهَا، وَالنُّطْقَ بِغَرَائِبِهَا!
+    _HeaderContentPair(
+      headerName: 'من أسماء الله الحسنى',
+      contentText:
+          '''«يَا مُبْدِئُ يَا خَالِقُ» "مِئَةَ مَرَّةٍ" ؛ فَإِنَّهُمَا مِنَ الأَسْمَاءِ الَّتِيْ تُوْرِثُكَ حِفْظَ العُلُوْمِ، وَفَهْمَ مَعَانِيْهَا، وَالنُّطْقَ بِغَرَائِبِهَا!
 وَمِنَ الأَسْمَاءِ الَّتِيْ تُوْرِثُكَ اسْتِجَابَةَ الدُّعَاءِ: «يَا سَمِيْعُ، يَا بَصِيْرُ» "مِئَةَ مَرَّةٍ".
 وهٰذِهِ الأَسْمَاءُ: «يَا فَتَّاحُ، يَا رَزّاقُ» "مِئَةَ مَرَّةٍ". «يَا كَافِيْ، يَا مُغْنِيْ» "مِئَةَ مَرَّةٍ"، «يَا عَلِيْمُ، يَا قدِيْرُ» "مِئَةَ مَرَّةٍ"، «يَا عَزِيْزُ، يَا وَهَّابُ» "مِئَةَ مَرَّةٍ"، «يَا حَفِيْظُ يَا وَدُوْدُ» "مِئَةَ مَرَّةٍ"، «يَا كَرِيْمُ يَا رَحِيْمُ» "مِئَةَ مَرَّةٍ"، «يَا قَوِيُّ» (سِتَّ عَشْرَةَ وَمِئَةَ مَرَّةٍ).
 فاجْتَهِدْ فِي تَرْتِيْبِ هٰذِهِ الأَسْمَاءِ كُلَّ لَيْلَةٍ تَرَ مِنْ بَرَكَاتِهَا كُلَّ خَيْرٍ..
 ''',
-      false,
-      incrementedContentId++, //102,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1rTnwifL5Wm4FzkJKAM454Z5KwBpXytnt',
     ),
-    Content(
-      incrementedContentId,
-      //      141,
-      '''لْيَكُنْ مِنْ أَوْرَادِكَ كُلَّ يَوْمٍ ـ "مِئَةٌ" مِنْ قَوْلِ: «اللَّهُمَّ حَبِّبْنِيْ إِلَىٰ حَبِيْبكَ مُحَمَّدٍ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ»، فَقَدْ ذُكِرَ أَنَّ ابْنَ عَرَبِيٍّ لَهُ مِنْ هذا الذِّكْرِ كُلَّ يَوْمٍ "أَلْفُ مَرَّةٍ"..''',
-      false,
-      incrementedContentId++, //103,
+    _HeaderContentPair(
+      headerName: 'من أوراد ابن عربي',
+      contentText:
+          '''لْيَكُنْ مِنْ أَوْرَادِكَ كُلَّ يَوْمٍ ـ "مِئَةٌ" مِنْ قَوْلِ: «اللَّهُمَّ حَبِّبْنِيْ إِلَىٰ حَبِيْبكَ مُحَمَّدٍ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ»، فَقَدْ ذُكِرَ أَنَّ ابْنَ عَرَبِيٍّ لَهُ مِنْ هذا الذِّكْرِ كُلَّ يَوْمٍ "أَلْفُ مَرَّةٍ"..''',
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1b077ognN5AVL9hK92ZOIB_HvnKaWyvd8',
     ),
-    Content(
-      incrementedContentId,
-      //      143,
-      '''وَعَلَيْكَ بِقِراءَةِ «الدَّلائِلِ» فِي الأُسْبُوعِ، فَتَقْرَأُ كُلَّ يَوْمٍ حِزْباً، وَإِنَّ مِنْ أَعْظَمِ الجَفا مِنَّا لِلحَبِيْبِ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ أَنْ يَمُرَّ اليَوْمُ عَلَيْنا، وَلا نَجْعَلَ لنا حَظّاً مِنَ الصَّلاةِ عَلَيْه؛ لا سِيَّما وَقَدْ وَرَدَ فِي الصَّلاةِ عَلَيْهِ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ الشَّيْءُ الكَثِيْرُ مِنَ الفَضْلِ الكَبِيْرِ، وَالثَّوابِ الجَزِيْلِ فِي الدُّنْيا وَالآخِرَةِ. 
+    _HeaderContentPair(
+      headerName: ' دلائل الخيرات',
+      contentText:
+          '''وَعَلَيْكَ بِقِراءَةِ «الدَّلائِلِ» فِي الأُسْبُوعِ، فَتَقْرَأُ كُلَّ يَوْمٍ حِزْباً، وَإِنَّ مِنْ أَعْظَمِ الجَفا مِنَّا لِلحَبِيْبِ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ أَنْ يَمُرَّ اليَوْمُ عَلَيْنا، وَلا نَجْعَلَ لنا حَظّاً مِنَ الصَّلاةِ عَلَيْه؛ لا سِيَّما وَقَدْ وَرَدَ فِي الصَّلاةِ عَلَيْهِ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ الشَّيْءُ الكَثِيْرُ مِنَ الفَضْلِ الكَبِيْرِ، وَالثَّوابِ الجَزِيْلِ فِي الدُّنْيا وَالآخِرَةِ. 
 وهذِهِ الصَّلاةُ عَلَىٰ النَّبِيِّ، المَرَّةُ تَعْدِلُ بِقراءَةِ «الدَّلائِلِ» كُلِّها وَهِيَ: «بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ، يا هُوَ يا هُوَ، يا هُوْ، يا مَنْ لا يَعْلَمُ كَيْفَ هُوَ إِلاَّ هُو، يا اللهُ يا قَهَّارُ، يا ذا الجَلالِ وَالإِكْرامِ، اللَّهُمَّ صَلِّ وَسَلِّمْ عَلَىٰ سَيِّدِنا مُحَمَّدٍ، وَعَلَىٰ آلِهِ وَصَحْبِهِ عَدَدَ كَمالِكَ، وَكَلامِكَ، وَعَظَمَتِكَ، وَقُدْرتِكَ، وَسَعَةِ عِلْمِكَ، وَحُكْمِكَ فِي كُل وَقْتٍ وَحِيْنٍ، وَصَلَّىٰ اللهُ عَلَىٰ سَيِّدِنا مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ»..
 ''',
-      false,
-      incrementedContentId++, //105,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1kTjhoJyPS-yWO6aBWZUbGyE2NW7O1WKf',
     ),
-    Content(
-      incrementedContentId,
-      //      145,
-      '''ثُمَّ اتْلُ شَيْئاً مِنَ القُرْآنِ.. تَبْدَأُ مِنْ أَوَّلِ المُصْحَفِ حَتَّى تَنْتَهِيَ إِلَى آخِرِهِ، وَكُلَّما أَنْهَيْتَ خَتْمَةً اشْرَعْ فِي ثانِيَةٍ، وَلَوْ كُلَّ يَوْمٍ جُزْءاً، فَإِنَّ كُلَّ مَنْ يَدَّعِيْ الصَّلاحَ وَالعِلْمَ مَعَ هَجْرِهِ القُرْآنَ فَدَعْوَاهُ كاذِبَةٌ راجِعَةٌ عَلَيْهِ، فَلا يَطْمَعُ العالِمُ في بَرَكَةِ العِلْمِ إِلاَّ إِنْ عَمِلَ بِما تَقَدَّمَ مِنْ تِلاوَةٍ وَأَوْرادٍ، وَعَمِلَ بِالعِلْمِ، وَمَا يَدَّعِيْهِ بَعْضُهُمْ مَعَ هَجْرِهِمُ القُرْآنَ فَدَعْواهُمْ باطِلَةٌ، وَصَفْقَتُهُمْ خاسِرَةٌ، وَاللهُ المُوَفِّقُ وَالمُعِيْنُ''',
-      false,
-      incrementedContentId++, //107,
+    _HeaderContentPair(
+      headerName: 'قراءة القرآن',
+      contentText:
+          '''ثُمَّ اتْلُ شَيْئاً مِنَ القُرْآنِ.. تَبْدَأُ مِنْ أَوَّلِ المُصْحَفِ حَتَّى تَنْتَهِيَ إِلَى آخِرِهِ، وَكُلَّما أَنْهَيْتَ خَتْمَةً اشْرَعْ فِي ثانِيَةٍ، وَلَوْ كُلَّ يَوْمٍ جُزْءاً، فَإِنَّ كُلَّ مَنْ يَدَّعِيْ الصَّلاحَ وَالعِلْمَ مَعَ هَجْرِهِ القُرْآنَ فَدَعْوَاهُ كاذِبَةٌ راجِعَةٌ عَلَيْهِ، فَلا يَطْمَعُ العالِمُ في بَرَكَةِ العِلْمِ إِلاَّ إِنْ عَمِلَ بِما تَقَدَّمَ مِنْ تِلاوَةٍ وَأَوْرادٍ، وَعَمِلَ بِالعِلْمِ، وَمَا يَدَّعِيْهِ بَعْضُهُمْ مَعَ هَجْرِهِمُ القُرْآنَ فَدَعْواهُمْ باطِلَةٌ، وَصَفْقَتُهُمْ خاسِرَةٌ، وَاللهُ المُوَفِّقُ وَالمُعِيْنُ''',
+      isLiked: false,
     ),
-
-    /// أذكار وأدعية خاصة
-    Content(
-      incrementedContentId,
-      //      146,
-      '''مِمَّا يَنْبَغِيْ أَنْ يَقُوْلَ خَلْفَ الجَنَازَةِ: «لا إِلٰهَ إِلاَّ اللهُ العافِيْ بَعْدَ قُدْرَتِهِ، لا إِلهَ إِلاَّ اللهُ الباقِي بَعْدَ فَناءِ خَلْقِهِ، لا إِلهَ إِلاَّ اللهُ، كُلُّ شَيْءٍ هَالِكٌ إِلاَّ وَجْهَهُ، لَهُ الحُكْمُ وَإِلَيْهِ تُرْجَعُونَ» فَإِنَّ اللهَ يَغْفِرُ لِلْمَيِّتِ، وَلِمَنْ مَعَهُ، وَلِلْقَرْيَةِ الَّتِي خَرَجَ مِنْها، ولأَهْلِ المَقْبَرَةِ الَّتِيْ قُبِرَ فِيْها، هكَذا نَقَلَها الحَبِيْبُ عَلِيُّ بْنُ حَسَنٍ العَطَّاسُ فِي القِرْطاسِ، وَعَلَيْهِ عَمَلُ كَثِيْرٍ مِنَ الأَئِمَّةِ المُقْتَدَى بِهِمْ. اهـ.''',
-      false,
-      incrementedContentId++, //108,
+    _HeaderContentPair(
+      headerName: 'ما يقال خلف الجنازة',
+      contentText:
+          '''مِمَّا يَنْبَغِيْ أَنْ يَقُوْلَ خَلْفَ الجَنَازَةِ: «لا إِلٰهَ إِلاَّ اللهُ العافِيْ بَعْدَ قُدْرَتِهِ، لا إِلهَ إِلاَّ اللهُ الباقِي بَعْدَ فَناءِ خَلْقِهِ، لا إِلهَ إِلاَّ اللهُ، كُلُّ شَيْءٍ هَالِكٌ إِلاَّ وَجْهَهُ، لَهُ الحُكْمُ وَإِلَيْهِ تُرْجَعُونَ» فَإِنَّ اللهَ يَغْفِرُ لِلْمَيِّتِ، وَلِمَنْ مَعَهُ، وَلِلْقَرْيَةِ الَّتِي خَرَجَ مِنْها، ولأَهْلِ المَقْبَرَةِ الَّتِيْ قُبِرَ فِيْها، هكَذا نَقَلَها الحَبِيْبُ عَلِيُّ بْنُ حَسَنٍ العَطَّاسُ فِي القِرْطاسِ، وَعَلَيْهِ عَمَلُ كَثِيْرٍ مِنَ الأَئِمَّةِ المُقْتَدَى بِهِمْ. اهـ.''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      147,
-      '''ممّا ينبغي للمسافر قبل سفره أن يعمل ما يأتي كما يلي:
+    _HeaderContentPair(
+      headerName: ' ما يطلب عند السفر',
+      contentText: '''ممّا ينبغي للمسافر قبل سفره أن يعمل ما يأتي كما يلي:
 ـ أن يزورَ أهلَهُ أولاً، ثمَّ يرجع إلى البيت، ثمَّ يصلي أربعَ رَكَعات، ويقرأ في كل ركعةٍ (الإخلاص)، ثمَّ يقول: (اللَّهُمَّ إنِّي أتقرَّب إليك بهنَّ فاخلفني في أهلي ومالي). وأقلُّها ركعتان، ثمَّ يقرأ آيةَ (الكرسيِّ[2]) وسورةَ (قريش[106]) وهٰذا الدُّعاء: (اللَّهُمَّ زَوِّدْني التَّقوىٰ، ووَجِّهني بالخير فيما توجَّهتُ، وهوِّن عليَّ صعوبةَ سفري، واطوِ عنِّي بُعده.
 اللَّهُمَّ أنت الصَّاحبُ في السَّفر، والخليفة في الأهل والمال والولد والأصحاب.. احفظني وإيَّاهُم من كلِّ آفةٍ وعاهةٍ.
 اللَّهُمَّ زَوِّدْني في سفري هٰذا البرَّ والتقوىٰ، ومن العمل ما ترضىٰ، برحمتك يا أرحمَ الرَّاحمين).
@@ -3222,30 +3248,30 @@ class IsarHelper {
 ـ تقرأ (الفاتحةَ[1])، و(إنا أنزلناه[97])، وآيةَ (الكرسيِّ[2]) و(الإخلاصَ[112]) "ثلاثاً"، وتقرأ بعد كلِّ مرة: "اللَّهُمَّ؛ سلِّمني وسلِّم ما معي، واحفظني واحفظ ما معي، وبَلِّغْني وبلِّغ ما معي".
 ـ ويقرأ صباحاً ومساءً سورةَ (عمَّ[78])؛ فإنّها للحفظ.
 ''',
-      false,
-      incrementedContentId++, //109,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      148,
-      '''تُقرأُ آيَةُ الْكُرْسِي أولاً بحضورٍ وخشوعٍ، وتدبرٍ وترتيلٍ. ثلاثَ مراتٍ، أو سبعَ مراتٍ، أو إِحدى عشرةَ، أو على قَدْرِ فراغه وحضورهِ وخشوعهِ وتوجُّهِهِ، ويجعلها ورداً عندَ المهماتِ. فإِنْ فَعَلَ ذلكَ معَ الإِخلاصِ، وقرأَ هذا الدعاءَ فلا بدَّ وأن يحصُلَ له شيْءٌ من بركاتِها وهو:
+    _HeaderContentPair(
+      headerName: 'دعاء آية الكرسيّ',
+      contentText:
+          '''تُقرأُ آيَةُ الْكُرْسِي أولاً بحضورٍ وخشوعٍ، وتدبرٍ وترتيلٍ. ثلاثَ مراتٍ، أو سبعَ مراتٍ، أو إِحدى عشرةَ، أو على قَدْرِ فراغه وحضورهِ وخشوعهِ وتوجُّهِهِ، ويجعلها ورداً عندَ المهماتِ. فإِنْ فَعَلَ ذلكَ معَ الإِخلاصِ، وقرأَ هذا الدعاءَ فلا بدَّ وأن يحصُلَ له شيْءٌ من بركاتِها وهو:
 «الْحَمْدُ للهِ وَالصَّلاةُ وَالسَّلامُ عَلَى رَسُولِ اللهِ، وَعَلَى آلِهِ. يَا اللهُ يَا حَيُّ يَا  قَيُّومُ، يَا مَلِكُ يَا قُدُّوسُ، يَا لَطِيفُ يَا قاهِرُ، يَا  عَلِيمُ يَا مُحِيطُ، يَا واسِعُ يَا حَفِيظُ، يَا عَلِيُّ يَا  عَظِيمُ، أَسْأَلُكَ يَا اللهُ يَا رَبِّ أَنْ تُحْيِـيَ قَلْبِيْ وَرُوحِيْ بِنُورِ مَعْرِفَتِكَ وَمَحَبَّتِكَ، وَتُحْيِـيَ جِسْمِي وجَوَارِحِي بِنُورِ عِبَادَتِكَ، وَلُزومِ طَاعَتِكَ، وَدَوَامِ خِدْمَتِكَ، وَأنْ تَرْزُقَنِي حُسْنَ الْقِيَامِ بِحَقِّكَ، وَتَمْلأَ يَدَيَّ مِنْ طَيِّبِ رِزْقِكَ، وَتَشْمَلَنِي بِخَفِيِّ لُطْفِكَ وَرَأْفَتِكَ، وَتُمَلِّكَنِي زِمَامَ نَفْسِي حَتَّى أَقُودَهَا إِلَى مَا فِيهِ رِضَاكَ وَنَيْلُ الْقُرْبِ مِنْكَ، وَطَهِّرْنِي مِنْ دَنَسِ الْمُخَالَفَاتِ وَالْغَفَلاتِ وَالشَّهَواتِ، وَآتِنِي رَحْمَةً مِنْ عِنْدِكَ، وَعَلِّمنِي مِنْ لَدُنْكَ عِلْماً، وَهَبْ لِيَ حِكْمَةً وَحُكْماً، وَعَافِنِي مِنْ سَخَطِكَ وَغَضَبِكَ، وَجَمِيعِ أَنْوَاعِ بَلائِكَ، وَاحْفَظْنِي مِنْ شِرَارِ خَلْقِكَ، وَشُرُورِهِمْ، وَمِنَ الشُّرُورِ كُلِّهَا، وَمِنْ جَمِيْعِ الْبَلِيَّاتِ وَالْمِحَنِ، وَأَعِذْنِي مِنْ مُضِلاّتِ الْفِتَنِ مَا ظَهَرَ مِنْهَا وَمَا بَطَنَ، وَاجْعَلْنِي مِنَ الَّذِيْنَ لاَ يُرِيدُونَ عُلُوّاً فِي الأَرْضِ وَلاَ فَسَاداً، وَهَبْ لِي فَضْلاً عَظِيماً، وَكَفِّرْ عَنِّي سَيِّئَاتِي، وَأَدْخِلْنِي مُدْخَلاً كَرِيماً يَا أَرْحَمَ الرَّاحِمِينَ، يَا أَرْحَمَ الرَّاحِمِينَ، يَا أَرْحَمَ الرَّاحِمينَ، وَصَلَّىٰ اللهُ عَلَىٰ سَيِّدِنَا مُحَمَّدٍ وَآلِهِ وَصَحْبِهِ وَسَلَّمَ.
 وهذا الدعاء للإِمَامِ الحَبيبِ عَبْدِ اللهِ الحدَّادِ رَضِيَ اللهُ عَنْهُ.
 ''',
-      false,
-      incrementedContentId++, //110,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1OqVWFRTEQTYH_FVFkyKb2uLmfpIA2T8P',
     ),
-    Content(
-      incrementedContentId,
-      //149,
-      '''«حَيٌّ قَيُّومٌ» "184 مَرَّةً"..''',
-      false,
-      incrementedContentId++, //111
+    _HeaderContentPair(
+      headerName: 'ذكر لكل مطلب',
+      contentText: '''«حَيٌّ قَيُّومٌ» "184 مَرَّةً"..''',
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '14BTNWZr22OWazicTarB970HIVYy3NxYT',
     ),
-    Content(
-      incrementedContentId,
-      //      150,
-      '''احْرِصْ كُلَّ الْحِرْصِ عَلَىٰ هٰذِهِ التَّعَوُّذَاتِ، وَالرُّقَىٰ، فَإِنَّها نَافِعَةٌ، وَهِيَ تَمْنَعُ وُصُوْلَ أَثَرِ العَائِنِ، وَتَدْفَعُهُ بَعْدَ وُصُوْلِهِ بِحَسْبِ قُوَّةِ إِيْمَانِ قَائِلِهَا، وَقُوَّةِ نَفْسِهِ وَاسْتِعْدَادِهِ، وَقُوَّةِ تَوَكُّلِهِ، وَثَبَاتِ قَلْبِهِ، قَالَ فِي «زَادِ المعادِ» لابنِ القَيِّمِ: فَمِنَ التَّعَوُّذَاتِ وَالرُّقَىٰ الإِكْثَارُ مِنْ قَرَاءَةِ ﴿ المُعَوِّذَتَيْنِ﴾، وَفَاتِحَةِ الْكِتَابِ، وَآيَةِ الْكُرْسِيِّ. 
+    _HeaderContentPair(
+      headerName: 'تعوّذاتٌ ورقىً نافعةٌ',
+      contentText:
+          '''احْرِصْ كُلَّ الْحِرْصِ عَلَىٰ هٰذِهِ التَّعَوُّذَاتِ، وَالرُّقَىٰ، فَإِنَّها نَافِعَةٌ، وَهِيَ تَمْنَعُ وُصُوْلَ أَثَرِ العَائِنِ، وَتَدْفَعُهُ بَعْدَ وُصُوْلِهِ بِحَسْبِ قُوَّةِ إِيْمَانِ قَائِلِهَا، وَقُوَّةِ نَفْسِهِ وَاسْتِعْدَادِهِ، وَقُوَّةِ تَوَكُّلِهِ، وَثَبَاتِ قَلْبِهِ، قَالَ فِي «زَادِ المعادِ» لابنِ القَيِّمِ: فَمِنَ التَّعَوُّذَاتِ وَالرُّقَىٰ الإِكْثَارُ مِنْ قَرَاءَةِ ﴿ المُعَوِّذَتَيْنِ﴾، وَفَاتِحَةِ الْكِتَابِ، وَآيَةِ الْكُرْسِيِّ. 
 وَمِنْهَا التَّعَوُّذَاتُ النَّبَوِيَّةُ نَحْوَ: «أَعُوْذُ بِكَلِماتِ اللهِ التَّامَّاتِ مِنْ شَرِّ مَا خَلَقَ».
 ونَحْوَ: «أَعُوْذُ بِكَلِمَاتِ اللهِ التَّامَّةِ، مِنْ كُلِّ شَيْطَانٍ وَهَامَّةٍ، وَمِنْ كُلِّ عَيْنٍ لاَمَّةٍ».
 وَنَحْوَ: «أَعُوْذُ بِكلِمَاتِ اللهِ التَّامَّاتِ الَّتِيْ لاَ يُجَاوِزُهُنَّ بَرٌّ وَلاَ فَاجِرٌ، مِنْ شَرِّ مَا خَلَقَ وَذَرَأَ وَبَرَأَ، وَمِنْ شَرِّ مَا يَنْزِلُ مِنَ السَّمَاءِ، وَمِنْ شَرِّ مَا يَعْرُجُ فِيْهَا، وَمِنْ شَرِّ مَا ذَرَأَ فِيْ الأَرْضِ، وَمِنْ شَرِّ فِتَنِ اللَّيْلِ، وَالنَّهَارِ، وَمِنْ شَرِّ طَوَارِقِ اللَّيْلِ إِلاَّ طَارِقاً يَطْرُقُ بِخَيْرٍ يَا رَحْمٰنُ».
@@ -3257,24 +3283,25 @@ class IsarHelper {
 وَمَنْ جرَّبَ هَذِهِ الدَّعَوَاتِ وَالْعُوَذَ.. عَرَفَ مِقْدَارَ مَنْفَعَتِهَا، وَشِدَّةَ الْحَاجةِ إِلَيْهَا، وَهِيْ تَمْنَعُ وُصُوْلَ أَثَرِ الْعَائِنِ، وَتَدْفَعُهُ بَعْدَ وُصُوْلِهِ بحَسَبِ قُوَّةِ إِيْمَانِ قَائِلِهَا، وَقُوَّةِ نَفْسِهِ، وَاسْتِعْدَادِهِ، وَقُوَّةِ تَوَكُّلِهِ وَثَبَاتِ قَلْبِهِ، فَإِنَّها سِلاحٌ، وَالسِّلاَحُ بِضَارِبِهِ.
 اللَّهُمَّ اسْتُرْ عوْرَاتِنَا، وَآمِنْ رَوْعَاتِنَا، وَاكْفِنَا كُلَّ هوْلٍ دُوْنَ الْجَنَّةِ..
 ''',
-      false,
-      incrementedContentId++, //112,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1ydofyj3QkoV0lX4WiYlTue_3NKqieDJX',
     ),
-    Content(
-      incrementedContentId,
-      //      151,
-      ''' مِمّا جُرِّبَ لإذهاب الخوف والفزع، والحزن والهَمِّ والغَمِّ: أن يُكْتَبَ بعد البسملة والصَّلاةِ على النَّبيِّ صلَّى الله عليه وسلَّم هاتان الآيتان:
-الأولى: الآية رقم (154) من سورة (آل عمران[3])، والثانية الآية رقم (29) من سورة (الفتح[48]), ثم يُحمَلان، ومَن حَملَهُما بارك الله له في جميع أحواله، ونَصرَهُ على أعدائه، وفرَّج الله عنه كلَّ همّ وغمّ، وهما ينفعان للأمراض الباطنة، وكلِّ ألمٍ يحدث في بدن الإنسان. وكل آية منهما تجمع حروف المعجم بأسرها.
+    _HeaderContentPair(
+      headerName: 'آياتٌ تكتب للحفظ',
+      contentText:
+          ''' مِمّا جُرِّبَ لإذهاب الخوف والفزع، والحزن والهَمِّ والغَمِّ: أن يُكْتَبَ بعد البسملة والصَّلاةِ على النَّبيِّ صلَّى الله عليه وسلَّم هاتان الآيتان:
+الأولى: الآية رقم (154) من سورة (آل عمران[3])، والثانية الآية رقم (29) من سورة (الفتح[48],
+    ), ثم يُحمَلان، ومَن حَملَهُما بارك الله له في جميع أحواله، ونَصرَهُ على أعدائه، وفرَّج الله عنه كلَّ همّ وغمّ، وهما ينفعان للأمراض الباطنة، وكلِّ ألمٍ يحدث في بدن الإنسان. وكل آية منهما تجمع حروف المعجم بأسرها.
 ﴿  ثُمَّ أَنزَلَ عَلَيْكُم مِّنۢ بَعْدِ ٱلْغَمِّ أَمَنَةًۭ نُّعَاسًۭا يَغْشَىٰ طَآئِفَةًۭ مِّنكُمْ ۖ وَطَآئِفَةٌۭ قَدْ أَهَمَّتْهُمْ أَنفُسُهُمْ يَظُنُّونَ بِٱللَّهِ غَيْرَ ٱلْحَقِّ ظَنَّ ٱلْجَـٰهِلِيَّةِ ۖ يَقُولُونَ هَل لَّنَا مِنَ ٱلْأَمْرِ مِن شَىْءٍۢ ۗ قُلْ إِنَّ ٱلْأَمْرَ كُلَّهُۥ لِلَّهِ ۗ يُخْفُونَ فِىٓ أَنفُسِهِم مَّا لَا يُبْدُونَ لَكَ ۖ يَقُولُونَ لَوْ كَانَ لَنَا مِنَ ٱلْأَمْرِ شَىْءٌۭ مَّا قُتِلْنَا هَـٰهُنَا ۗ قُل لَّوْ كُنتُمْ فِى بُيُوتِكُمْ لَبَرَزَ ٱلَّذِينَ كُتِبَ عَلَيْهِمُ ٱلْقَتْلُ إِلَىٰ مَضَاجِعِهِمْ ۖ وَلِيَبْتَلِىَ ٱللَّهُ مَا فِى صُدُورِكُمْ وَلِيُمَحِّصَ مَا فِى قُلُوبِكُمْ ۗ وَٱللَّهُ عَلِيمٌۢ بِذَاتِ ٱلصُّدُورِ ١٥٤ ﴾.
 ﴿  مُّحَمَّدٌۭ رَّسُولُ ٱللَّهِ ۚ وَٱلَّذِينَ مَعَهُۥٓ أَشِدَّآءُ عَلَى ٱلْكُفَّارِ رُحَمَآءُ بَيْنَهُمْ ۖ تَرَىٰهُمْ رُكَّعًۭا سُجَّدًۭا يَبْتَغُونَ فَضْلًۭا مِّنَ ٱللَّهِ وَرِضْوَٰنًۭا ۖ سِيمَاهُمْ فِى وُجُوهِهِم مِّنْ أَثَرِ ٱلسُّجُودِ ۚ ذَٰلِكَ مَثَلُهُمْ فِى ٱلتَّوْرَىٰةِ ۚ وَمَثَلُهُمْ فِى ٱلْإِنجِيلِ كَزَرْعٍ أَخْرَجَ شَطْـَٔهُۥ فَـَٔازَرَهُۥ فَٱسْتَغْلَظَ فَٱسْتَوَىٰ عَلَىٰ سُوقِهِۦ يُعْجِبُ ٱلزُّرَّاعَ لِيَغِيظَ بِهِمُ ٱلْكُفَّارَ ۗ وَعَدَ ٱللَّهُ ٱلَّذِينَ ءَامَنُوا۟ وَعَمِلُوا۟ ٱلصَّـٰلِحَـٰتِ مِنْهُم مَّغْفِرَةًۭ وَأَجْرًا عَظِيمًۢا ٢٩﴾..
 ''',
-      false,
-      incrementedContentId++, //113,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      152,
-      '''مِمَّا يُتْلَىٰ لِلْحِفْظِ: هٰذِهِ الأَبْيَاتُ فِي نَسَبِ النَّبِيِّ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ، فَإِنَّ مَنْ حَمَلَهَا، أَوْ قالَها، أَوْ كَانَتْ عِنْدَهُ؛ أَمِنَ مِنْ كُلِّ مَكْرُوْهٍ، وَحُفِظَ فِي نَفْسِهِ وَمَالِهِ وَأَهْلِهِ وَذُرِّيَّتِهِ؛ كَمَا قَالَهُ ابْنُ الجَوْزِيّ وَهِيَ:
+    _HeaderContentPair(
+      headerName: 'فائدةٌ في فضل نسب النّبيّ صلّى الله عليه وآله وسلّم',
+      contentText:
+          '''مِمَّا يُتْلَىٰ لِلْحِفْظِ: هٰذِهِ الأَبْيَاتُ فِي نَسَبِ النَّبِيِّ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ، فَإِنَّ مَنْ حَمَلَهَا، أَوْ قالَها، أَوْ كَانَتْ عِنْدَهُ؛ أَمِنَ مِنْ كُلِّ مَكْرُوْهٍ، وَحُفِظَ فِي نَفْسِهِ وَمَالِهِ وَأَهْلِهِ وَذُرِّيَّتِهِ؛ كَمَا قَالَهُ ابْنُ الجَوْزِيّ وَهِيَ:
 مُحَمَّدُ عَبْدُ اللهِ شَيْبَةُ هَاشِمٌ
 مَنَافٌ قُصَيٌّ مَعْ كِلاَبٍ وَمُرَّةِ
 وَكَعْبٌ لُؤَيٌّ غَالِبٌ فِهْرُ مَالِكٌ
@@ -3282,13 +3309,12 @@ class IsarHelper {
 وَمُدْرِكَةٌ إِلْيَاسُ مَعْ مُضَرٍ تَلاَ
 نِزَارٌ مَعَدٌّ ثُمَّ عَدْنَانُ صَحَّتِ.
 ''',
-      false,
-      incrementedContentId++, //114,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      153,
-      '''أَشرقَ نورُ اللهِ، وظهرَ كلامُ اللهِ، وثبتَ أَمرُ اللهِ، ونفذَ حكمُ اللهِ.
+    _HeaderContentPair(
+      headerName: 'دعاءٌ يقرأ صباحاً للحفظ من الأعداء',
+      contentText:
+          '''أَشرقَ نورُ اللهِ، وظهرَ كلامُ اللهِ، وثبتَ أَمرُ اللهِ، ونفذَ حكمُ اللهِ.
 استعنتُ باللهِ، وتوكلَّتُ على اللهِ، ما شاءَ اللهُ، لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ، تحصَّنتُ بخفيِّ لطفِ اللهِ، وبلطيفِ صنعِ اللهِ، وبجميلِ سترِ اللهِ، وبعظيمِ ذكرِ اللهِ، وبقوَّةِ سلطانِ اللهِ.
 دخلتُ في كنفِ اللهِ، واستجرتُ برسولِ اللهِ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ.
 بَرَأْتُ مِن حولي وقوَّتي واستعنتُ بحولِ اللهِ وقوَّتِهِ.
@@ -3296,88 +3322,92 @@ class IsarHelper {
 وصلَّى اللهُ علىٰ سَيِّدِنَا مُحَمَّدٍ خاتَمِ النبيِّيْنَ، وعلى آلهِ وصحبهِ أَجمعينَ، وسلَّمَ تسليماً كثيراً دائماً أبداً إِلىٰ يومِ الدينِ، والحمدُ للهِ ربِّ العالمينَ "سَبْعاً". 
 (وإِن لَم يتيسَّرْ قراءَتُهُ كلُّهُ سَبْعاً.. يقرأُ الذي بينَ قوسينِ سَبْعاً)..
 ''',
-      false,
-      incrementedContentId++, //115,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1UyrXeG96FdOejZVauzavFMP7GKUsA8nJ',
     ),
-    Content(
-      incrementedContentId,
-      //      154,
-      '''اللَّهُمَّ بتَلَأْلُؤ نورِ بهاءِ حُجُبِ عرشِكَ.. مِن أَعدائي احتجبتُ.
+    _HeaderContentPair(
+      headerName: ' حزب الحجب للشاذلي',
+      contentText:
+          '''اللَّهُمَّ بتَلَأْلُؤ نورِ بهاءِ حُجُبِ عرشِكَ.. مِن أَعدائي احتجبتُ.
 وبسطوةِ الجبروتِ ممَّن يَكيدُني.. استَتَرْتُ.
 وبطولِ حولِ شديدِ قوَّتِكَ مِن كلِّ سلطانٍ.. تحصَّنتُ..
 وبديمومِ قيُّومِ دوامِ أَبديَّتِكَ مِن كلِّ شيطانٍ.. استعذتُ.
 وبمكنونِ السرِّ مِن سرِّ سرِّكَ مِن كلِّ همٍّ وغمٍّ.. تخلَّصتُ.
 يا حاملَ العرشِ عَن حملةِ العرشِ، يا شديدَ البطشِ، يا حابسَ الوحشِ.. احبِس عنِّي مَن ظَلَمني، واغلِبْ مَن غلبَني، كتبَ اللهُ لأَغلبنَّ أَنا ورُسُلِي، إنَّ اللهَ قويٌّ عزيزٌ..
 ''',
-      false,
-      incrementedContentId++, //116,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '11acitT6Cwae7w_jzcsleswQi0HdgKx-t',
     ),
-    Content(
-      incrementedContentId,
-      //      155,
-      '''اللَّهُمَّ إنِّي أَسأَلُكَ بسرِّ الذاتِ، السرُّ هوَ أَنتَ، وأَنتَ هُوَ، لاَ إِلَهَ إِلاَّ أَنتَ.
+    _HeaderContentPair(
+      headerName: ' دعاء منسوب لأم قطب الدين السنباطي',
+      contentText:
+          '''اللَّهُمَّ إنِّي أَسأَلُكَ بسرِّ الذاتِ، السرُّ هوَ أَنتَ، وأَنتَ هُوَ، لاَ إِلَهَ إِلاَّ أَنتَ.
 احتجبتُ بنورِ اللهِ، وبنورِ عرشِ اللهِ، وبكلِّ اسمٍ مِن أَسماءِ اللهِ مِن عَدوِّي وعدوِّ اللهِ، مِن شرِّ خلقِ اللهِ، بمئَة أَلفِ أَلفِ لاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ.
 ختمتُ علىٰ نفسي، ودِيني، وأَهلي، ومالي، ووَلدي، وجميعِ ما أَعطاني ربِّي بخاتِمِ اللهِ القدُّوسِ المنيعِ الَّذِي ختمَ بهِ علىٰ أَقطارِ السمٰواتِ والأَرضِ (وَحسبُنا اللهُ ونعمَ الوكيلُ) "ثَلاَثاً".
 وصَلَّى اللهُ على سَيِّدِنا مُحَمَّدٍ وَآلِهِ وصحبهِ وسلَّمَ..
 ''',
-      false,
-      incrementedContentId++, //117,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1clgfih68shl-IJ1-fd6i6bSFQwNwpxOC',
     ),
-    Content(
-      incrementedContentId,
-      //      156,
-      '''«يا قَيُّومُ، فَلاَ يَفُوتُه شَيءٌ مِنْ عِلْمِهِ، وَلاَ يَؤُودُهُ» كُلَّ يَوْمٍ "سَبْعاً وَعِشْرِينَ مَرَّةً"..''',
-      false,
-      incrementedContentId++, //118,
+    _HeaderContentPair(
+      headerName: 'دعاء للحفظ',
+      contentText:
+          '''«يا قَيُّومُ، فَلاَ يَفُوتُه شَيءٌ مِنْ عِلْمِهِ، وَلاَ يَؤُودُهُ» كُلَّ يَوْمٍ "سَبْعاً وَعِشْرِينَ مَرَّةً"..''',
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1umWy8kVOvhXFOcHvqbZ_nCCDeQp9t9hM',
     ),
-    Content(
-      incrementedContentId,
-      //      157,
-      '''يَقْرَأُ "مِئَةَ مَرَّةٍ": «بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ، وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ العَلِيِّ العَظِيْمِ، يا حَيُّ، يا قَيُّومُ، يا قَدِيْمُ، يا فَرْدُ، يا وَتْرُ، يا أَحَدُ، يا صَمَدُ»، ثُمَّ يَسْجُدُ وَيَسْأَلُ اللهَ حَاجَتَهُ فَإِنَّها تُقْضَى، مُجَرَّبٌ كائِنَةً ما كانَتْ.
+    _HeaderContentPair(
+      headerName: 'فائدةٌ لقضاء الحاجة وكفاية العدو',
+      contentText:
+          '''يَقْرَأُ "مِئَةَ مَرَّةٍ": «بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ، وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ العَلِيِّ العَظِيْمِ، يا حَيُّ، يا قَيُّومُ، يا قَدِيْمُ، يا فَرْدُ، يا وَتْرُ، يا أَحَدُ، يا صَمَدُ»، ثُمَّ يَسْجُدُ وَيَسْأَلُ اللهَ حَاجَتَهُ فَإِنَّها تُقْضَى، مُجَرَّبٌ كائِنَةً ما كانَتْ.
 كَذلِكَ بَيْنَ سُنَّةِ الصُّبْحِ وَالفَرْضِ سُوْرَةَ (الفيل) "إِحْدَى وَأَرْبَعِيْنَ مَرَّةً"، وَهذِهِ الأسْماءَ: اللهُ القادِرُ، المُقْتَدِرُ، القاهِرُ كُلَّ جَبَّارٍ عَنِيْدٍ، ناصِرُ الحَقِّ حَيْثُ كانَ، بِهِ الحَوْلُ وَالقُوَّةُ، و: ﴿إِن كانَت إِلّا صَيحَةً واحِدَةً فَإِذا هُم خامِدونَ﴾. مَنْ فَعَلَ ذلِكَ رَأَى فِي عَدُوِّهِ ما يَسُرُّهُ، فَلْيَتَّقِ اللهَ، وَلاَ يَعْمَلْ ذلكَ إِلاَّ لِمُسْتَحِقِّهِ. اهـ. مِنَ «القِرْطاسِ» للإِمَامِ العارِفِ باللهِ الحَبِيْبِ عَلِيِّ بْنِ حَسَنٍ العَطَّاسِ وَقالَ: إِنَّها لِقَضاءِ الحاجَةِ
 ''',
-      false,
-      incrementedContentId++, //119,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      158,
-      '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ
+    _HeaderContentPair(
+      headerName: 'دعاء يقرأ على الأعداء',
+      contentText: '''بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيمِ
 اللَّهُمَّ اقطعْ أَجلَ أَمَلِ أَعدائِي، وشتِّتِ ـ اللَّهُمَّ ـ شملَهُم وأَمرَهُم، وفَرِّق جمعَهُم، واقلِبْ تدبيرَهم، وبدِّل أَحوالَهُم، ونَكِّسْ أَعلامَهُم، وكِلَّ سِلاحَهُم، وقَرِّبْ آجالهم، ونقِّصْ أَعمارَهُم، وزَلْزِلْ أَقدامَهُم، وغَيِّر أَفْكَارَهُم، وخَيِّبْ آمالَهُم، وخَرِّبْ بُنْيَانَهُمْ، واقْلَعْ آثارَهُم، حتَّى لا تَبْقىٰ لَهم باقيةٌ، ولا يجِدُوا لهم واقيةً، وأَشْغِلْهُم بأَبدانِهم وأَنْفُسِهِمْ، وارْمِهِمْ بِصَواعِقِ انتقَامِكَ، وابْطِشْ بِهِم بطْشاً شديداً، وخُذْهُم أَخْذاً عزيزاً، إِنَّكَ علىٰ كُلِّ شيْءٍ قديرٌ، وَلاَ حَوْلَ وَلاَ قُوَّةَ إِلاَّ بِاللهِ الْعَلِيِّ الْعَظِيْمِ.
 اللَّهُمَّ لا أَمْنَعُهُمْ ولا أَدفَعُهُمْ إِلاَّ بِكَ.
 اللَّهُمَّ إنَّا نَجْعَلُكَ في نُحُورِهِم، ونَعُوذُ بِكَ مِنْ شرورِهِم، يا مالكَ يومِ الدينِ، إِيَّاكَ نعبدُ وإِيَّاكَ نَستعينُ عليهِمْ، ودَمِّرْهُم تَدْمِيراً، وتَبِّرهُم تتبِيراً، واجْعَلهُم هباءً منثوراً، آمينَ "ثَلاَثاً" يا اللهُ "ثَلاَثاً".
 وصَلَّىٰ اللهُ على سَيِّدِنَا مُحَمَّدٍ وَآلِهِ وصَحْبِهِ وَسَلَّمَ..
 ''',
-      false,
-      incrementedContentId++, //120,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '11U2uRhm3OFaDA8iwWbU6fqG8zGZ06wyR',
     ),
-    Content(
-      incrementedContentId,
-      //      159,
-      '''إِذَا خِفْتَ مَكْرَ قَوْمٍ فَقُلْ: ٱلَّذِينَ قَالَ لَهُمُ ٱلنَّاسُ إِنَّ ٱلنَّاسَ قَدْ جَمَعُوا۟ لَكُمْ فَٱخْشَوْهُمْ فَزَادَهُمْ إِيمَـٰنًۭا وَقَالُوا۟ حَسْبُنَا ٱللَّهُ وَنِعْمَ ٱلْوَكِيلُ ١٧٣﴾ وَكَرِّرْ حَسْبُنَا اللهُ وَنِعْمَ الوَكِيْلُ "أَربَعَ مِئَةٍ وَخَمْسِيْنَ مَرَّةً"، ثُمَّ قُلْ: ﴿ فَٱنقَلَبُوا۟ بِنِعْمَةٍۢ مِّنَ ٱللَّهِ وَفَضْلٍۢ لَّمْ يَمْسَسْهُمْ سُوٓءٌۭ وَٱتَّبَعُوا۟ رِضْوَٰنَ ٱللَّهِ ۗ وَٱللَّهُ ذُو فَضْلٍ عَظِيمٍ ١٧٤﴾..''',
-      false,
-      incrementedContentId++, //121,
+    _HeaderContentPair(
+      headerName: 'فائدةٌ لمن خاف مكر قومٍ',
+      contentText:
+          '''إِذَا خِفْتَ مَكْرَ قَوْمٍ فَقُلْ: ٱلَّذِينَ قَالَ لَهُمُ ٱلنَّاسُ إِنَّ ٱلنَّاسَ قَدْ جَمَعُوا۟ لَكُمْ فَٱخْشَوْهُمْ فَزَادَهُمْ إِيمَـٰنًۭا وَقَالُوا۟ حَسْبُنَا ٱللَّهُ وَنِعْمَ ٱلْوَكِيلُ ١٧٣﴾ وَكَرِّرْ حَسْبُنَا اللهُ وَنِعْمَ الوَكِيْلُ "أَربَعَ مِئَةٍ وَخَمْسِيْنَ مَرَّةً"، ثُمَّ قُلْ: ﴿ فَٱنقَلَبُوا۟ بِنِعْمَةٍۢ مِّنَ ٱللَّهِ وَفَضْلٍۢ لَّمْ يَمْسَسْهُمْ سُوٓءٌۭ وَٱتَّبَعُوا۟ رِضْوَٰنَ ٱللَّهِ ۗ وَٱللَّهُ ذُو فَضْلٍ عَظِيمٍ ١٧٤﴾..''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      160,
-      '''«يا مُبْدِعَ البَدائِعِ، لَمْ يَبْغِ فِي إِنْشائِها عَوْناً مِنْ خَلْقِهِ» "79 مَرَّةً"..''',
-      false,
-      incrementedContentId++, //122,
+    _HeaderContentPair(
+      headerName: ' ذكر للفتوح وتحصيل العلم',
+      contentText:
+          '''«يا مُبْدِعَ البَدائِعِ، لَمْ يَبْغِ فِي إِنْشائِها عَوْناً مِنْ خَلْقِهِ» "79 مَرَّةً"..''',
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1ypaUvpmCfYK3mENet4hVIDo3RHAMqFDE',
     ),
-    Content(
-      incrementedContentId,
-      //      161,
-      '''«اللَّهُمَّ ارْزُقْنِي فَهْمَ النَّبِيِّيْنَ، وَحِفْظَ المُرْسَلِيْنَ، وسُرْعَةَ إِلهامِ المَلائِكَةِ المُقَرِّبِيْنَ.اللَّهُمَّ أَغْنِنِي بِالعِلْمِ، وَزَينِّي بالحِلْمِ، وَأَكْرِمْنِي بالتَّقْوَى، وَجَمِّلْنِي بالعافِيَةِ.. يا أَرْحَمَ الرَّاحِميْنَ».
+    _HeaderContentPair(
+      headerName: 'دعاء لقوة الحافظة',
+      contentText:
+          '''«اللَّهُمَّ ارْزُقْنِي فَهْمَ النَّبِيِّيْنَ، وَحِفْظَ المُرْسَلِيْنَ، وسُرْعَةَ إِلهامِ المَلائِكَةِ المُقَرِّبِيْنَ.اللَّهُمَّ أَغْنِنِي بِالعِلْمِ، وَزَينِّي بالحِلْمِ، وَأَكْرِمْنِي بالتَّقْوَى، وَجَمِّلْنِي بالعافِيَةِ.. يا أَرْحَمَ الرَّاحِميْنَ».
 وَمِنْ فَوائِدِ هٰذا الدُّعاءِ.. أَنَّهُ يُقْرَأُ قَبْلَ الحِفْظِ، وقَبْلَ الدَّرْسِ "ثلاثاً"، وَبَعْدَ الحِفْظِ وَبَعْدَ الدَّرسِ "ثلاثاً" فإِنَّهُ مُعِينٌ لِتَسْهِيلِ الحِفْظِ!.
 ''',
-      false,
-      incrementedContentId++, //123,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1yonI42oaZP0WgNtz9reB5VxzuuQ8-koi',
     ),
-    Content(
-      incrementedContentId,
-      //      162,
-      '''لقضاء الدين: سورة القدر بَعْدَ الزَّوَالِ يَوْمَ الْجُمُعَةِ (سبع مَرَّاتٍ).
+    _HeaderContentPair(
+      headerName: ' أذكار لطلب الرزق وقضاء الدين',
+      contentText:
+          '''لقضاء الدين: سورة القدر بَعْدَ الزَّوَالِ يَوْمَ الْجُمُعَةِ (سبع مَرَّاتٍ).
 وَلِتَسْهِيل الدَّراهِمِ تَقُولُ: «يَا غَنِيّ يَا مُغْنِيْ» "أَرْبَعِيْنَ مَرَّةً"، وَبَعْدَ كُلِّ عَشْرَةٍ تَزِيْدُ: «أَغْنِنيْ».
 وَتَأْتِيْ بِهذا كُلِّهِ وَالخَطيبُ يَخْطُبُ يَوْمَ الْجُمُعَةِ فِي أَثْنَاءِ الخُطْبَةِ الثَّانِيَةِ.
 مَنْ قالَ: «اللَّهُمَّ إِنِّي أسْتَغْفِرُكَ وَأَتُوبُ إِلَيْكَ، إِنَّكَ أَنْتَ التَّوَّابُ الرَّحِيْمُ» "سَبْعِيْنَ مَرَّةً" كُلَّ يَوْمٍ، رَزَقَهُ الله مِنْ حَيْثُ لاَ يَحْتَسِبُ، وَعِنْدَ اسْتِبْطَاءِ الرِّزْقِ يَقُولُ: «اللَّهُمَّ إِنِّي أَسْأَلُكَ مِنْ فَضْلِكَ، فَإِنَّهُ لا يَمْلِكُهُ إِلاَّ أَنْتَ».
@@ -3389,117 +3419,120 @@ class IsarHelper {
 اللَّهُمَّ مَا ضَعُفَتْ عَنْهُ قُوَّتِي وَقَصُرَ عَنْهُ عَمَلِي؛ وَلَمْ تَنْتَهِ إِلَيْهِ رَغْبَتِي، وَلَمْ تَبْلُغْهُ مَسْأَلَتِي وَلَمْ يَجْرِ عَلَىٰ لِسَانِي، مِمَّا أَعْطَيْتَ أَحَداً مِنَ الأَوَّلِينَ وَالآخِرِيْنَ مِنَ اليَقِينِ؛ فَخُصَّنِي بِهِ يَا أَرْحَمَ الرَّاحِمِينَ».
  وَرُوِيَ عَنْ بَعْضِهِمْ أَنَّهُ قَالَ: تَعَهَّدُوا ﴿قل ياأيها الكافرون﴾ و﴿ إذا جاء نصر الله والفتح﴾ فَإِنَّهُمَا يَنْفِيانِ الفَقْر.
 ''',
-      false,
-      incrementedContentId++, //124,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      163,
-      '''مِنْ «جَواهِرِ البِحَارِ»، لِلنَّبْهَانِيّ ـ الْجُزْءِ الثَّالِثِ ـ قَالَ:
+    _HeaderContentPair(
+      headerName: 'فائدةٌ لإذهاب الوجع',
+      contentText:
+          '''مِنْ «جَواهِرِ البِحَارِ»، لِلنَّبْهَانِيّ ـ الْجُزْءِ الثَّالِثِ ـ قَالَ:
 وَقَدْ رَوَيْنَا بِالإِجَازَةِ الْخَاصَّةِ وَالْعَامَّةِ عَنْ بَعْضِ مَشَايِخِنَا ـ رَحِمَهُمُ اللهُ تَعَالىٰ ـ أَنَّ مِنْ فَوائِدِ كَفِّهِ الشَّريفَةِ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ: أَنَّ الْمَوْجُوعَ أَيَّ وَجَعٍ كَانَ إِذَا وَضَعَ يَدَهُ عَلَى مَحَلّ الوَجَعِ وَقَالَ هٰذَيْنِ البَيْتَيْنِ يُعَافَىٰ:
 أمْرَرْتُ كَفّاً سَبَّحَتْ فِيْهَا الحَصَا
 وَرَوَّتِ الجَيْشَ بِمَاءٍ طَاهِرِ
 عَلَىٰ مَعَاشِيْ وَمَعَادِيْ وَعَلَىٰ
 ذُرِيَّتِيْ وَبَاطِنيْ وَظَاهِرِيْ
 وَهُمَا لابْنِ الْوَرْدِيْ. مِنْ فَوائِدِهِمَا يُنْشَدانِ صَبَاحاً وَمَسَاءً لِلْحِفْظِ. اهـ..''',
-      false,
-      incrementedContentId++, //125,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      164,
-      '''«اللَّهُمَّ نَزِّهْ قُلُوبَنَا عَنِ التَّعَلُّقِ بِمَنْ دُوْنَكَ، وَاجْعَلْنا مِنْ قَوْمٍ تُحِبُّهُمْ وَيُحِبُّونَكَ»..''',
-      false,
-      incrementedContentId++, //126,
+    _HeaderContentPair(
+      headerName: 'دعاء لتنزيه القلب عن التعلق بما دون الله',
+      contentText:
+          '''«اللَّهُمَّ نَزِّهْ قُلُوبَنَا عَنِ التَّعَلُّقِ بِمَنْ دُوْنَكَ، وَاجْعَلْنا مِنْ قَوْمٍ تُحِبُّهُمْ وَيُحِبُّونَكَ»..''',
+      isLiked: false,
     ),
-
-    ///  ما يطلب ليلة الجمعة ويومها
-    /// ما يطلب ليلة الجمعة
-    Content(
-      incrementedContentId,
-      '''مِمَّا يَنْبَغِيْ وَيُنْدَبُ لِطالِبِ الآخِرَةِ المُواظَبَةُ عَلَيْهِ لَيْلَةَ الجُمُعَةِ أَنْ يَقْرَأَ سُوْرَةَ (الكَهْفِ[18]).''',
-      false,
-      incrementedContentId++,
+    _HeaderContentPair(
+      headerName: 'قراءة سورة الكهف',
+      contentText:
+          '''مِمَّا يَنْبَغِيْ وَيُنْدَبُ لِطالِبِ الآخِرَةِ المُواظَبَةُ عَلَيْهِ لَيْلَةَ الجُمُعَةِ أَنْ يَقْرَأَ سُوْرَةَ (الكَهْفِ[18]).''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      '''
+    _HeaderContentPair(
+      headerName: 'الإكثار من الصلاة على النبي صلى الله عليه وسلم',
+      contentText: '''
 أَكْثِرْ مِنَ الصَّلاةِ عَلَىٰ النَّبِيِّ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ فِي لَيْلَتِها.''',
-      false,
-      incrementedContentId++, //126,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      165,
-      '''رُوِيَ عَنْ رَسُولِ اللهِ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ أَنَّهُ قَالَ: «مَنْ قَرَأَ لَيْلَةَ الجُمُعَةِ: ﴿ فَلِلَّهِ ٱلْحَمْدُ رَبِّ ٱلسَّمَـٰوَٰتِ وَرَبِّ ٱلْأَرْضِ رَبِّ ٱلْعَـٰلَمِينَ ٣٦ وَلَهُ ٱلْكِبْرِيَآءُ فِى ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضِ ۖ وَهُوَ ٱلْعَزِيزُ ٱلْحَكِيمُ ٣٧﴾ ثُمَّ يقولُ: «اللَّهُمَّ اجْعَلْ ثَوابَها لِوالِدَيَّ» لَمْ يَبْقَ لِوالِدَيْهِ حَقٌّ إِلاَّ أَدَّاهُ إِلَيْهِما!''',
-      false,
-      incrementedContentId++, //127,
+    _HeaderContentPair(
+      headerName: 'قراءة آخر سورة الجاثية، وجعل ثوابه للوالدين',
+      contentText:
+          '''رُوِيَ عَنْ رَسُولِ اللهِ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ أَنَّهُ قَالَ: «مَنْ قَرَأَ لَيْلَةَ الجُمُعَةِ: ﴿ فَلِلَّهِ ٱلْحَمْدُ رَبِّ ٱلسَّمَـٰوَٰتِ وَرَبِّ ٱلْأَرْضِ رَبِّ ٱلْعَـٰلَمِينَ ٣٦ وَلَهُ ٱلْكِبْرِيَآءُ فِى ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضِ ۖ وَهُوَ ٱلْعَزِيزُ ٱلْحَكِيمُ ٣٧﴾ ثُمَّ يقولُ: «اللَّهُمَّ اجْعَلْ ثَوابَها لِوالِدَيَّ» لَمْ يَبْقَ لِوالِدَيْهِ حَقٌّ إِلاَّ أَدَّاهُ إِلَيْهِما!''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      //      165,
-      '''رُوِيَ أَنَّهُ عَلَيْهِ الصَّلاةُ والسَّلامُ قالَ: «مَنْ قالَ لَيْلَةَ الجُمُعَةِ: يا مَلِيكُ، يا قَدِيْرُ، يا مَنْ لا شَرِيْكَ لَهُ، وَلاَ وَزِيْرَ، صَلِّ عَلَى مُحَمَّد النَّبِيِّ، وَاغْفِرْ لِيْ وَلِوالِدَيَّ، فَقَدْ أَدَّى حَقَّهُمَا»!. اهـ.''',
-      false,
-      incrementedContentId++, //127,
+    _HeaderContentPair(
+      headerName: 'دعاء لطلب المغفرة للوالدين',
+      contentText:
+          '''رُوِيَ أَنَّهُ عَلَيْهِ الصَّلاةُ والسَّلامُ قالَ: «مَنْ قالَ لَيْلَةَ الجُمُعَةِ: يا مَلِيكُ، يا قَدِيْرُ، يا مَنْ لا شَرِيْكَ لَهُ، وَلاَ وَزِيْرَ، صَلِّ عَلَى مُحَمَّد النَّبِيِّ، وَاغْفِرْ لِيْ وَلِوالِدَيَّ، فَقَدْ أَدَّى حَقَّهُمَا»!. اهـ.''',
+      isLiked: false,
     ),
-
-    /// ما يطلب يوم الجمعة
-    Content(
-      incrementedContentId,
-      '''عَلَيْكَ بِتَوْزِيْعِ يَوْمِ الجُمُعَةِ فِي العِبادَةِ، وَاجْتَهِدْ أَنْ تَأْتِيَ الجامِعَ قَبْلَ الزَّوالِ، وَلَوْ بِسَاعَةٍ.''',
-      false,
-      incrementedContentId++,
+    _HeaderContentPair(
+      headerName: 'توزيع الأوقات في العبادة و التبكير للجامع',
+      contentText:
+          '''عَلَيْكَ بِتَوْزِيْعِ يَوْمِ الجُمُعَةِ فِي العِبادَةِ، وَاجْتَهِدْ أَنْ تَأْتِيَ الجامِعَ قَبْلَ الزَّوالِ، وَلَوْ بِسَاعَةٍ.''',
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      '''وَمِمَّا يُسَنُّ قراءَتُهُ سُوْرَةُ (الكَهْفِ[18]) وَ(آلِ عِمرانَ[3]) وَ(الأَنْعامِ[6]) وَسُوْرَةُ (هُودٍ[11]) وَ(الدُّخانِ[44]).
+    _HeaderContentPair(
+      headerName: 'سور يطلب قراءتها يوم الجمعة',
+      contentText:
+          '''وَمِمَّا يُسَنُّ قراءَتُهُ سُوْرَةُ (الكَهْفِ[18]) وَ(آلِ عِمرانَ[3]) وَ(الأَنْعامِ[6]) وَسُوْرَةُ (هُودٍ[11]) وَ(الدُّخانِ[44]).
 وَعَمَلُ سَيِّدِنَا القُطْبِ الحَبِيبِ عَبْدِ اللهِ بْنِ عَلَويٍّ الحدَّادِ قِرَاءَةُ سُورَةِ (طه[20]) قَبْلَ دُخُولِ الخَطِيبِ.''',
-      false,
-      incrementedContentId++, //126,
+      isLiked: false,
+      hasVoice: true,
+      voiceFile: '1n7D6bIlj58N_N6d0elXEq2e9F2lNIv82',
     ),
-    Content(
-      incrementedContentId,
-      '''
+    _HeaderContentPair(
+      headerName: 'الإكثار من الصلاة على النبي صلى الله عليه وسلم',
+      contentText: '''
 أَكْثِرْ مِنَ الصَّلاةِ عَلَىٰ النَّبِيِّ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ فِي يَوْمِهَا.''',
-      false,
-      incrementedContentId++, //126,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      '''
+    _HeaderContentPair(
+      headerName: 'صيغة خاصة من الصلاة على النبي صلى الله عليه وسلم',
+      contentText: '''
 رُوِيَ عَنِ النَّبِيِّ صَلَّىٰ اللهُ عَلَيْهِ وَآلِهِ وَسَلَّمَ أَنَّهُ قَالَ: «مَنْ صَلَّىٰ عَلَيَّ فِي يَوْمِ الجُمُعَةِ "ثَمانِيْنَ مَرَّةً" غَفَرَ اللهُ لَهُ ذُنُوبَ ثَمانِيْنَ سَنَةً! قِيْلَ: يا رَسُولَ اللهِ.. كَيْفَ الصَّلاةُ عَلَيْكَ؟ قالَ: تَقُوْلُ: «اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ عَبْدِكَ، وَنَبِيِّكَ، وَرَسُوْلِكَ، النَّبِيِّ الأُمِّيِّ» "ثَمانينَ مَرَّةً".
 (حزب يوم الجمعة من دلائل الخيرات%91%)''',
-      false,
-      incrementedContentId++, //126,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      '''احْرِصْ عَلَى الأَرْبَعِ رَكَعَاتٍ، الَّتِيْ مَنْ واظَبَ عَلَيْها يَرَى مَقْعَدَهُ مِنَ الجَنَّةِ، أَوْ يُرَى لَهُ! تَقْرَأُ فِي كلِّ رَكْعَةٍ "خَمْسِيْنَ" مِنَ (الإِخْلاصِ).
+    _HeaderContentPair(
+      headerName: 'أربع ركعات فضيلة',
+      contentText:
+          '''احْرِصْ عَلَى الأَرْبَعِ رَكَعَاتٍ، الَّتِيْ مَنْ واظَبَ عَلَيْها يَرَى مَقْعَدَهُ مِنَ الجَنَّةِ، أَوْ يُرَى لَهُ! تَقْرَأُ فِي كلِّ رَكْعَةٍ "خَمْسِيْنَ" مِنَ (الإِخْلاصِ).
 وَأَرْبعَاً قَبْلَ الجُمُعَةِ، وَعَمَلُ القُطْبِ سَيِّدِنا الحَدَّادِ فِيهَا يَقْرَأُ فِي كُلِّ رَكْعَةٍ مِنْها (الإِخْلاصَ) "ثَلاَثاً" وَآيَةَ (الكُرْسِيِّ)، وَيُضِيْفُ إِلى ذلِكَ فِي الرَّكْعَةِ الأُوْلَى أَوَّلَ سُوْرَةِ (الجُمُعَةِ[62]) إِلَى: ﴿  يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوٓا۟ إِذَا نُودِىَ لِلصَّلَوٰةِ ...﴾.
 وفِي الثَّانِيَةِ يُكْمِلُ السُّوْرَةَ مِنْ: ﴿  يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوٓا۟ إِذَا نُودِىَ لِلصَّلَوٰةِ مِن يَوْمِ ٱلْجُمُعَةِ فَٱسْعَوْا۟ إِلَىٰ ذِكْرِ ٱللَّهِ وَذَرُوا۟ ٱلْبَيْعَ ۚ ذَٰلِكُمْ خَيْرٌۭ لَّكُمْ إِن كُنتُمْ تَعْلَمُونَ ٩ فَإِذَا قُضِيَتِ ٱلصَّلَوٰةُ فَٱنتَشِرُوا۟ فِى ٱلْأَرْضِ وَٱبْتَغُوا۟ مِن فَضْلِ ٱللَّهِ وَٱذْكُرُوا۟ ٱللَّهَ كَثِيرًۭا لَّعَلَّكُمْ تُفْلِحُونَ ١٠ وَإِذَا رَأَوْا۟ تِجَـٰرَةً أَوْ لَهْوًا ٱنفَضُّوٓا۟ إِلَيْهَا وَتَرَكُوكَ قَآئِمًۭا ۚ قُلْ مَا عِندَ ٱللَّهِ خَيْرٌۭ مِّنَ ٱللَّهْوِ وَمِنَ ٱلتِّجَـٰرَةِ ۚ وَٱللَّهُ خَيْرُ ٱلرَّٰزِقِينَ ﴾ و﴿  ءَامَنَ ٱلرَّسُولُ بِمَآ أُنزِلَ إِلَيْهِ مِن رَّبِّهِۦ وَٱلْمُؤْمِنُونَ ۚ كُلٌّ ءَامَنَ بِٱللَّهِ وَمَلَـٰٓئِكَتِهِۦ وَكُتُبِهِۦ وَرُسُلِهِۦ لَا نُفَرِّقُ بَيْنَ أَحَدٍۢ مِّن رُّسُلِهِۦ ۚ وَقَالُوا۟ سَمِعْنَا وَأَطَعْنَا ۖ غُفْرَانَكَ رَبَّنَا وَإِلَيْكَ ٱلْمَصِيرُ ٢٨٥ لَا يُكَلِّفُ ٱللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا ٱكْتَسَبَتْ ۗ رَبَّنَا لَا تُؤَاخِذْنَآ إِن نَّسِينَآ أَوْ أَخْطَأْنَا ۚ رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَآ إِصْرًۭا كَمَا حَمَلْتَهُۥ عَلَى ٱلَّذِينَ مِن قَبْلِنَا ۚ رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِۦ ۖ وَٱعْفُ عَنَّا وَٱغْفِرْ لَنَا وَٱرْحَمْنَآ ۚ أَنتَ مَوْلَىٰنَا فَٱنصُرْنَا عَلَى ٱلْقَوْمِ ٱلْكَـٰفِرِينَ ٢٨٦ ﴾.
 وفي الثَّالِثَةِ: (المُنافِقُونَ[63]) إِلى: ﴿  يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ لَا تُلْهِكُمْ أَمْوَٰلُكُمْ وَلَآ أَوْلَـٰدُكُمْ عَن ذِكْرِ ٱللَّهِ ۚ وَمَن يَفْعَلْ ذَٰلِكَ فَأُو۟لَـٰٓئِكَ هُمُ ٱلْخَـٰسِرُونَ ﴾.
 وَفِي الرَّابِعَةِ يُتَمِّمُها مَعَ آيَةِ: ﴿  هُوَ ٱللَّهُ ٱلَّذِى لَآ إِلَـٰهَ إِلَّا هُوَ ٱلْمَلِكُ ٱلْقُدُّوسُ ٱلسَّلَـٰمُ ٱلْمُؤْمِنُ ٱلْمُهَيْمِنُ ٱلْعَزِيزُ ٱلْجَبَّارُ ٱلْمُتَكَبِّرُ ۚ سُبْحَـٰنَ ٱللَّهِ عَمَّا يُشْرِكُونَ ٢٣ هُوَ ٱللَّهُ ٱلْخَـٰلِقُ ٱلْبَارِئُ ٱلْمُصَوِّرُ ۖ لَهُ ٱلْأَسْمَآءُ ٱلْحُسْنَىٰ ۚ يُسَبِّحُ لَهُۥ مَا فِى ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضِ ۖ وَهُوَ ٱلْعَزِيزُ ٱلْحَكِيمُ ٢٤ ﴾.
 ثُمَّ ﴿  يَـٰٓأَيُّهَا ٱلْمُدَّثِّرُ ١ قُمْ فَأَنذِرْ ٢ وَرَبَّكَ فَكَبِّرْ ٣ ﴾ ثُمَّ يَرْكَعُ.''',
-      false,
-      incrementedContentId++, //126,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      '''
+    _HeaderContentPair(
+      headerName: 'أذكار بعد صلاة الجمعة',
+      contentText: '''
 بَعْدَ السَّلامِ من صلاة الجمعة تُسَبِّحُ كَبَقِيَّةِ الصَّلَواتِ، ثُمَّ تَقْرَأُ المُسَبَّعاتِ، وَهِيَ: (الفاتِحَةُ) "سَبْعَاً"، (الإخْلاصُ) "سَبْعَاً"، (الفَلَقُ) "سَبْعَاً"، (النَّاسُ) "سَبْعَاً"، ثُمَّ سُبْحَانَ اللهِ العَظِيْمِ وَبِحَمْدِهِ "مِئَةَ مَرَّةٍ".
 وَفِي «شَرْحِ الصُّدُورِ»: أَنَّ الحَبِيْبَ عَبْدَ الرَّحْمنِ المَشْهُورَ يَأْتِيْ بَدَلَ هذا: «سُبْحانَ اللهِ وَبِحَمْدِهِ، سُبْحَانَ اللهِ العَظِيْمِ وَبِحَمْدِهِ، أَسْتَغْفِرُ الله» "مِئَةَ مَرَّةٍ".
 وَيُقالُ: إِنَّ مَنْ أَتَىٰ بِهِ غَفَرَ اللهُ لَهُ مِئَةَ أَلْفِ ذَنْبٍ، وَلِوالِدَيْهِ أَرْبَعَةً وَعِشْرِيْنَ أَلْفَ ذَنْبٍ!. اهـ.
 ثُـمَّ: يَا غَنِيُّ، يا حَمِيْدُ، يا مُبْدِئُ، يا  مُعِيْدُ، يا رَحِيْمُ، يا وَدُوْدُ، أغْنِنِيْ بِحَلالِكَ عَنْ حَرامِكَ، وَبِفَضْلِكَ عَمَّنْ سِوَاكَ، الأَقَلُّ "ثَلاثَ مَرَّاتٍ"، وَالأكْمَلُ "سَبعينَ مَرَّةً"، ثُمَّ: يا كافِي، يا مُغْنِي، يا  فَتَّاحُ، يا رَزَّاقُ "عِدَّةَ مَرَّاتٍ".''',
-      false,
-      incrementedContentId++, //126,
+      isLiked: false,
     ),
-    Content(
-      incrementedContentId,
-      '''
+    _HeaderContentPair(
+      headerName: 'ما يقال بعد الانصرف من صلاة الجمعة',
+      contentText: '''
 «اللَّهُمَّ إِنِّي أَجَبْتُ دَعْوَتَكَ، وَصَلَّيْتُ فَرِيْضَتَكَ، وَانْتَشَرْتُ كَما أَمَرْتَنِيْ؛ فَارْزُقْنِيْ وَأَنْتَ خَيْرُ الرَّازِقِيْنَ».
 وَقَدْ وَرَدَ بِزِيادَةٍ عَلَى ذلِكَ.''',
-      false,
-      incrementedContentId++, //126,
+      isLiked: false,
     ),
   ];
+}
+
+class _HeaderContentPair {
+  final String headerName;
+  final String? contentText;
+  final bool isLiked;
+  final bool hasVoice;
+  final String? voiceFile;
+
+  const _HeaderContentPair({
+    required this.headerName,
+    this.contentText,
+    this.isLiked = false,
+    this.hasVoice = false,
+    this.voiceFile,
+  });
 }
