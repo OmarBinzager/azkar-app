@@ -77,16 +77,21 @@ class _DownloadsViewState extends ConsumerState<DownloadsView> {
     final path = await _getPdfLocalPath();
     final file = File(path);
     if (await file.exists() && await file.length() > 100) {
-      _pdfExists = true;
       try {
-        _pdfSize = await file.length();
-      } catch (_) {
-        _pdfSize = 0;
-      }
-    } else {
-      _pdfExists = false;
-      _pdfSize = 0;
+        final header = await file.openRead(0, 5).first;
+        if (String.fromCharCodes(header).startsWith('%PDF')) {
+          _pdfExists = true;
+          _pdfSize = await file.length();
+          return;
+        }
+      } catch (_) {}
+      // Delete corrupted/non-PDF file
+      try {
+        await file.delete();
+      } catch (_) {}
     }
+    _pdfExists = false;
+    _pdfSize = 0;
   }
 
   Future<void> _downloadPdf() async {
@@ -100,7 +105,7 @@ class _DownloadsViewState extends ConsumerState<DownloadsView> {
       final path = await _getPdfLocalPath();
       final file = File(path);
       final downloadUrl =
-          'https://drive.google.com/uc?export=download&id=$_bookFileId&confirm=t';
+          'https://drive.usercontent.google.com/download?id=$_bookFileId&export=download&confirm=t';
 
       final client = HttpClient();
       client.autoUncompress = true;

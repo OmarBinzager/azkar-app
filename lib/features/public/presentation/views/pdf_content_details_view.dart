@@ -123,7 +123,7 @@ class _PdfContentDetailsViewState extends ConsumerState<PdfContentDetailsView> {
           if (match != null && match.groupCount >= 1) {
             fileId = match.group(1)!;
             downloadUrl =
-                'https://drive.google.com/uc?export=download&id=$fileId&confirm=t';
+                'https://drive.usercontent.google.com/download?id=$fileId&export=download&confirm=t';
           }
         }
 
