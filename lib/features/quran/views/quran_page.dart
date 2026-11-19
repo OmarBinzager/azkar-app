@@ -3,7 +3,10 @@ import 'dart:convert';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart' as m;
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:new_azkar_app/core/services/mushaf_image_service.dart';
+import 'package:new_azkar_app/core/services/qcf_font_service.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -110,6 +113,9 @@ class _QuranViewPageState extends ConsumerState<QuranViewPage> {
   @override
   void initState() {
     super.initState();
+    QcfFontService.ensurePageFontLoaded(widget.pageNumber).then((ok) {
+      if (ok && mounted) setState(() {});
+    });
     if (widget.jsonData == null) {
       loadJsonAsset();
     }
@@ -449,6 +455,7 @@ class _QuranViewPageState extends ConsumerState<QuranViewPage> {
                 reverse: false,
                 scrollDirection: Axis.horizontal,
                 onPageChanged: (a) {
+                  MushafImageService.prefetchAdjacent(a);
                   setState(() {
                     selectedSpan = "";
                     index = a;
@@ -770,108 +777,46 @@ class _QuranViewPageState extends ConsumerState<QuranViewPage> {
     );
   }
 
-  m.Directionality _buildSurahContent(int pageIndex) {
-    return Directionality(
-      textDirection: m.TextDirection.rtl,
-      child: Padding(
-        padding: const EdgeInsets.all(0.0),
-        child: SizedBox(
-          width: double.infinity,
-          child: RichText(
-            key: richTextKeys[pageIndex - 1],
-            textDirection: m.TextDirection.rtl,
-            textAlign: (pageIndex == 1 || pageIndex == 2 || pageIndex > 570)
-                ? TextAlign.center
-                : TextAlign.center,
-            softWrap: true,
-            locale: const Locale("ar"),
-            text: TextSpan(
-              style: TextStyle(
-                color: m.Colors.black,
-                fontSize: 23.sp.toDouble(),
-              ),
-              children: getPageData(pageIndex).expand((e) {
-                List<InlineSpan> spans = [];
-                for (var i = e["start"]; i <= e["end"]; i++) {
-                  // Surah Header Banner
-                  if (i == 1) {
-                    spans.add(
-                      WidgetSpan(
-                        child: HeaderWidget(
-                          e: e,
-                          jsonData: activeJsonData,
-                        ),
-                      ),
-                    );
-                    if (pageIndex != 187 && pageIndex != 1) {
-                      spans.add(
-                        const WidgetSpan(
-                          child: Basmallah(index: 0),
-                        ),
-                      );
-                    }
-                    if (pageIndex == 187) {
-                      spans.add(
-                        WidgetSpan(
-                          child: Container(
-                            height: 10.h,
-                          ),
-                        ),
-                      );
-                    }
-                  }
-
-                  // Verses TextSpan with QCF Fonts
-                  spans.add(
-                    TextSpan(
-                      recognizer: LongPressGestureRecognizer()
-                        ..onLongPress = () {
-                          // Long press handler for verse
-                        }
-                        ..onLongPressDown = (details) {
-                          setState(() {
-                            selectedSpan = " ${e["surah"]}$i";
-                          });
-                        }
-                        ..onLongPressUp = () {
-                          setState(() {
-                            selectedSpan = "";
-                          });
-                        }
-                        ..onLongPressCancel = () => setState(() {
-                          selectedSpan = "";
-                        }),
-                      text: i == e["start"]
-                          ? "${getVerseQCF(e["surah"], i).replaceAll(" ", "").substring(0, 1)}\u200A${getVerseQCF(e["surah"], i).replaceAll(" ", "").substring(1)}"
-                          : getVerseQCF(
-                              e["surah"],
-                              i,
-                            ).replaceAll(' ', ''),
-                      style: TextStyle(
-                        color: Colors.black,
-                        height: (pageIndex == 1 || pageIndex == 2) ? 2.h : 1.95.h,
-                        letterSpacing: 0.w,
-                        wordSpacing: 0,
-                        fontFamily:
-                            "QCF_P${pageIndex.toString().padLeft(3, "0")}",
-                        fontSize: pageIndex == 1 || pageIndex == 2
-                            ? 28.sp
-                            : pageIndex == 145 || pageIndex == 201
-                                ? pageIndex == 532 || pageIndex == 533
-                                    ? 22.5.sp
-                                    : 22.4.sp
-                                : 23.1.sp,
-                        backgroundColor: Colors.transparent,
-                      ),
-                    ),
-                  );
-                }
-                return spans;
-              }).toList(),
+  Widget _buildSurahContent(int pageIndex) {
+    MushafImageService.prefetchAdjacent(pageIndex);
+    return FutureBuilder<File?>(
+      future: MushafImageService.getPageImage(pageIndex),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(
+            child: CircularProgressIndicator(color: AppColors.secondaryColor),
+          );
+        }
+        final file = snapshot.data;
+        if (file == null) {
+          return Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const Icon(Icons.wifi_off_rounded,
+                    size: 40, color: Colors.grey),
+                const SizedBox(height: 8),
+                Text(
+                  'تعذر تحميل الصفحة، تحقق من الاتصال بالإنترنت',
+                  style: TextStyle(fontFamily: 'Amiri', fontSize: 16.sp),
+                ),
+                const SizedBox(height: 8),
+                ElevatedButton(
+                  onPressed: () => setState(() {}),
+                  child: const Text('إعادة المحاولة'),
+                ),
+              ],
             ),
+          );
+        }
+        return Center(
+          child: Image.file(
+            file,
+            fit: BoxFit.fitWidth,
+            width: double.infinity,
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 }

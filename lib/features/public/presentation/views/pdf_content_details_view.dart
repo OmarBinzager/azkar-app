@@ -443,6 +443,121 @@ class _PdfContentDetailsViewState extends ConsumerState<PdfContentDetailsView> {
     super.dispose();
   }
 
+  void _showBookIndexSheet() {
+    final pageController = TextEditingController();
+    final lastPage = _totalPages > 0 ? _totalPages - 1 : 0;
+
+    final List<Map<String, dynamic>> quickSections = [
+      {'title': 'بداية الكتاب (الغلاف والمقدمة)', 'page': 0},
+      {'title': 'الفهرس المطبوع (آخر الكتاب)', 'page': lastPage},
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 16,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'فهرس الكتاب والتنقل',
+                    style: TextStyles.bold.copyWith(
+                      color: AppColors.secondaryColor,
+                      fontSize: 17,
+                    ),
+                  ),
+                  Text(
+                    'صفحة ${_currentPage + 1} من $_totalPages',
+                    style: TextStyles.regular.copyWith(
+                      color: AppColors.secondaryColor.withOpacity(0.7),
+                      fontSize: 13,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: pageController,
+                      keyboardType: TextInputType.number,
+                      decoration: InputDecoration(
+                        hintText: 'اكتب رقم الصفحة (1 - $_totalPages)',
+                        isDense: true,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.secondaryColor,
+                      foregroundColor: AppColors.gold,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: () {
+                      final num = int.tryParse(pageController.text.trim());
+                      if (num != null && num >= 1 && num <= _totalPages) {
+                        _pdfViewController?.setPage(num - 1);
+                        Navigator.pop(ctx);
+                      }
+                    },
+                    child: const Text('انتقال'),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              ...quickSections.map(
+                (item) => ListTile(
+                  leading: const Icon(
+                    Icons.bookmark_outline_rounded,
+                    color: AppColors.secondaryColor,
+                  ),
+                  title: Text(
+                    item['title'] as String,
+                    style: TextStyles.medium.copyWith(
+                      color: AppColors.secondaryColor,
+                    ),
+                  ),
+                  trailing: Text(
+                    'ص ${(item['page'] as int) + 1}',
+                    style: TextStyles.regular.copyWith(
+                      color: AppColors.secondaryColor.withOpacity(0.7),
+                    ),
+                  ),
+                  onTap: () {
+                    _pdfViewController?.setPage(item['page'] as int);
+                    Navigator.pop(ctx);
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final settings = ref.watch(settingsProvider);
@@ -463,6 +578,17 @@ class _PdfContentDetailsViewState extends ConsumerState<PdfContentDetailsView> {
         ),
         centerTitle: true,
         actions: [
+          if (_localPdfPath != null && _totalPages > 0)
+            IconButton(
+              icon: Icon(
+                Icons.toc_rounded,
+                color: settings.nightMode
+                    ? Colors.white
+                    : AppColors.secondaryColor[100],
+              ),
+              tooltip: 'فهرس الكتاب',
+              onPressed: _showBookIndexSheet,
+            ),
           IconButton(
             icon: Icon(
               settings.nightMode ? Icons.dark_mode : Icons.light_mode,
@@ -557,6 +683,16 @@ class _PdfContentDetailsViewState extends ConsumerState<PdfContentDetailsView> {
                         pageSnap: true,
                         fitPolicy: FitPolicy.BOTH,
                         preventLinkNavigation: false,
+                        onLinkHandler: (String? uri) {
+                          if (uri != null) {
+                            final pageNum = int.tryParse(uri);
+                            if (pageNum != null &&
+                                pageNum >= 0 &&
+                                pageNum < _totalPages) {
+                              _pdfViewController?.setPage(pageNum);
+                            }
+                          }
+                        },
                         onRender: (pages) {
                           setState(() {
                             _totalPages = pages ?? 0;
