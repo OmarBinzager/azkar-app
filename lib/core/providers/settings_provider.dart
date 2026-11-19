@@ -13,6 +13,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       final quranFontFamily = await SettingsService.getQuranFontFamily();
       final contentFontFamily = await SettingsService.getContentFontFamily();
       final nightMode = await SettingsService.getNightMode();
+      final quranTextScale = await SettingsService.getQuranTextScale();
 
       state = state.copyWith(
         autoPlayAudio: autoPlay,
@@ -20,6 +21,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
         quranFontFamily: quranFontFamily,
         contentFontFamily: contentFontFamily,
         nightMode: nightMode,
+        quranTextScale: quranTextScale,
         isLoading: false,
       );
     } catch (e) {
@@ -57,6 +59,21 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       } catch (e2) {
         // Still update the state even if saving fails
         state = state.copyWith(fontSize: value);
+      }
+    }
+  }
+
+  Future<void> setQuranTextScale(double value) async {
+    try {
+      await SettingsService.setQuranTextScale(value);
+      state = state.copyWith(quranTextScale: value);
+    } catch (e) {
+      try {
+        await SettingsService.reinitialize();
+        await SettingsService.setQuranTextScale(value);
+        state = state.copyWith(quranTextScale: value);
+      } catch (e2) {
+        state = state.copyWith(quranTextScale: value);
       }
     }
   }
@@ -121,6 +138,7 @@ class SettingsState {
   final String quranFontFamily;
   final String contentFontFamily;
   final bool nightMode;
+  final double quranTextScale;
 
   SettingsState({
     this.autoPlayAudio = false,
@@ -129,6 +147,7 @@ class SettingsState {
     this.quranFontFamily = 'UthmanicHafs_V20',
     this.contentFontFamily = 'Lotus',
     this.nightMode = false,
+    this.quranTextScale = 1.0,
   });
 
   SettingsState copyWith({
@@ -138,6 +157,7 @@ class SettingsState {
     String? quranFontFamily,
     String? contentFontFamily,
     bool? nightMode,
+    double? quranTextScale,
   }) {
     return SettingsState(
       autoPlayAudio: autoPlayAudio ?? this.autoPlayAudio,
@@ -146,6 +166,7 @@ class SettingsState {
       quranFontFamily: quranFontFamily ?? this.quranFontFamily,
       contentFontFamily: contentFontFamily ?? this.contentFontFamily,
       nightMode: nightMode ?? this.nightMode,
+      quranTextScale: quranTextScale ?? this.quranTextScale,
     );
   }
 }

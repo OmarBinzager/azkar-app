@@ -13,6 +13,7 @@ import 'package:new_azkar_app/features/home/providers/fast_access_list_provider.
 import 'package:new_azkar_app/features/prayer_times/providers/prayer_times_provider.dart';
 import 'package:new_azkar_app/features/prayer_times/model/prayer_times_model.dart';
 import 'package:new_azkar_app/features/public/models/header_model.dart';
+import 'package:new_azkar_app/features/public/presentation/views/pdf_content_details_view.dart';
 import 'package:new_azkar_app/features/public/providers/headers_provider.dart';
 import 'package:new_azkar_app/features/public/providers/contents_provider.dart';
 import 'package:new_azkar_app/core/services/isar_helper.dart';
@@ -748,7 +749,86 @@ class _HomeViewState extends ConsumerState<HomeView>
             ),
           ],
         ),
+        const SizedBox(height: 12),
+        _buildFullBookCard(),
       ],
+    );
+  }
+
+  Widget _buildFullBookCard() {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      height: 68,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => context.pushNamed(
+            Routes.pdfContentDetails,
+            extra: PdfContentDetailsParams(
+              title: 'كتاب عمل اليوم والليلة',
+              pdfPath:
+                  'https://drive.google.com/file/d/18us5NUdQQJ_dZQg8BHd5Nk7b9wXKX0M2/view?usp=sharing',
+            ),
+          ),
+          borderRadius: BorderRadius.circular(16),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: AppColors.secondaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: AppColors.secondaryColor.withOpacity(0.2),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: AppColors.secondaryColor.withOpacity(0.2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(
+                    Icons.menu_book_rounded,
+                    color: AppColors.secondaryColor,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'كتاب عمل اليوم والليلة الكامل',
+                        style: TextStyles.bold.copyWith(
+                          color: AppColors.secondaryColor,
+                          fontSize: 15,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        'قراءة الكتاب بصيغة PDF',
+                        style: TextStyles.regular.copyWith(
+                          color: AppColors.secondaryColor.withOpacity(0.75),
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: AppColors.secondaryColor.withOpacity(0.7),
+                  size: 16,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 

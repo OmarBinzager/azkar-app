@@ -551,147 +551,199 @@ class _QuranPageState extends ConsumerState<QuranPage> {
             );
           },
           child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Surah number circle
-                Container(
-                  width: 50,
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: AppColors.secondaryColor.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(25),
-                    border: Border.all(
-                      color: AppColors.secondaryColor.withOpacity(0.2),
-                      width: 2,
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      suraNumber.toString(),
-                      style: TextStyles.mediumBold.copyWith(
-                        color: AppColors.secondaryColor,
-                        fontSize: 16,
+                // Row 1: Surah Number + Full Surah Title + Revelation Badge + Calligraphy
+                Row(
+                  children: [
+                    // Surah number circle
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: AppColors.secondaryColor.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: AppColors.secondaryColor.withValues(alpha: 0.2),
+                          width: 1.5,
+                        ),
+                      ),
+                      child: Center(
+                        child: Text(
+                          suraNumber.toString(),
+                          style: TextStyles.mediumBold.copyWith(
+                            color: AppColors.secondaryColor,
+                            fontSize: 15,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                ),
-                const SizedBox(width: 12),
+                    const SizedBox(width: 12),
 
-                // Surah details
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                    // Surah title + Revelation badge
+                    Expanded(
+                      child: Row(
                         children: [
-                          Expanded(
+                          Flexible(
                             child: Text(
                               suraName,
-                              style: TextStyles.mediumBold.copyWith(
+                              style: TextStyles.bold.copyWith(
                                 color: AppColors.secondaryColor,
-                                fontSize: 18,
+                                fontSize: 19,
                                 fontFamily: "DecoType-Thuluth2",
                               ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
+                          const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 8,
-                              vertical: 4,
+                              vertical: 3,
                             ),
                             decoration: BoxDecoration(
-                              color:
-                                  revelationType == "مكية"
-                                      ? AppColors.secondaryColor.withOpacity(
-                                        0.1,
-                                      )
-                                      : AppColors.primaryColor.withOpacity(
-                                        0.1,
-                                      ),
-                              borderRadius: BorderRadius.circular(12),
+                              color: revelationType == "مكية"
+                                  ? AppColors.secondaryColor.withValues(alpha: 0.1)
+                                  : AppColors.primaryColor.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                             child: Text(
                               revelationType,
                               style: TextStyles.regular.copyWith(
-                                color:
-                                    revelationType == "مكية"
-                                        ? AppColors.secondaryColor
-                                        : AppColors.primaryColor,
-                                fontSize: 12,
+                                color: revelationType == "مكية"
+                                    ? AppColors.secondaryColor
+                                    : AppColors.primaryColor,
+                                fontSize: 11,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 4),
-                      Text(
+                    ),
+
+                    const SizedBox(width: 8),
+
+                    // Arabic calligraphy badge
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.gold.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        suraName,
+                        style: const TextStyle(
+                          fontFamily: "arsura",
+                          fontSize: 18,
+                          color: AppColors.gold,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 10),
+
+                // Row 2: English subtitle / Ayah count on one side, and Audio Play button on the other
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Text(
                         '$suraNameEnglish • $ayahCount آية',
                         style: TextStyles.regular.copyWith(
                           color: Colors.grey[600],
                           fontSize: 13,
                         ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+                    const SizedBox(width: 8),
 
-                const SizedBox(width: 8),
-
-                // Audio Play/Pause Button
-                IconButton(
-                  tooltip: isPlaying ? 'إيقاف مؤقت' : 'تشغيل التلاوة',
-                  icon: isLoadingAudio
-                      ? const SizedBox(
-                          width: 28,
-                          height: 28,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2.5,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              AppColors.secondaryColor,
+                    // Dedicated Audio Play/Pause Button
+                    Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(20),
+                        onTap: () {
+                          final notifier =
+                              ref.read(globalAudioProvider.notifier);
+                          notifier.playUrlAudio(
+                            url: audioUrl,
+                            title:
+                                'سورة $suraName (${selectedReciter.nameArabic})',
+                            surahNumber: suraNumber,
+                            reciterId: selectedReciter.identifier,
+                          );
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
+                            color: isCurrentSurah
+                                ? AppColors.gold.withValues(alpha: 0.15)
+                                : AppColors.secondaryColor.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: isCurrentSurah
+                                  ? AppColors.gold
+                                  : AppColors.secondaryColor.withValues(alpha: 0.2),
+                              width: 1,
                             ),
                           ),
-                        )
-                      : Icon(
-                          isPlaying
-                              ? Icons.pause_circle_filled
-                              : Icons.play_circle_fill,
-                          color: isCurrentSurah
-                              ? AppColors.gold
-                              : AppColors.secondaryColor,
-                          size: 38,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (isLoadingAudio)
+                                SizedBox(
+                                  width: 16,
+                                  height: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      isCurrentSurah
+                                          ? AppColors.gold
+                                          : AppColors.secondaryColor,
+                                    ),
+                                  ),
+                                )
+                              else
+                                Icon(
+                                  isPlaying
+                                      ? Icons.pause_circle_filled
+                                      : Icons.play_circle_fill,
+                                  color: isCurrentSurah
+                                      ? AppColors.gold
+                                      : AppColors.secondaryColor,
+                                  size: 20,
+                                ),
+                              const SizedBox(width: 6),
+                              Text(
+                                isPlaying ? 'إيقاف التلاوة' : 'استماع',
+                                style: TextStyles.medium.copyWith(
+                                  color: isCurrentSurah
+                                      ? AppColors.gold
+                                      : AppColors.secondaryColor,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
-                  onPressed: () {
-                    final notifier = ref.read(globalAudioProvider.notifier);
-                    notifier.playUrlAudio(
-                      url: audioUrl,
-                      title: 'سورة $suraName (${selectedReciter.nameArabic})',
-                      surahNumber: suraNumber,
-                      reciterId: selectedReciter.identifier,
-                    );
-                  },
-                ),
-
-                const SizedBox(width: 4),
-
-                // Arabic name
-                Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: BoxDecoration(
-                    color: AppColors.gold.withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Text(
-                    suraName,
-                    style: const TextStyle(
-                      fontFamily: "arsura",
-                      fontSize: 18,
-                      color: AppColors.gold,
+                      ),
                     ),
-                  ),
+                  ],
                 ),
               ],
             ),

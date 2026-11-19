@@ -2,12 +2,15 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:new_azkar_app/core/constants/app_colors.dart';
 import 'package:new_azkar_app/core/constants/layout_constants.dart';
+import 'package:new_azkar_app/core/constants/routes.dart';
 import 'package:new_azkar_app/core/constants/text_styles.dart';
 import 'package:new_azkar_app/core/models/audio_item.dart';
 import 'package:new_azkar_app/core/providers/global_audio_provider.dart';
 import 'package:new_azkar_app/core/services/isar_helper.dart';
+import 'package:new_azkar_app/features/public/presentation/views/pdf_content_details_view.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -32,6 +35,15 @@ class _DownloadsViewState extends ConsumerState<DownloadsView> {
   bool _isBulkDownloading = false;
   bool _cancelBulk = false;
 
+  // PDF Book State
+  static const String _bookFileId = '18us5NUdQQJ_dZQg8BHd5Nk7b9wXKX0M2';
+  static const String _bookUrl =
+      'https://drive.google.com/file/d/18us5NUdQQJ_dZQg8BHd5Nk7b9wXKX0M2/view?usp=sharing';
+  bool _pdfExists = false;
+  int _pdfSize = 0;
+  bool _isDownloadingPdf = false;
+  double _pdfProgress = 0.0;
+
   @override
   void initState() {
     super.initState();
@@ -42,6 +54,7 @@ class _DownloadsViewState extends ConsumerState<DownloadsView> {
     setState(() => _loading = true);
     final audios = IsarHelper.getAllAudioItems();
     await _checkLocalStatus(audios);
+    await _checkPdfStatus();
 
     if (!mounted) return;
     setState(() {
@@ -49,6 +62,129 @@ class _DownloadsViewState extends ConsumerState<DownloadsView> {
       _applyFilter();
       _loading = false;
     });
+  }
+
+  Future<String> _getPdfLocalPath() async {
+    final Directory baseDir = await getApplicationDocumentsDirectory();
+    final Directory pdfDir = Directory('${baseDir.path}/pdfs');
+    if (!await pdfDir.exists()) {
+      await pdfDir.create(recursive: true);
+    }
+    return '${pdfDir.path}/$_bookFileId.pdf';
+  }
+
+  Future<void> _checkPdfStatus() async {
+    final path = await _getPdfLocalPath();
+    final file = File(path);
+    if (await file.exists() && await file.length() > 100) {
+      _pdfExists = true;
+      try {
+        _pdfSize = await file.length();
+      } catch (_) {
+        _pdfSize = 0;
+      }
+    } else {
+      _pdfExists = false;
+      _pdfSize = 0;
+    }
+  }
+
+  Future<void> _downloadPdf() async {
+    if (_isDownloadingPdf) return;
+    setState(() {
+      _isDownloadingPdf = true;
+      _pdfProgress = 0.0;
+    });
+
+    try {
+      final path = await _getPdfLocalPath();
+      final file = File(path);
+      final downloadUrl =
+          'https://drive.google.com/uc?export=download&id=$_bookFileId&confirm=t';
+
+      final client = HttpClient();
+      client.autoUncompress = true;
+
+      Uri currentUri = Uri.parse(downloadUrl);
+      HttpClientResponse? response;
+      int redirectCount = 0;
+
+      while (redirectCount < 5) {
+        final request = await client.getUrl(currentUri);
+        request.followRedirects = false;
+        response = await request.close();
+        if (response.statusCode >= 300 &&
+            response.statusCode < 400 &&
+            response.headers.value('location') != null) {
+          currentUri = currentUri.resolve(response.headers.value('location')!);
+          redirectCount++;
+        } else {
+          break;
+        }
+      }
+
+      if (response == null || response.statusCode != 200) {
+        throw Exception('HTTP ${response?.statusCode}');
+      }
+
+      final totalBytes = response.contentLength;
+      int receivedBytes = 0;
+      final sink = file.openWrite();
+
+      await for (final chunk in response) {
+        sink.add(chunk);
+        receivedBytes += chunk.length;
+        if (totalBytes > 0 && mounted) {
+          setState(() {
+            _pdfProgress = receivedBytes / totalBytes;
+          });
+        }
+      }
+      await sink.flush();
+      await sink.close();
+      client.close();
+
+      await _checkPdfStatus();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('تم تحميل كتاب عمل اليوم والليلة وحفظه محلياً'),
+            backgroundColor: AppColors.secondaryColor,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('تعذر تحميل الكتاب: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isDownloadingPdf = false);
+      }
+    }
+  }
+
+  Future<void> _deletePdf() async {
+    final path = await _getPdfLocalPath();
+    final file = File(path);
+    if (await file.exists()) {
+      await file.delete();
+    }
+    await _checkPdfStatus();
+    if (mounted) {
+      setState(() {});
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('تم حذف الكتاب من التخزين المحلي'),
+          backgroundColor: AppColors.secondaryColor,
+        ),
+      );
+    }
   }
 
   Future<String> _getLocalPath(String voiceFile) async {
@@ -97,7 +233,8 @@ class _DownloadsViewState extends ConsumerState<DownloadsView> {
   int get _downloadedCount =>
       _allAudios.where((a) => _existsById[a.voiceFile] == true).length;
 
-  int get _totalBytesUsed => _sizeById.values.fold(0, (sum, size) => sum + size);
+  int get _totalBytesUsed =>
+      _sizeById.values.fold(0, (sum, size) => sum + size) + _pdfSize;
 
   String _formatBytes(int bytes) {
     if (bytes <= 0) return '0 ميجابايت';
@@ -317,7 +454,7 @@ class _DownloadsViewState extends ConsumerState<DownloadsView> {
         foregroundColor: AppColors.gold,
         elevation: 0,
         title: Text(
-          'إدارة التنزيلات الصوتية',
+          'إدارة التنزيلات',
           style: TextStyles.bold.copyWith(color: AppColors.gold, fontSize: 18.sp),
         ),
         centerTitle: true,
@@ -329,6 +466,7 @@ class _DownloadsViewState extends ConsumerState<DownloadsView> {
           : Column(
               children: [
                 _buildStorageHeaderCard(),
+                _buildPdfBookCard(),
                 _buildSearchAndFilters(categories),
                 Expanded(
                   child: _filteredAudios.isEmpty
@@ -356,6 +494,113 @@ class _DownloadsViewState extends ConsumerState<DownloadsView> {
                 ),
               ],
             ),
+    );
+  }
+
+  Widget _buildPdfBookCard() {
+    final sizeMb = (_pdfSize / (1024 * 1024)).toStringAsFixed(1);
+    return Container(
+      margin: EdgeInsets.symmetric(
+        horizontal: LayoutConstants.screenPadding.r,
+        vertical: 4.h,
+      ),
+      padding: EdgeInsets.all(14.r),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16.r),
+        border: Border.all(
+          color: AppColors.secondaryColor.withOpacity(0.18),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: EdgeInsets.all(10.r),
+            decoration: BoxDecoration(
+              color: AppColors.secondaryColor.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(12.r),
+            ),
+            child: Icon(
+              Icons.menu_book_rounded,
+              color: AppColors.secondaryColor,
+              size: 24.r,
+            ),
+          ),
+          SizedBox(width: 12.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'كتاب عمل اليوم والليلة الكامل (PDF)',
+                  style: TextStyles.bold.copyWith(
+                    color: AppColors.secondaryColor,
+                    fontSize: 14.sp,
+                  ),
+                ),
+                SizedBox(height: 4.h),
+                Text(
+                  _isDownloadingPdf
+                      ? 'جاري التحميل... ${(_pdfProgress * 100).toInt()}%'
+                      : _pdfExists
+                          ? 'محفوظ محلياً • $sizeMb MB'
+                          : 'غير محمّل (متاح للقراءة والتحميل)',
+                  style: TextStyles.regular.copyWith(
+                    color: _pdfExists
+                        ? Colors.green.shade700
+                        : AppColors.secondaryColor.withOpacity(0.7),
+                    fontSize: 12.sp,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (_isDownloadingPdf)
+            SizedBox(
+              width: 24.r,
+              height: 24.r,
+              child: CircularProgressIndicator(
+                value: _pdfProgress > 0 ? _pdfProgress : null,
+                strokeWidth: 2.5,
+                color: AppColors.secondaryColor,
+              ),
+            )
+          else if (_pdfExists) ...[
+            IconButton(
+              icon: const Icon(Icons.open_in_new_rounded,
+                  color: AppColors.secondaryColor),
+              tooltip: 'قراءة الكتاب',
+              onPressed: () {
+                context.pushNamed(
+                  Routes.pdfContentDetails,
+                  extra: PdfContentDetailsParams(
+                    title: 'كتاب عمل اليوم والليلة',
+                    pdfPath: _bookUrl,
+                  ),
+                );
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.delete_outline_rounded, color: Colors.red),
+              tooltip: 'حذف من التخزين المحلي',
+              onPressed: _deletePdf,
+            ),
+          ] else
+            IconButton(
+              icon: const Icon(Icons.download_rounded,
+                  color: AppColors.secondaryColor),
+              tooltip: 'تحميل وحفظ محلياً',
+              onPressed: _downloadPdf,
+            ),
+        ],
+      ),
     );
   }
 

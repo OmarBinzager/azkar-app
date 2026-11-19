@@ -605,12 +605,25 @@ class _PdfContentDetailsViewState extends ConsumerState<PdfContentDetailsView> {
             )
           : null,
       bottomNavigationBar: (hasVoice && voiceFile.isNotEmpty)
-          ? Container(
-              color: settings.nightMode
-                  ? AppColors.fourthColor[900]
-                  : Colors.white,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: _buildAudioControls(settings),
+          ? SafeArea(
+              top: false,
+              bottom: true,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: settings.nightMode
+                      ? AppColors.fourthColor[900]
+                      : Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.08),
+                      blurRadius: 8,
+                      offset: const Offset(0, -2),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 6),
+                child: _buildAudioControls(settings),
+              ),
             )
           : null,
     );
@@ -681,9 +694,9 @@ class _PdfContentDetailsViewState extends ConsumerState<PdfContentDetailsView> {
         if (duration.inSeconds > 0)
           SliderTheme(
             data: SliderThemeData(
-              trackHeight: 4,
-              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-              overlayShape: const RoundSliderOverlayShape(overlayRadius: 12),
+              trackHeight: 3,
+              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5),
+              overlayShape: const RoundSliderOverlayShape(overlayRadius: 10),
               activeTrackColor: activeTrackColor,
               inactiveTrackColor: inactiveTrackColor,
               thumbColor: thumbColor,
@@ -732,7 +745,9 @@ class _PdfContentDetailsViewState extends ConsumerState<PdfContentDetailsView> {
           children: [
             if (duration.inSeconds > 0) ...[
               IconButton(
-                icon: Icon(Icons.replay_10, color: iconColor, size: 30),
+                icon: Icon(Icons.replay_10, color: iconColor, size: 28),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 38, minHeight: 38),
                 onPressed: isDownloadingAudio
                     ? null
                     : () {
@@ -743,7 +758,7 @@ class _PdfContentDetailsViewState extends ConsumerState<PdfContentDetailsView> {
                         }
                       },
               ),
-              const SizedBox(width: 16),
+              const SizedBox(width: 10),
             ],
 
             // Play / Pause button
@@ -755,11 +770,11 @@ class _PdfContentDetailsViewState extends ConsumerState<PdfContentDetailsView> {
                     : (isPlaying ? _pauseAudio() : _playAudio());
               },
               child: Container(
-                width: 50,
-                height: 50,
+                width: 46,
+                height: 46,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: iconColor.withOpacity(0.1),
+                  color: iconColor.withValues(alpha: 0.1),
                 ),
                 child: Icon(
                   isDownloadingAudio
@@ -768,22 +783,22 @@ class _PdfContentDetailsViewState extends ConsumerState<PdfContentDetailsView> {
                           ? Icons.hourglass_empty
                           : (isPlaying ? Icons.pause : Icons.play_arrow),
                   color: iconColor,
-                  size: 30,
+                  size: 28,
                 ),
               ),
             ),
 
             // Speed Control
-            const SizedBox(width: 16),
+            const SizedBox(width: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: iconColor.withOpacity(0.15),
+                backgroundColor: iconColor.withValues(alpha: 0.15),
                 foregroundColor: iconColor,
                 padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
+                  horizontal: 10,
+                  vertical: 6,
                 ),
-                minimumSize: const Size(40, 40),
+                minimumSize: const Size(36, 36),
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -811,9 +826,11 @@ class _PdfContentDetailsViewState extends ConsumerState<PdfContentDetailsView> {
             ),
 
             if (duration.inSeconds > 0) ...[
-              const SizedBox(width: 16),
+              const SizedBox(width: 10),
               IconButton(
-                icon: Icon(Icons.forward_10, color: iconColor, size: 30),
+                icon: Icon(Icons.forward_10, color: iconColor, size: 28),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 38, minHeight: 38),
                 onPressed: isDownloadingAudio
                     ? null
                     : () {

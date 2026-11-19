@@ -6,13 +6,14 @@ class SettingsService {
   static const String _quranFontFamilyKey = 'quran_font_family';
   static const String _contentFontFamilyKey = 'content_font_family';
   static const String _nightModeKey = 'night_mode';
-
+  static const String _quranTextScaleKey = 'quran_text_scale';
 
   static const double _defaultFontSize = 22.0;
   static const bool _defaultAutoPlayAudio = false;
   static const String _defaultQuranFontFamily = 'UthmanicHafs_V20';
   static const String _defaultContentFontFamily = 'Lotus';
   static const bool _defaultNightMode = false;
+  static const double _defaultQuranTextScale = 1.0;
 
   static SharedPreferences? _prefsInstance;
 
@@ -46,6 +47,34 @@ class SettingsService {
         await Future.delayed(const Duration(milliseconds: 100));
         final prefs = await _prefs;
         await prefs.setDouble(_fontSizeKey, fontSize);
+      } catch (e2) {
+        // Ignore second error
+      }
+    }
+  }
+
+  // Get quran text scale setting
+  static Future<double> getQuranTextScale() async {
+    try {
+      final prefs = await _prefs;
+      final scale =
+          prefs.getDouble(_quranTextScaleKey) ?? _defaultQuranTextScale;
+      return scale;
+    } catch (e) {
+      return _defaultQuranTextScale;
+    }
+  }
+
+  // Save quran text scale setting
+  static Future<void> setQuranTextScale(double scale) async {
+    try {
+      final prefs = await _prefs;
+      await prefs.setDouble(_quranTextScaleKey, scale);
+    } catch (e) {
+      try {
+        await Future.delayed(const Duration(milliseconds: 100));
+        final prefs = await _prefs;
+        await prefs.setDouble(_quranTextScaleKey, scale);
       } catch (e2) {
         // Ignore second error
       }
@@ -166,6 +195,7 @@ class SettingsService {
       await prefs.remove(_quranFontFamilyKey);
       await prefs.remove(_contentFontFamilyKey);
       await prefs.remove(_nightModeKey);
+      await prefs.remove(_quranTextScaleKey);
     } catch (e) {
       // Ignore error
     }
