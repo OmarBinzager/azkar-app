@@ -80,7 +80,7 @@ class _HomeViewState extends ConsumerState<HomeView>
 
   @override
   Widget build(BuildContext context) {
-    final double spacing = 14;
+    final double spacing = 8;
     final headers = ref.watch(headersProvider);
     ref.read(contentsListProvider);
     final prayerTimes = ref.watch(prayerTimesProvider);
@@ -101,8 +101,8 @@ class _HomeViewState extends ConsumerState<HomeView>
                 padding: const EdgeInsets.only(
                   left: 20,
                   right: 20,
-                  bottom: 8,
-                  top: 10,
+                  bottom: 4,
+                  top: 4,
                 ),
                 child: _buildHeroSection(),
               ),
@@ -112,7 +112,7 @@ class _HomeViewState extends ConsumerState<HomeView>
               child: Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
-                  vertical: 8,
+                  vertical: 0,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,7 +166,7 @@ class _HomeViewState extends ConsumerState<HomeView>
   // --- New AppBar with centered title/logo and action icons ---
   Widget _buildHeaderSection(double spacing) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -203,7 +203,7 @@ class _HomeViewState extends ConsumerState<HomeView>
   // --- Hero Section with Prayer Times ---
   Widget _buildHeroSection() {
     return Container(
-      height: 170,
+      height: 135,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         gradient: LinearGradient(
@@ -364,7 +364,7 @@ class _HomeViewState extends ConsumerState<HomeView>
                   fontSize: 18,
                 ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 6),
               const SizedBox(
                 width: 20,
                 height: 20,
@@ -562,13 +562,14 @@ class _HomeViewState extends ConsumerState<HomeView>
     return Column(
       children: [
         GridView.builder(
+          padding: EdgeInsets.zero,
           shrinkWrap: true,
           physics: NeverScrollableScrollPhysics(),
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
             crossAxisSpacing: spacing,
-            mainAxisSpacing: spacing,
-            childAspectRatio: 2.5 / 1.3,
+            mainAxisSpacing: 6,
+            childAspectRatio: 2.5 / 1.15,
           ),
           itemCount: gridFeatures.length,
           itemBuilder: (context, index) {
@@ -581,7 +582,7 @@ class _HomeViewState extends ConsumerState<HomeView>
             );
           },
         ),
-        SizedBox(height: spacing),
+        const SizedBox(height: 6),
         // Last 3 as full-width list
         Column(
           children: [
@@ -593,10 +594,24 @@ class _HomeViewState extends ConsumerState<HomeView>
                 gradient: feature['gradient'] as List<Color>,
                 isFullWidth: true,
               ),
-              SizedBox(height: spacing),
+              const SizedBox(height: 6),
             ],
           ],
         ),
+        _buildMainCard(
+          label: 'كتاب عمل اليوم والليلة الكامل',
+          icon: Icons.menu_book_rounded,
+          isFullWidth: true,
+          onTap: () => context.pushNamed(
+            Routes.pdfContentDetails,
+            extra: PdfContentDetailsParams(
+              title: 'كتاب عمل اليوم والليلة',
+              pdfPath:
+                  'https://drive.google.com/file/d/18us5NUdQQJ_dZQg8BHd5Nk7b9wXKX0M2/view?usp=sharing',
+            ),
+          ),
+        ),
+        const SizedBox(height: 10),
       ],
     );
   }
@@ -749,8 +764,6 @@ class _HomeViewState extends ConsumerState<HomeView>
             ),
           ],
         ),
-        const SizedBox(height: 12),
-        _buildFullBookCard(),
       ],
     );
   }
@@ -758,7 +771,7 @@ class _HomeViewState extends ConsumerState<HomeView>
   Widget _buildFullBookCard() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 4),
-      height: 68,
+      height: 60,
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -840,7 +853,7 @@ class _HomeViewState extends ConsumerState<HomeView>
     return Expanded(
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 4),
-        height: 85,
+        height: 74,
         child: Material(
           color: Colors.transparent,
           child: InkWell(
@@ -870,7 +883,7 @@ class _HomeViewState extends ConsumerState<HomeView>
                       size: 20,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 6),
                   Text(
                     label,
                     style: TextStyles.regular.copyWith(
