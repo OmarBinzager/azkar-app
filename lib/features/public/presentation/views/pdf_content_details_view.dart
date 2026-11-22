@@ -66,6 +66,7 @@ class _PdfContentDetailsViewState extends ConsumerState<PdfContentDetailsView> {
   String? _pdfError;
   int _totalPages = 0;
   int _currentPage = 0;
+  bool _swipeHorizontal = false;
   PDFViewController? _pdfViewController;
 
   Content? get content => widget.params.content;
@@ -581,6 +582,23 @@ class _PdfContentDetailsViewState extends ConsumerState<PdfContentDetailsView> {
           if (_localPdfPath != null && _totalPages > 0)
             IconButton(
               icon: Icon(
+                _swipeHorizontal
+                    ? Icons.swap_vert_rounded
+                    : Icons.swap_horiz_rounded,
+                color: settings.nightMode
+                    ? Colors.white
+                    : AppColors.secondaryColor[100],
+              ),
+              tooltip: _swipeHorizontal ? 'القراءة الرأسية' : 'القراءة الأفقية',
+              onPressed: () {
+                setState(() {
+                  _swipeHorizontal = !_swipeHorizontal;
+                });
+              },
+            ),
+          if (_localPdfPath != null && _totalPages > 0)
+            IconButton(
+              icon: Icon(
                 Icons.toc_rounded,
                 color: settings.nightMode
                     ? Colors.white
@@ -675,9 +693,11 @@ class _PdfContentDetailsViewState extends ConsumerState<PdfContentDetailsView> {
                         ),
                       )
                     : PDFView(
+                        key: ValueKey(_swipeHorizontal),
                         filePath: _localPdfPath,
+                        defaultPage: _currentPage,
                         enableSwipe: true,
-                        swipeHorizontal: false,
+                        swipeHorizontal: _swipeHorizontal,
                         autoSpacing: true,
                         pageFling: true,
                         pageSnap: true,

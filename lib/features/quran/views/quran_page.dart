@@ -6,7 +6,6 @@ import 'package:flutter/material.dart' as m;
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:new_azkar_app/core/services/mushaf_image_service.dart';
-import 'package:new_azkar_app/core/services/qcf_font_service.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -113,9 +112,6 @@ class _QuranViewPageState extends ConsumerState<QuranViewPage> {
   @override
   void initState() {
     super.initState();
-    QcfFontService.ensurePageFontLoaded(widget.pageNumber).then((ok) {
-      if (ok && mounted) setState(() {});
-    });
     if (widget.jsonData == null) {
       loadJsonAsset();
     }
