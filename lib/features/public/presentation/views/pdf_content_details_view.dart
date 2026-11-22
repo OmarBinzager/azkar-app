@@ -446,11 +446,145 @@ class _PdfContentDetailsViewState extends ConsumerState<PdfContentDetailsView> {
 
   void _showBookIndexSheet() {
     final pageController = TextEditingController();
-    final lastPage = _totalPages > 0 ? _totalPages - 1 : 0;
+    final searchController = TextEditingController();
 
-    final List<Map<String, dynamic>> quickSections = [
-      {'title': 'بداية الكتاب (الغلاف والمقدمة)', 'page': 0},
-      {'title': 'الفهرس المطبوع (آخر الكتاب)', 'page': lastPage},
+    const List<Map<String, dynamic>> bookIndex = [
+      {'title': 'مقدمة', 'page': 5},
+      {'title': 'أسماء الله الحسنى', 'page': 7},
+      {'title': 'سور من القرآن الكريم', 'page': 11},
+      {'title': 'سورة الكهف', 'page': 13},
+      {'title': 'سورة طه', 'page': 25},
+      {'title': 'سورة السجدة', 'page': 35},
+      {'title': 'سورة يس', 'page': 38},
+      {'title': 'سورة فصلت', 'page': 44},
+      {'title': 'سورة الدخان', 'page': 50},
+      {'title': 'سورة الرحمن', 'page': 53},
+      {'title': 'سورة الواقعة', 'page': 56},
+      {'title': 'سورة الحشر', 'page': 60},
+      {'title': 'سورة الصف', 'page': 64},
+      {'title': 'سورة الجمعة', 'page': 66},
+      {'title': 'سورة المنافقون', 'page': 67},
+      {'title': 'سورة المُلك', 'page': 69},
+      {'title': 'سورة المدثر', 'page': 71},
+      {'title': 'سورة الإنسان', 'page': 73},
+      {'title': 'سورة النبأ', 'page': 75},
+      {'title': 'سورة البروج', 'page': 77},
+      {'title': 'سورة الطارق', 'page': 78},
+      {'title': 'سورة الأعلى', 'page': 78},
+      {'title': 'سورة الشمس', 'page': 79},
+      {'title': 'سورة الليل', 'page': 79},
+      {'title': 'سورة الضحى', 'page': 80},
+      {'title': 'سورة الشرح', 'page': 81},
+      {'title': 'سورة التين', 'page': 81},
+      {'title': 'سورة العلق', 'page': 81},
+      {'title': 'سورة القدر', 'page': 83},
+      {'title': 'سورة البينة', 'page': 83},
+      {'title': 'سورة الزلزلة', 'page': 84},
+      {'title': 'سورة العاديات', 'page': 84},
+      {'title': 'سورة القارعة', 'page': 85},
+      {'title': 'سورة التكاثر', 'page': 85},
+      {'title': 'سورة العصر', 'page': 86},
+      {'title': 'سورة الهُمَزة', 'page': 86},
+      {'title': 'سورة الفيل', 'page': 86},
+      {'title': 'سورة قريش', 'page': 87},
+      {'title': 'سورة الماعون', 'page': 87},
+      {'title': 'سورة الكوثر', 'page': 87},
+      {'title': 'سورة الكافرون', 'page': 88},
+      {'title': 'سورة النصر', 'page': 88},
+      {'title': 'سورة المسد', 'page': 88},
+      {'title': 'سورة الإخلاص', 'page': 89},
+      {'title': 'سورة الفلق', 'page': 89},
+      {'title': 'سورة الناس', 'page': 89},
+      {'title': 'عمل اليوم والليلة', 'page': 91},
+      {'title': 'آداب الاستيقاظ', 'page': 93},
+      {'title': 'آداب لبس الثوب', 'page': 95},
+      {'title': 'دعاء الخروج من المنزل', 'page': 97},
+      {'title': 'آداب الدخول إلى الخلاء', 'page': 100},
+      {'title': 'آداب الخروج من الخلاء', 'page': 101},
+      {'title': 'دعاء الخروج إلى المسجد', 'page': 102},
+      {'title': 'آداب الوضوء', 'page': 103},
+      {'title': 'دعاء الدخول إلى المسجد', 'page': 110},
+      {'title': 'دعاء الفجر', 'page': 114},
+      {'title': 'الورد اللطيف للحبيب عبد الله الحداد', 'page': 128},
+      {'title': 'ورد سيدنا أبي بكر السكران', 'page': 142},
+      {'title': 'ورد الشيخ أبي بكر بن سالم باعلوي', 'page': 146},
+      {'title': 'ورْدُ الإمام النووي', 'page': 150},
+      {'title': 'ما يطلب بعد الإشراق', 'page': 159},
+      {'title': 'ركعتي الإشراق والدعاء بعدها', 'page': 160},
+      {'title': 'دعاء الاستخارة', 'page': 164},
+      {'title': 'آداب الخروج من المسجد', 'page': 166},
+      {'title': 'دعاء دخول المنزل', 'page': 167},
+      {'title': 'سنة صلاة الضحى', 'page': 169},
+      {'title': 'ما يطلب بعد دخول وقت الظهر', 'page': 172},
+      {'title': 'من آداب طالب العلم', 'page': 174},
+      {'title': 'ما يطلب عند دخول وقت العصر', 'page': 179},
+      {'title': 'حزب البحر', 'page': 181},
+      {'title': 'دعاء الكرب', 'page': 191},
+      {'title': 'دعاء الإمداد بالقوة', 'page': 192},
+      {'title': 'دعاء سورة الواقعة', 'page': 194},
+      {'title': 'حزب البر للشاذلي', 'page': 198},
+      {'title': 'حزب النصر للشاذلي', 'page': 220},
+      {'title': 'حزب النصر على الأعداء للإمام الحداد', 'page': 227},
+      {'title': 'أدعية متفرقة', 'page': 234},
+      {'title': 'المسبعات', 'page': 235},
+      {'title': 'المعشرات', 'page': 237},
+      {'title': 'ما يطلب عند دخول وقت المغرب', 'page': 241},
+      {'title': 'الراتب الشهير للحبيب عبد الله الحداد', 'page': 248},
+      {'title': 'عقيدة سيدنا الشيخ علي بن أبي بكر السكران', 'page': 257},
+      {'title': 'ما يطلب عند دخول وقت العشاء', 'page': 260},
+      {'title': 'صلاة الوتر', 'page': 261},
+      {'title': 'دعاء ذي النون', 'page': 262},
+      {'title': 'حزب الفتح والنصر', 'page': 263},
+      {'title': 'آداب النوم وأدعيته وأذكاره', 'page': 279},
+      {'title': 'خاتمة في آداب وفوائد شتى', 'page': 284},
+      {'title': 'آداب المائدة وأدعيتها', 'page': 284},
+      {'title': 'فوائد في قراءة بعض السور', 'page': 286},
+      {'title': 'دعاء عند رؤية الهلال', 'page': 287},
+      {'title': 'دعاء عند إفطار الصائم', 'page': 287},
+      {'title': 'دعاء صلاة التراويح', 'page': 288},
+      {'title': 'دعاء سورة يس', 'page': 290},
+      {'title': 'أدعية مأثورة', 'page': 292},
+      {'title': 'ما يطلب ليلة الجمعة ويومها', 'page': 294},
+      {'title': 'فضل قراءة سورتي ﴿السجدة﴾ و﴿تبارك﴾', 'page': 302},
+      {'title': 'عمل الإمام الغزالي في قراءة سورة الفاتحة بعد الصلوات', 'page': 304},
+      {'title': 'دعاء الفاتحة للإمام الحبيب عبد الله الحداد', 'page': 305},
+      {'title': 'فائدة لقضاء الحاجة', 'page': 306},
+      {'title': 'فائدة فيما يقال خلف الجنازة', 'page': 308},
+      {'title': 'فائدة في عدد آي القرآن', 'page': 309},
+      {'title': 'دعاء آية الكرسي للإمام الحداد', 'page': 310},
+      {'title': 'فائدة لمن خاف مكر قوم', 'page': 313},
+      {'title': 'الأذكار العشرة للحبيب علي بن حسن العطاس', 'page': 313},
+      {'title': 'نصائح عامة', 'page': 317},
+      {'title': 'دعاء لسيدنا الخضر عليه السلام', 'page': 323},
+      {'title': 'دعاء اللطف للإمام الحداد', 'page': 324},
+      {'title': 'آيات الكفاية والحرز', 'page': 325},
+      {'title': 'فوائد في طلب الرزق وقضاء الدين', 'page': 334},
+      {'title': 'المنجيات', 'page': 337},
+      {'title': 'قصيدة لسيدنا أبي بكر العدني', 'page': 339},
+      {'title': 'قصيدة لسيدنا الشيخ علي بن أبي بكر السكران', 'page': 343},
+      {'title': 'فائدة في اسم الله اللطيف والدعاء بعده', 'page': 345},
+      {'title': 'أذكار وأوراد مختلفة', 'page': 348},
+      {'title': 'فائدة في فضل نسب النبي ﷺ', 'page': 350},
+      {'title': 'فائدة لإذهاب الوجع', 'page': 351},
+      {'title': 'ورد الحبيب عقيل بن يحيى', 'page': 353},
+      {'title': 'ورد سيدنا الإمام شيخان بن علي بن هاشم', 'page': 358},
+      {'title': 'من وصايا الحبيب علي بن حسن العطاس', 'page': 364},
+      {'title': 'فائدة في قراءة سورة طه', 'page': 366},
+      {'title': 'عمل الإمام الحداد في الصلوات من سور', 'page': 367},
+      {'title': 'عمل الحبيب عبد الرحمن المشهور في الصلوات من سور', 'page': 368},
+      {'title': 'نصائح لطالب العلم', 'page': 370},
+      {'title': 'راتب العطاس', 'page': 377},
+      {'title': 'الدعاء بعد راتب العطاس', 'page': 388},
+      {'title': 'راتب الإمام عبد الله بن حسين بلفقيه', 'page': 392},
+      {'title': 'تعوذات ورقىً نافعة', 'page': 401},
+      {'title': 'فوائد من أسرار أسماء الله الحسنى', 'page': 406},
+      {'title': 'دعاء الفرج لسيدنا الخضر', 'page': 408},
+      {'title': 'دعاء يقرأ صباحاً', 'page': 411},
+      {'title': 'دعاءً يقرأ على الأعداء', 'page': 416},
+      {'title': 'آيات تقرأ للحفظ', 'page': 418},
+      {'title': 'فائدة للمسافر عند سفره', 'page': 420},
+      {'title': 'خاتمة', 'page': 424},
+      {'title': 'الفهرس', 'page': 426},
     ];
 
     showModalBottomSheet(
@@ -461,99 +595,150 @@ class _PdfContentDetailsViewState extends ConsumerState<PdfContentDetailsView> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) {
-        return Padding(
-          padding: EdgeInsets.only(
-            left: 16,
-            right: 16,
-            top: 16,
-            bottom: MediaQuery.of(ctx).viewInsets.bottom + 20,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'فهرس الكتاب والتنقل',
-                    style: TextStyles.bold.copyWith(
-                      color: AppColors.secondaryColor,
-                      fontSize: 17,
-                    ),
+        String query = '';
+        return StatefulBuilder(
+          builder: (ctx, setSheetState) {
+            final filtered = query.trim().isEmpty
+                ? bookIndex
+                : bookIndex
+                    .where((item) =>
+                        (item['title'] as String).contains(query.trim()))
+                    .toList();
+
+            return DraggableScrollableSheet(
+              initialChildSize: 0.75,
+              minChildSize: 0.45,
+              maxChildSize: 0.92,
+              expand: false,
+              builder: (_, scrollController) {
+                return Padding(
+                  padding: EdgeInsets.only(
+                    left: 16,
+                    right: 16,
+                    top: 16,
+                    bottom: MediaQuery.of(ctx).viewInsets.bottom + 12,
                   ),
-                  Text(
-                    'صفحة ${_currentPage + 1} من $_totalPages',
-                    style: TextStyles.regular.copyWith(
-                      color: AppColors.secondaryColor.withOpacity(0.7),
-                      fontSize: 13,
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: pageController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        hintText: 'اكتب رقم الصفحة (1 - $_totalPages)',
-                        isDense: true,
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'فهرس الكتاب والتنقل',
+                            style: TextStyles.bold.copyWith(
+                              color: AppColors.secondaryColor,
+                              fontSize: 17,
+                            ),
+                          ),
+                          Text(
+                            'صفحة ${_currentPage + 1} من $_totalPages',
+                            style: TextStyles.regular.copyWith(
+                              color: AppColors.secondaryColor.withOpacity(0.7),
+                              fontSize: 13,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 10),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: pageController,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                hintText: 'انتقال لصفحة (1 - $_totalPages)',
+                                isDense: true,
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppColors.secondaryColor,
+                              foregroundColor: AppColors.gold,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            onPressed: () {
+                              final num =
+                                  int.tryParse(pageController.text.trim());
+                              if (num != null &&
+                                  num >= 1 &&
+                                  num <= _totalPages) {
+                                _pdfViewController?.setPage(num - 1);
+                                Navigator.pop(ctx);
+                              }
+                            },
+                            child: const Text('انتقال'),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      TextField(
+                        controller: searchController,
+                        onChanged: (val) => setSheetState(() => query = val),
+                        decoration: InputDecoration(
+                          hintText: 'ابحث في عناوين الفهرس...',
+                          prefixIcon: const Icon(Icons.search),
+                          isDense: true,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.secondaryColor,
-                      foregroundColor: AppColors.gold,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                      const SizedBox(height: 8),
+                      Expanded(
+                        child: ListView.separated(
+                          controller: scrollController,
+                          itemCount: filtered.length,
+                          separatorBuilder: (_, __) => const Divider(height: 1),
+                          itemBuilder: (_, index) {
+                            final item = filtered[index];
+                            final pageNum = item['page'] as int;
+                            return ListTile(
+                              dense: true,
+                              leading: const Icon(
+                                Icons.bookmark_outline_rounded,
+                                color: AppColors.secondaryColor,
+                                size: 20,
+                              ),
+                              title: Text(
+                                item['title'] as String,
+                                style: TextStyles.medium.copyWith(
+                                  color: AppColors.secondaryColor,
+                                  fontSize: 14,
+                                ),
+                              ),
+                              trailing: Text(
+                                'ص $pageNum',
+                                style: TextStyles.bold.copyWith(
+                                  color:
+                                      AppColors.secondaryColor.withOpacity(0.75),
+                                  fontSize: 13,
+                                ),
+                              ),
+                              onTap: () {
+                                final target = (pageNum - 1)
+                                    .clamp(0, (_totalPages - 1).clamp(0, 9999));
+                                _pdfViewController?.setPage(target);
+                                Navigator.pop(ctx);
+                              },
+                            );
+                          },
+                        ),
                       ),
-                    ),
-                    onPressed: () {
-                      final num = int.tryParse(pageController.text.trim());
-                      if (num != null && num >= 1 && num <= _totalPages) {
-                        _pdfViewController?.setPage(num - 1);
-                        Navigator.pop(ctx);
-                      }
-                    },
-                    child: const Text('انتقال'),
+                    ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 12),
-              ...quickSections.map(
-                (item) => ListTile(
-                  leading: const Icon(
-                    Icons.bookmark_outline_rounded,
-                    color: AppColors.secondaryColor,
-                  ),
-                  title: Text(
-                    item['title'] as String,
-                    style: TextStyles.medium.copyWith(
-                      color: AppColors.secondaryColor,
-                    ),
-                  ),
-                  trailing: Text(
-                    'ص ${(item['page'] as int) + 1}',
-                    style: TextStyles.regular.copyWith(
-                      color: AppColors.secondaryColor.withOpacity(0.7),
-                    ),
-                  ),
-                  onTap: () {
-                    _pdfViewController?.setPage(item['page'] as int);
-                    Navigator.pop(ctx);
-                  },
-                ),
-              ),
-            ],
-          ),
+                );
+              },
+            );
+          },
         );
       },
     );
