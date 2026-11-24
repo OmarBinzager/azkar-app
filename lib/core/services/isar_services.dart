@@ -46,7 +46,11 @@ class IsarServices {
   Future<void> _initDatabaseInternal() async {
     final isar = await db;
     final headerCount = await isar.headers.count();
-    if (headerCount == 0 || headerCount != IsarHelper.headers.length) {
+    final contentCount = await isar.contents.count();
+    if (headerCount == 0 ||
+        headerCount != IsarHelper.headers.length ||
+        contentCount == 0 ||
+        contentCount != IsarHelper.contents.length) {
       debugPrint(
         'Content & Headers out of date or empty. Syncing database with IsarHelper...',
       );
