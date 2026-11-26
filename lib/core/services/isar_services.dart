@@ -64,11 +64,13 @@ class IsarServices {
   }
 
   Future<List<Header>> loadAllHeaders() async {
+    await initDatabase();
     final isar = await db;
     return isar.headers.where().findAll();
   }
 
   Future<List<Content>> loadAllContents() async {
+    await initDatabase();
     final isar = await db;
     return isar.contents.where().findAll();
   }
